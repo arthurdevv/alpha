@@ -1,0 +1,14 @@
+{
+  "terminal.create": "ctrl+shift+t",
+  "terminal.clear": "ctrl+shift+k",
+  "terminal.close": "ctrl+shift+w",
+  "terminal.settings": "ctrl+,",
+  "tab.next": "ctrl+tab",
+  "tab.previous": "ctrl+shift+tab",
+  "tab.specific": "ctrl",
+  "window.reload": "ctrl+shift+r",
+  "window.devtools": "ctrl+shift+i",
+  "window.fullscreen": "f11",
+  "window.minimize": "ctrl+shift+m",
+  "window.close": "ctrl+shift+q"
+}

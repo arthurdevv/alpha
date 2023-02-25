@@ -1,0 +1,31 @@
+{
+  "presets": [
+    "preact",
+    "@babel/preset-env",
+    [
+      "@babel/preset-typescript",
+      {
+        "jsxPragma": "h"
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "babel-plugin-styled-components",
+      {
+        "ssr": false,
+        "displayName": false,
+        "preprocess": false,
+        "minify": false,
+        "transpileTemplateLiterals": false
+      }
+    ],
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        "pragma": "h",
+        "pragmaFrag": "Fragment"
+      }
+    ]
+  ]
+}
