@@ -1,0 +1,24 @@
+name: Test
+
+on: pull_request
+
+jobs:
+  code:
+    name: Test code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js 16
+        uses: actions/setup-node@v3.2.0
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1
+
+      - name: Run Jest
+        run: yarn test
