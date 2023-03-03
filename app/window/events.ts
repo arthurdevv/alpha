@@ -3,10 +3,6 @@ import { ipcMain, BrowserWindow } from 'electron';
 export default () => {
   const focusedWindow = BrowserWindow.getFocusedWindow;
 
-  ipcMain.on('window-reload', () => {
-    focusedWindow()?.reload();
-  });
-
   ipcMain.on('window-minimize', () => {
     focusedWindow()?.minimize();
   });
