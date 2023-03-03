@@ -6,14 +6,13 @@ import Mousetrap from 'mousetrap';
 import { commands } from 'app/common/keymaps/commands';
 import { getKeymapsParsed } from 'app/common/keymaps';
 
+import { Content } from 'lib/styles/global';
+import Menu from 'lib/context/menu';
 import Header from 'lib/context/header';
 import Terminal from 'lib/context/terminal';
-import Profiles from 'lib/context/profiles';
-import { Content } from 'lib/styles/global';
+import Watermark from './Watermark';
 
 const Alpha: React.FC<AlphaProps> = (props: AlphaProps) => {
-  const { resizeWindow, execCommand } = props;
-
   const mousetrap: Mousetrap.MousetrapInstance = new (Mousetrap as any)(window);
 
   useEffect(() => {
@@ -31,14 +30,14 @@ const Alpha: React.FC<AlphaProps> = (props: AlphaProps) => {
 
           const callback = commands[command];
 
-          execCommand(command, callback, event);
+          props.execCommand(command, callback, event);
         },
         'keydown',
       );
     });
 
     const handleResize = () => {
-      resizeWindow(window.innerWidth, window.innerHeight);
+      props.resizeWindow(window.innerWidth, window.innerHeight);
     };
 
     window.addEventListener('resize', handleResize);
@@ -55,8 +54,9 @@ const Alpha: React.FC<AlphaProps> = (props: AlphaProps) => {
       <Header />
       <Content>
         <Terminal />
+        <Watermark />
       </Content>
-      <Profiles />
+      <Menu />
     </Content>
   );
 };

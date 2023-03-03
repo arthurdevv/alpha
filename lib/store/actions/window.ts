@@ -5,6 +5,7 @@ import {
   WINDOW_RESTORE,
   WINDOW_CLOSE,
   WINDOW_TOGGLE_FULLSCREEN,
+  WINDOW_SET_MENU,
   WINDOW_EXEC_COMMAND,
 } from '../types/window';
 
@@ -72,6 +73,15 @@ export function toggleFullScreen(): (dispatch: AlphaDispatch) => void {
       callback() {
         global.send('window-toggle-fullscreen');
       },
+    });
+  };
+}
+
+export function setMenu(menu: MenuType): (dispatch: AlphaDispatch) => void {
+  return (dispatch: AlphaDispatch) => {
+    dispatch({
+      type: WINDOW_SET_MENU,
+      menu,
     });
   };
 }

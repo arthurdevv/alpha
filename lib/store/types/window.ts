@@ -10,6 +10,8 @@ export const WINDOW_CLOSE = 'WINDOW_CLOSE';
 
 export const WINDOW_TOGGLE_FULLSCREEN = 'WINDOW_TOGGLE_FULLSCREEN';
 
+export const WINDOW_SET_MENU = 'WINDOW_SET_MENU';
+
 export const WINDOW_EXEC_COMMAND = 'WINDOW_EXEC_COMMAND';
 
 export interface WindowResizeAction {
@@ -38,6 +40,11 @@ export interface WindowToggleFullScreenAction {
   type: typeof WINDOW_TOGGLE_FULLSCREEN;
 }
 
+export interface WindowSetMenuAction {
+  type: typeof WINDOW_SET_MENU;
+  menu: MenuType;
+}
+
 export interface WindowExecCommandAction {
   type: typeof WINDOW_EXEC_COMMAND;
   command: string;
@@ -50,4 +57,5 @@ export type WindowActions =
   | WindowRestoreAction
   | WindowCloseAction
   | WindowToggleFullScreenAction
+  | WindowSetMenuAction
   | WindowExecCommandAction;

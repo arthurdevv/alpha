@@ -22,7 +22,7 @@ import Popover from './Popover';
 import TabGroup from './Tab/group';
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
-  process.platform === 'darwin' ? (
+  global.isMac ? (
     <Container>
       <Actions>
         <MacWindowControl aria-label="Close" onClick={props.closeWindow}>
@@ -48,7 +48,10 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
           <PlusIcon />
           <Popover label="New Terminal" />
         </ActionItem>
-        <ActionItem aria-label="Profiles" onClick={props.toggleProfiles}>
+        <ActionItem
+          aria-label="Profiles"
+          onClick={() => props.setMenu('Profiles')}
+        >
           <ProfilesIcon />
           <Popover label="Profiles" />
         </ActionItem>
@@ -79,7 +82,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
         </ActionItem>
         <ActionItem
           aria-label="Profiles"
-          onClick={props.toggleProfiles}
+          onClick={() => props.setMenu('Profiles')}
           className={props.tabs.length > 0 ? 'visited' : ''}
         >
           <ProfilesIcon />
