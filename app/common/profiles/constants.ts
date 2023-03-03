@@ -44,8 +44,6 @@ export const clinkPath = app.isPackaged
     )
   : join(appPath, 'app/common/profiles/clink', `clink_${process.arch}.exe`);
 
-console.log(clinkPath);
-
 export const cmdPath =
   process.env.COMSPEC ||
   join(process.env.WINDIR || 'C:\\Windows', 'system32', 'cmd.exe');
