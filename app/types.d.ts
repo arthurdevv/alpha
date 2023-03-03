@@ -59,6 +59,17 @@ declare global {
   };
 
   type Commands = Record<string, () => void>;
+
+  type MenuCommands = Record<
+    string,
+    Record<
+      string,
+      {
+        keys: string[];
+        onClick: () => void;
+      }
+    >
+  >;
 }
 
 export {};

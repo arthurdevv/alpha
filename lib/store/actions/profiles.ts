@@ -1,18 +1,10 @@
 import {
-  PROFILES_TOGGLE,
   PROFILES_SELECT,
   PROFILES_REMOVE,
   PROFILES_CLEAR_RECENT,
 } from '../types/profiles';
+import { setMenu } from './window';
 import { getRecent } from '../selectors';
-
-export function toggleProfiles(): (dispatch: AlphaDispatch) => void {
-  return (dispatch: AlphaDispatch) => {
-    dispatch({
-      type: PROFILES_TOGGLE,
-    });
-  };
-}
 
 export function selectProfile(
   profile: IProfile,
@@ -34,7 +26,7 @@ export function selectProfile(
           dispatch(removeProfile(recent[0]));
         }
 
-        dispatch(toggleProfiles());
+        dispatch(setMenu(null));
       },
     });
   };
@@ -56,7 +48,7 @@ export function clearRecentProfiles(): (dispatch: AlphaDispatch) => void {
     dispatch({
       type: PROFILES_CLEAR_RECENT,
       callback() {
-        dispatch(toggleProfiles());
+        dispatch(setMenu(null));
       },
     });
   };

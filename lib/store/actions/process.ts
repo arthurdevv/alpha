@@ -87,20 +87,14 @@ export function clearProcessData(): AlphaActions {
 export function killProcess(
   id: string,
   type: typeof PROCESS_DELETE | typeof PROCESS_KILL,
-): (dispatch: AlphaDispatch, getState: () => AlphaState) => void {
-  return (dispatch: AlphaDispatch, getState: () => AlphaState) => {
+): (dispatch: AlphaDispatch) => void {
+  return (dispatch: AlphaDispatch) => {
     dispatch({
       type,
       id,
       callback() {
-        const { process } = getState();
-
         if (type === PROCESS_KILL) {
           global.emit('process-kill', { id });
-        }
-
-        if (Object.keys(process.context).length === 0) {
-          global.send('window-close');
         }
       },
     });

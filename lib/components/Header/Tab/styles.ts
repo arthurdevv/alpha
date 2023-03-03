@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Group = styled.div`
   height: 100%;
@@ -18,7 +18,16 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease 0s;
-  animation: tab-on-create 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s forwards;
+  animation: ${keyframes`
+    0% {
+      width: 0;
+      padding: 0;
+    }
+
+    100% {
+      width: 12.5rem;
+    }
+  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s forwards;
 
   &:hover {
     & span:first-of-type {
@@ -42,17 +51,6 @@ export const Container = styled.div`
 
   &:not(.current) {
     color: ${props => props.theme.disabled};
-  }
-
-  @keyframes tab-on-create {
-    0% {
-      width: 0;
-      padding: 0;
-    }
-
-    100% {
-      width: 12.5rem;
-    }
   }
 `;
 

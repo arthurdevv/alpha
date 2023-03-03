@@ -6,6 +6,7 @@
   "tab.next": "ctrl+tab",
   "tab.previous": "ctrl+shift+tab",
   "tab.specific": "command",
+  "window.commands": "shift+command+p",
   "window.devtools": "command+alt+i",
   "window.fullscreen": "command+ctrl+f",
   "window.minimize": "command+m",

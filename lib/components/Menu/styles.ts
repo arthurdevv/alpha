@@ -1,24 +1,32 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Overlay = styled.div`
+export const Overlay = styled.div<{ menu: string | null }>`
   position: fixed;
   width: 100%;
   height: 100%;
   padding: 10vh 1rem 1rem;
   inset: 0;
-  z-index: 1000;
+  opacity: 0;
   overflow: hidden;
+  pointer-events: none;
   display: flex;
   align-items: flex-start;
   justify-content: center;
+
+  ${props =>
+    props.menu &&
+    css`
+      opacity: 1;
+      z-index: 1000;
+      pointer-events: all;
+    `}
 `;
 
-export const Content = styled.div`
+export const Content = styled.div<{ visible: boolean }>`
   position: relative;
   width: 100%;
   max-width: 31.25rem;
   max-height: 70vh;
-  opacity: 0;
   overflow-y: auto;
   overflow-x: hidden;
   pointer-events: auto;
@@ -29,23 +37,18 @@ export const Content = styled.div`
     0px 5px 17px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   transform: scale(0.99);
-  animation: modal-on-show 0.2s forwards 0.1s;
+  transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
 
-  @keyframes modal-on-show {
-    0% {
-      opacity: 0;
-      transform: scale(0.99);
-    }
-
-    50% {
-      transform: scale(1.02);
-    }
-
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
+  ${props =>
+    props.visible
+      ? css`
+          opacity: 1;
+          transform: scale(1);
+        `
+      : css`
+          opacity: 0;
+          transform: scale(0.98);
+        `}
 `;
 
 export const Search = styled.div`
@@ -72,14 +75,6 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const Separator = styled.hr`
-  width: 100%;
-  height: 1px;
-  margin-bottom: 0.5rem;
-  background: ${props => props.theme.separator};
-  border: none;
-`;
-
 export const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -88,6 +83,13 @@ export const Wrapper = styled.div`
   &.hidden {
     display: none;
   }
+`;
+
+export const Separator = styled.hr`
+  width: 100%;
+  height: 1px;
+  margin-bottom: 0.25rem;
+  border: none;
 `;
 
 export const Label = styled.div`
@@ -103,25 +105,20 @@ export const Group = styled.ul`
   overflow: hidden;
 `;
 
-export const Container = styled.li`
+export const Container = styled.li<{ menuType: string }>`
   height: 2.25rem;
   padding: 0 1.5rem;
   font-size: 0.813rem;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: ${props =>
+    props.menuType === 'Profiles' ? 'flex-start' : 'space-between'};
   transition: background 0.2s ease 0s;
 
   &:hover {
     background: ${props => props.theme.separator};
   }
-`;
-
-export const Info = styled.div`
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 export const Title = styled.div`
@@ -135,4 +132,25 @@ export const Shell = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
   color: ${props => props.theme.disabled};
+`;
+
+export const Keys = styled.div`
+  margin-left: 0.5rem;
+  gap: 0.25rem;
+  display: flex;
+  align-items: center;
+`;
+
+export const KeyItem = styled.div`
+  height: 1.25rem;
+  min-width: 1.25rem;
+  padding: 0 0.25rem;
+  font-size: 0.688rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  color: ${props => props.theme.popover.foreground};
+  border: 1px solid ${props => props.theme.border};
+  border-radius: 3px;
 `;

@@ -45,8 +45,8 @@ export const KeyItem = styled.div`
   justify-content: center;
   text-transform: uppercase;
   color: ${props => props.theme.popover.foreground};
-  background: ${props => props.theme.popover.background};
-  border-radius: 2px;
+  border: 1px solid ${props => props.theme.border};
+  border-radius: 3px;
 `;
 
 export const Arrow = styled.span`

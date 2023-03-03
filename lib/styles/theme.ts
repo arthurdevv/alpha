@@ -13,7 +13,6 @@ const defaultTheme: IDefaultTheme = {
   },
   popover: {
     foreground: 'rgba(190, 190, 190, 1.0)',
-    background: 'rgba(40, 40, 40, 1.0)',
   },
   scrollbar: {
     thumb: 'rgba(255, 255, 255, 0.10)',

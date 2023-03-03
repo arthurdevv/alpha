@@ -10,7 +10,7 @@ import { TabActions } from './store/types/tab';
 import { AlphaConnectedProps } from './context/alpha';
 import { HeaderConnectedProps } from './context/header';
 import { TerminalConnectedProps } from './context/terminal';
-import { ProfilesConnectedProps } from './context/profiles';
+import { MenuConnectedProps } from './context/menu';
 
 declare global {
   type AlphaProps = AlphaConnectedProps;
@@ -19,7 +19,7 @@ declare global {
 
   type TerminalProps = TerminalConnectedProps;
 
-  type ProfilesProps = ProfilesConnectedProps;
+  type MenuProps = MenuConnectedProps;
 
   type ITab = {
     id: string;
@@ -94,9 +94,12 @@ declare global {
   type WindowState = Immutable<{
     width: number;
     height: number;
+    menu: MenuType;
     isMaximized: boolean;
     isFullScreen: boolean;
   }>;
+
+  type MenuType = 'Profiles' | 'Commands' | null;
 
   type ProcessState = Immutable<{
     context: Mutable<Record<string, IProcess>>;
@@ -128,7 +131,6 @@ declare global {
 
   type ProfilesState = Immutable<{
     recent: Mutable<Record<string, IProfile>>;
-    isVisible: boolean;
   }>;
 
   type Mutable<T> = T extends Immutable<infer U>
@@ -152,7 +154,6 @@ declare module 'styled-components' {
     };
     popover: {
       foreground: string;
-      background: string;
     };
     scrollbar: {
       thumb: string;

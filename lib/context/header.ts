@@ -5,13 +5,13 @@ import { getTabs } from 'lib/store/selectors';
 import { requestTerminal } from 'lib/store/actions/terminal';
 import { selectTab, closeTab } from 'lib/store/actions/tab';
 import {
+  setMenu,
   minimizeWindow,
   maximizeWindow,
   restoreWindow,
   closeWindow,
   toggleFullScreen,
 } from 'lib/store/actions/window';
-import { toggleProfiles } from 'lib/store/actions/profiles';
 
 const mapStateToProps = (state: AlphaState) => ({
   tabs: getTabs(state),
@@ -32,8 +32,8 @@ const mapDispatchToProps = (dispatch: AlphaDispatch) => ({
     dispatch(closeTab(id));
   },
 
-  toggleProfiles() {
-    dispatch(toggleProfiles());
+  setMenu(menu: MenuType) {
+    dispatch(setMenu(menu));
   },
 
   minimizeWindow() {

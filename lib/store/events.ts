@@ -14,6 +14,7 @@ import {
   setTerminalOptions,
   disposeTerminal,
 } from './actions/terminal';
+import { setMenu } from './actions/window';
 import { nextTab, previousTab, specificTab } from './actions/tab';
 
 export default () => {
@@ -97,6 +98,10 @@ export default () => {
     store.dispatch(specificTab(index));
   });
 
+  global.on('window-show-commands', () => {
+    store.dispatch(setMenu('Commands'));
+  });
+
   global.on('exec-command', command => {
     execCommand(command);
   });
@@ -109,7 +114,5 @@ export default () => {
     });
 
     listeners.watch();
-
-    global.emit('terminal-create', {});
   })();
 };
