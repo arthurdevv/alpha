@@ -23,9 +23,6 @@ const commands: Commands = {
   'tab.previous': () => {
     global.emit('tab-move-to-previous');
   },
-  'window.reload': () => {
-    global.send('window-reload');
-  },
   'window.devtools': () => {
     global.send('window-toggle-devtools');
   },
