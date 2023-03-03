@@ -64,7 +64,7 @@ const GlobalStyle = createGlobalStyle`
 
   @font-face {
     font-family: 'Inter';
-    font-weight: 400;
+    font-weight: 100 1000;
     font-style: normal;
     src: url('lib/styles/fonts/Inter.ttf') format('truetype');
   }
