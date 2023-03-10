@@ -4,7 +4,7 @@ import { autoUpdater } from 'electron-updater';
 export default (mainWindow: Electron.BrowserWindow) => {
   if (app.isPackaged) {
     setInterval(() => {
-      autoUpdater.checkForUpdates();
+      if (navigator.onLine) autoUpdater.checkForUpdates();
     }, 60000);
 
     autoUpdater.on('update-downloaded', event => {
