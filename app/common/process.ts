@@ -49,6 +49,7 @@ class Process extends EventEmitter {
       name: 'xterm-256color',
       cwd,
       env,
+      useConpty: true,
     };
 
     this.process = pty.spawn(shell, args, options);
