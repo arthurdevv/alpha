@@ -3,9 +3,7 @@ import { autoUpdater } from 'electron-updater';
 
 export default (mainWindow: Electron.BrowserWindow) => {
   if (app.isPackaged) {
-    setInterval(() => {
-      if (navigator.onLine) autoUpdater.checkForUpdates();
-    }, 60000);
+    autoUpdater.checkForUpdates();
 
     autoUpdater.on('update-downloaded', event => {
       const { releaseName, releaseNotes } = event;

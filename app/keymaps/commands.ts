@@ -1,86 +1,84 @@
-import { openSettings } from 'app/settings';
-
 const execCommand = (command: string) => commands[command];
 
 const hasCommand = (command: string) => command in commands;
 
 const commands: Commands = {
-  'terminal.create': () => {
+  'terminal-create': () => {
     global.emit('terminal-create', {});
   },
-  'terminal.clear': () => {
+  'terminal-clear': () => {
     global.emit('terminal-clear-buffer');
   },
-  'terminal.close': () => {
+  'terminal-close': () => {
     global.emit('terminal-dispose-current');
   },
-  'terminal.settings': () => {
-    openSettings();
+  'terminal-settings': () => {
+    global.emit('terminal-open-settings');
   },
-  'tab.next': () => {
+  'tab-next': () => {
     global.emit('tab-move-to-next');
   },
-  'tab.previous': () => {
+  'tab-previous': () => {
     global.emit('tab-move-to-previous');
   },
-  'window.commands': () => {
+  'window-commands': () => {
     global.emit('window-show-commands');
   },
-  'window.devtools': () => {
+  'window-devtools': () => {
     global.send('window-toggle-devtools');
   },
-  'window.fullscreen': () => {
+  'window-fullscreen': () => {
     global.send('window-toggle-fullscreen');
   },
-  'window.minimize': () => {
+  'window-minimize': () => {
     global.send('window-minimize');
   },
-  'window.close': () => {
+  'window-close': () => {
     global.send('window-close');
   },
 };
 
-const menuCommands: MenuCommands = {
+const menuCommands: Record<string, IMenuCommand> = {
   Terminal: {
     'New Terminal': {
       keys: global.isMac ? ['⌘', 't'] : ['Ctrl', '⇧', 't'],
-      onClick: () => commands['terminal.create'](),
+      onClick: () => commands['terminal-create'](),
     },
     'Clear Current Terminal': {
       keys: global.isMac ? ['⌘', 'k'] : ['Ctrl', '⇧', 'k'],
-      onClick: () => commands['terminal.clear'](),
+      onClick: () => commands['terminal-clear'](),
     },
     'Open Settings': {
       keys: [global.isMac ? '⌘' : 'Ctrl', ','],
-      onClick: () => commands['terminal.settings'](),
+      onClick: () => commands['terminal-settings'](),
     },
   },
   Tab: {
     'Go to Next Tab': {
       keys: ['Ctrl', 'Tab'],
-      onClick: () => commands['tab.next'](),
+      onClick: () => commands['tab-next'](),
     },
     'Go to Previous Tab': {
       keys: ['Ctrl', '⇧', 'Tab'],
-      onClick: () => commands['tab.previous'](),
+      onClick: () => commands['tab-previous'](),
     },
   },
   Window: {
     'Toggle Developer Tools': {
       keys: global.isMac ? ['⌘', 'Alt', 'i'] : ['Ctrl', '⇧', 'i'],
-      onClick: () => commands['window.devtools'](),
+      onClick: () => commands['window-devtools'](),
     },
     'Toggle Full Screen': {
       keys: global.isMac ? ['⌘', 'Ctrl', 'f'] : ['f11'],
-      onClick: () => commands['window.fullscreen'](),
+      onClick: () => commands['window-fullscreen'](),
     },
     'Minimize Window': {
       keys: global.isMac ? ['⌘', 'm'] : ['Ctrl', '⇧', 'm'],
-      onClick: () => commands['window.minimize'](),
+      onClick: () => commands['window-minimize'](),
     },
     'Close Window': {
       keys: global.isMac ? ['⌘', 'Shift', 'w'] : ['Alt', 'f4'],
-      onClick: () => commands['window.close'](),
+      onClick: () => commands['window-close'](),
     },
   },
 };

@@ -13,10 +13,10 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.background};
-  border: 1px solid ${props => props.theme.border};
+  background: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border};
   border-radius: 4px;
-  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
+  box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.35s;
 
   &.visible {

@@ -12,6 +12,8 @@ import { HeaderConnectedProps } from './context/header';
 import { TerminalConnectedProps } from './context/terminal';
 import { MenuConnectedProps } from './context/menu';
 
+import theme from './styles/theme';
+
 declare global {
   type AlphaProps = AlphaConnectedProps;
 
@@ -99,7 +101,7 @@ declare global {
     isFullScreen: boolean;
   }>;
 
-  type MenuType = 'Profiles' | 'Commands' | null;
+  type MenuType = 'Profiles' | 'Commands' | 'Settings' | null;
 
   type ProcessState = Immutable<{
     context: Mutable<Record<string, IProcess>>;
@@ -141,27 +143,8 @@ declare global {
 }
 
 declare module 'styled-components' {
-  type IDefaultTheme = {
-    foreground: string;
-    background: string;
-    border: string;
-    disabled: string;
-    separator: string;
-    boxShadow: string;
-    selection: {
-      foreground: string;
-      background: string;
-    };
-    popover: {
-      foreground: string;
-    };
-    scrollbar: {
-      thumb: string;
-      hover: string;
-    };
-  };
+  type Theme = typeof theme;
 
-  export interface DefaultTheme extends IDefaultTheme {
-    readonly defaultTheme: IDefaultTheme;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface DefaultTheme extends Theme {}
 }

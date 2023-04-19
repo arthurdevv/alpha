@@ -35,13 +35,13 @@ export const ActionItem = styled.div`
   justify-content: center;
 
   & svg {
-    color: ${props => props.theme.disabled};
+    color: ${({ theme }) => theme.disabled};
     transition: color 0.2s ease 0s;
   }
 
   &:hover {
     & svg {
-      color: ${props => props.theme.foreground};
+      color: ${({ theme }) => theme.foreground};
       transition: color 0.2s ease 0s;
     }
 
@@ -88,7 +88,7 @@ export const MacWindowControl = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.border};
+  background: ${({ theme }) => theme.border};
   border-radius: 50%;
 
   &:hover div span {

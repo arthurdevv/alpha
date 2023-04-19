@@ -1,6 +1,4 @@
-import { IDefaultTheme } from 'styled-components';
-
-const defaultTheme: IDefaultTheme = {
+const theme = {
   foreground: 'rgba(230, 230, 230, 1.0)',
   background: 'rgba(15, 15, 15, 1.0)',
   border: 'rgba(40, 40, 40, 1.0)',
@@ -20,4 +18,4 @@ const defaultTheme: IDefaultTheme = {
   },
 };
 
-export default defaultTheme;
+export default theme;

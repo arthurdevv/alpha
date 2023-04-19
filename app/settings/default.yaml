@@ -1,0 +1,17 @@
+application:
+  language: en-US
+  autoUpdates: true
+  alwaysOnTop: false
+  gpu: false
+appearance:
+  fontSize: 16
+  fontFamily: Menlo, Consolas, Lucida Console, monospace
+  fontWeight: 400
+  fontLigatures: true
+  lineHeight: 1
+  letterSpacing: 0
+  cursorStyle: block
+  cursorBlink: true
+command-line:
+  cwd: null
+  useConpty: true

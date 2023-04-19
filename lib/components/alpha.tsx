@@ -3,8 +3,8 @@ import { memo } from 'preact/compat';
 import { useEffect } from 'preact/hooks';
 
 import Mousetrap from 'mousetrap';
-import { commands } from 'app/common/keymaps/commands';
-import { getKeymapsParsed } from 'app/common/keymaps';
+import { commands } from 'app/keymaps/commands';
+import { getKeymapsParsed } from 'app/keymaps';
 
 import { Content } from 'lib/styles/global';
 import Menu from 'lib/context/menu';

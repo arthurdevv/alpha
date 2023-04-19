@@ -1,4 +1,3 @@
-import { ImmutableArray } from 'seamless-immutable';
 import { EventEmitter } from 'events';
 import { FontWeight, ITheme } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -11,15 +10,27 @@ declare global {
 
   var emit: EventEmitter['emit'];
 
-  var send: typeof Electron.ipcRenderer.send;
+  var send: Electron.IpcRenderer['send'];
 
   var isWin: boolean;
 
   var isMac: boolean;
 
-  type ISettings = ITerminalOptions & {
-    args: string[];
-    env: Record<string, string>;
+  type ISettings = IAppOptions & {
+    cwd: string | null;
+    useConpty: boolean;
+  } & ITerminalOptions;
+
+  type IRawSettings = Record<
+    'application' | 'appearance' | 'command-line',
+    ISettings
+  >;
+
+  type IAppOptions = {
+    language: string;
+    autoUpdates: boolean;
+    alwaysOnTop: boolean;
+    gpu: boolean;
   };
 
   type IProcessOptions = {
@@ -30,6 +41,7 @@ declare global {
     env: {
       [key: string]: string;
     };
+    useConpty: boolean;
   };
 
   type ITerminalOptions = {
@@ -42,6 +54,8 @@ declare global {
     cursorStyle: 'block' | 'underline' | 'bar';
     cursorBlink: boolean;
     theme: ITheme;
+    scrollback?: number | undefined;
+    allowProposedApi?: boolean | undefined;
     allowTransparency?: boolean | undefined;
   };
 
@@ -55,20 +69,34 @@ declare global {
   type IProfile = {
     title: string;
     shell: string;
-    args: string[] | ImmutableArray<string>;
+    args: string[];
   };
 
   type Commands = Record<string, () => void>;
 
-  type MenuCommands = Record<
+  type IMenuCommand = Record<
     string,
-    Record<
-      string,
-      {
-        keys: string[];
-        onClick: () => void;
-      }
-    >
+    {
+      keys: string[];
+      onClick: () => void;
+    }
+  >;
+
+  type ISettingsKey = Record<
+    string,
+    {
+      label: string;
+      type: 'input' | 'checkbox' | 'select';
+      valueType: 'text' | 'number' | 'boolean';
+      description: string;
+      options?: any[] | undefined;
+      range?:
+        | {
+            min?: number | undefined;
+            max?: number | undefined;
+          }
+        | undefined;
+    }
   >;
 }
 

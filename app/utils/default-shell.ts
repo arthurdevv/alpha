@@ -9,15 +9,7 @@ const getDefaultShell = (): string => {
 
   const { shell } = userInfo();
 
-  if (shell) {
-    return shell;
-  }
-
-  if (platform === 'darwin') {
-    return env.SHELL || '/bin/zsh';
-  }
-
-  return env.SHELL || '/bin/sh';
+  return env.SHELL || shell;
 };
 
 export default getDefaultShell();

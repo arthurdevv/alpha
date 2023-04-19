@@ -1,11 +1,18 @@
 import { app, BrowserWindow } from 'electron';
 import { initialize, enable } from '@electron/remote/main';
-import { is, electronApp, optimizer } from '@electron-toolkit/utils';
+import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { resolve } from 'path';
+import { getSettings } from 'app/settings';
 import invokeEvents from './events';
 import checkForUpdates from './updater';
 
 initialize();
+
+const { gpu, autoUpdates } = getSettings();
+
+if (!gpu) {
+  app.disableHardwareAcceleration();
+}
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -67,7 +74,7 @@ app.whenReady().then(() => {
 
   createWindow();
 
-  if (mainWindow && !is.dev) {
+  if (mainWindow && autoUpdates) {
     checkForUpdates(mainWindow);
   }
 

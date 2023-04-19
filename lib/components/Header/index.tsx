@@ -1,7 +1,6 @@
 import { h } from 'preact';
 import { memo } from 'preact/compat';
 
-import { openSettings } from 'app/settings';
 import {
   Container,
   DragRegion,
@@ -21,8 +20,10 @@ import {
 import Popover from './Popover';
 import TabGroup from './Tab/group';
 
-const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
-  global.isMac ? (
+const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
+  const { tabs, isMaximized, isFullScreen } = props;
+
+  return global.isMac ? (
     <Container>
       <Actions>
         <MacWindowControl aria-label="Close" onClick={props.closeWindow}>
@@ -32,17 +33,13 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
           <Popover label="Minimize" />
         </MacWindowControl>
         <MacWindowControl
-          aria-label={props.isFullScreen ? 'Restore' : 'Maximize'}
+          aria-label={isFullScreen ? 'Restore' : 'Maximize'}
           onClick={props.toggleFullScreen}
         >
-          <Popover label={props.isFullScreen ? 'Restore' : 'Maximize'} />
+          <Popover label={isFullScreen ? 'Restore' : 'Maximize'} />
         </MacWindowControl>
       </Actions>
-      <TabGroup
-        tabs={props.tabs}
-        onSelect={props.onSelect}
-        onClose={props.onClose}
-      />
+      <TabGroup tabs={tabs} onSelect={props.onSelect} onClose={props.onClose} />
       <Actions>
         <ActionItem aria-label="New Terminal" onClick={props.newTerminal}>
           <PlusIcon />
@@ -58,7 +55,10 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
       </Actions>
       <DragRegion />
       <Actions>
-        <ActionItem aria-label="Settings" onClick={openSettings}>
+        <ActionItem
+          aria-label="Settings"
+          onClick={() => props.setMenu('Settings')}
+        >
           <SettingsIcon />
           <Popover label="Settings" />
         </ActionItem>
@@ -66,16 +66,12 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
     </Container>
   ) : (
     <Container>
-      <TabGroup
-        tabs={props.tabs}
-        onSelect={props.onSelect}
-        onClose={props.onClose}
-      />
+      <TabGroup tabs={tabs} onSelect={props.onSelect} onClose={props.onClose} />
       <Actions>
         <ActionItem
           aria-label="New Terminal"
           onClick={props.newTerminal}
-          className={props.tabs.length > 0 ? 'visited' : ''}
+          className={tabs.length > 0 ? 'visited' : ''}
         >
           <PlusIcon />
           <Popover label="New Terminal" />
@@ -83,7 +79,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
         <ActionItem
           aria-label="Profiles"
           onClick={() => props.setMenu('Profiles')}
-          className={props.tabs.length > 0 ? 'visited' : ''}
+          className={tabs.length > 0 ? 'visited' : ''}
         >
           <ProfilesIcon />
           <Popover label="Profiles" />
@@ -91,7 +87,10 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
       </Actions>
       <DragRegion />
       <Actions>
-        <ActionItem aria-label="Settings" onClick={openSettings}>
+        <ActionItem
+          aria-label="Settings"
+          onClick={() => props.setMenu('Settings')}
+        >
           <SettingsIcon />
           <Popover label="Settings" />
         </ActionItem>
@@ -100,13 +99,11 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
           <Popover label="Minimize" />
         </ActionItem>
         <ActionItem
-          aria-label={props.isMaximized ? 'Restore' : 'Maximize'}
-          onClick={
-            props.isMaximized ? props.restoreWindow : props.maximizeWindow
-          }
+          aria-label={isMaximized ? 'Restore' : 'Maximize'}
+          onClick={isMaximized ? props.restoreWindow : props.maximizeWindow}
         >
-          {props.isMaximized ? <RestoreIcon /> : <MaximizeIcon />}
-          <Popover label={props.isMaximized ? 'Restore' : 'Maximize'} />
+          {isMaximized ? <RestoreIcon /> : <MaximizeIcon />}
+          <Popover label={isMaximized ? 'Restore' : 'Maximize'} />
         </ActionItem>
         <ActionItem aria-label="Close" onClick={props.closeWindow}>
           <CloseIcon />
@@ -115,5 +112,6 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) =>
       </Actions>
     </Container>
   );
+};
 
 export default memo(Header);
