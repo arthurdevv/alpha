@@ -1,6 +1,6 @@
 import listeners from 'app/settings/listeners';
 import { getSettings } from 'app/settings';
-import { execCommand } from 'app/common/keymaps/commands';
+import { execCommand } from 'app/keymaps/commands';
 import { sessions, setSession } from 'app/common/process';
 
 import store from '.';
@@ -14,8 +14,8 @@ import {
   setTerminalOptions,
   disposeTerminal,
 } from './actions/terminal';
-import { setMenu } from './actions/window';
 import { nextTab, previousTab, specificTab } from './actions/tab';
+import { setMenu } from './actions/window';
 
 export default () => {
   global.on('terminal-create', ({ current }) => {
@@ -80,6 +80,10 @@ export default () => {
 
   global.on('terminal-dispose-current', () => {
     store.dispatch(disposeTerminal('current', 'PROCESS_KILL'));
+  });
+
+  global.on('terminal-open-settings', () => {
+    store.dispatch(setMenu('Settings'));
   });
 
   global.on('profile-select', ({ profile }) => {

@@ -51,7 +51,7 @@ export const ShortcutKeys = styled.span`
   font-size: 0.75rem;
   display: flex;
   align-items: center;
-  border: 1px solid ${props => props.theme.border};
+  border: 1px solid ${({ theme }) => theme.border};
   border-radius: 3px;
 `;
 
@@ -67,5 +67,5 @@ export const Footer = styled.footer`
 
 export const Version = styled.div`
   font-size: 0.8125rem;
-  color: ${props => props.theme.disabled};
+  color: ${({ theme }) => theme.disabled};
 `;

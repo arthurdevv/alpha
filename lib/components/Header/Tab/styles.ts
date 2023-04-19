@@ -46,11 +46,11 @@ export const Container = styled.div`
 
   &.current {
     cursor: default;
-    color: ${props => props.theme.foreground};
+    color: ${({ theme }) => theme.foreground};
   }
 
   &:not(.current) {
-    color: ${props => props.theme.disabled};
+    color: ${({ theme }) => theme.disabled};
   }
 `;
 
@@ -73,7 +73,7 @@ export const CloseButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.theme.foreground};
+  color: ${({ theme }) => theme.foreground};
   border-radius: 3px;
   transition: all 0.2s ease 0s;
 

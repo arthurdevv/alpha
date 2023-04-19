@@ -19,20 +19,20 @@ export const Content = styled.span`
   pointer-events: none;
   display: flex;
   align-items: center;
-  color: ${props => props.theme.foreground};
-  background: ${props => props.theme.background};
-  border: 1px solid ${props => props.theme.border};
+  color: ${({ theme }) => theme.foreground};
+  background: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border};
   border-radius: 3px;
-  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
+  box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
 `;
 
-export const Keys = styled.div<{ hidden: boolean }>`
+export const Keys = styled.div`
   margin-left: 0.5rem;
   gap: 0.25rem;
   display: flex;
   align-items: center;
-  display: ${props => props.hidden && 'none'};
+  display: ${({ hidden }) => hidden && 'none'};
 `;
 
 export const KeyItem = styled.div`
@@ -44,8 +44,8 @@ export const KeyItem = styled.div`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  color: ${props => props.theme.popover.foreground};
-  border: 1px solid ${props => props.theme.border};
+  color: ${({ theme }) => theme.popover.foreground};
+  border: 1px solid ${({ theme }) => theme.border};
   border-radius: 3px;
 `;
 
@@ -60,7 +60,7 @@ export const Arrow = styled.span`
   align-items: center;
   justify-content: center;
   border: 6px solid transparent;
-  border-bottom-color: ${props => props.theme.border};
+  border-bottom-color: ${({ theme }) => theme.border};
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
   -webkit-mask: none !important;
 
@@ -71,6 +71,6 @@ export const Arrow = styled.span`
     height: 0;
     top: -5px;
     border: 7px solid transparent;
-    border-bottom-color: ${props => props.theme.background};
+    border-bottom-color: ${({ theme }) => theme.background};
   }
 `;

@@ -38,6 +38,8 @@ export const getOptions = (props: TermProps): ITerminalOptions => ({
     brightCyan: props.theme.brightCyan,
     brightWhite: props.theme.brightWhite,
   },
+  scrollback: 25000,
+  allowProposedApi: true,
   allowTransparency: true,
 });
 
@@ -67,8 +69,6 @@ export default class Instance {
 
     this.instance.open(parent);
 
-    this.instance.options.allowProposedApi = true;
-
     this.addons = {
       fitAddon: new FitAddon(),
       unicode11Addon: new Unicode11Addon(),
@@ -86,9 +86,7 @@ export default class Instance {
       }
     });
 
-    if (props.isCurrent) {
-      this.instance.focus();
-    }
+    props.isCurrent && this.instance.focus();
 
     this.instance.onData(props.onData);
 

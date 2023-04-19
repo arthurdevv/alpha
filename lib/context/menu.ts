@@ -15,6 +15,10 @@ const mapDispatchToProps = (dispatch: AlphaDispatch) => ({
     dispatch(setMenu(menu));
   },
 
+  hideMenu() {
+    dispatch(setMenu(null));
+  },
+
   selectProfile(profile: IProfile) {
     dispatch(selectProfile(profile));
   },

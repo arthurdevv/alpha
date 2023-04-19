@@ -50,7 +50,7 @@ const Terminal: React.FC<TermProps> = (props: TermProps) => {
   return (
     <Container
       role="presentation"
-      className={props.isCurrent ? 'current' : undefined}
+      className={props.isCurrent && 'current'}
       onContextMenu={onContextMenu}
     >
       <Content ref={parent} />

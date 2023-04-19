@@ -14,7 +14,7 @@ import {
 } from './styles';
 import { AlphaIcon } from '../Icon';
 
-const Watermark: React.FC<{}> = () => (
+const Watermark: React.FC = () => (
   <Container>
     <Logo>
       <AlphaIcon />

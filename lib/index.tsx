@@ -5,7 +5,7 @@ import { ThemeProvider } from 'styled-components';
 
 import Alpha from './context/alpha';
 import GlobalStyle from './styles/global';
-import defaultTheme from './styles/theme';
+import theme from './styles/theme';
 
 import store from './store';
 import invokeEvents from './store/events';
@@ -13,7 +13,7 @@ import invokeEvents from './store/events';
 invokeEvents();
 
 render(
-  <ThemeProvider theme={defaultTheme}>
+  <ThemeProvider theme={theme}>
     <Provider store={store}>
       <Alpha />
     </Provider>

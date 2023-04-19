@@ -23,7 +23,7 @@ export function selectProfile(
         const target = state.profiles.recent[profile.title];
 
         if (recent.indexOf(target) === 3) {
-          dispatch(removeProfile(recent[0]));
+          dispatch(removeProfile(recent[0] as any));
         }
 
         dispatch(setMenu(null));

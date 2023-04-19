@@ -36,8 +36,13 @@ const GlobalStyle = createGlobalStyle`
     overflow: hidden;
     display: flex;
     font: 400 16px 'Inter', sans-serif;
-    color: ${props => props.theme.foreground};
-    background: ${props => props.theme.background};
+    color: ${({ theme }) => theme.foreground};
+    background: ${({ theme }) => theme.background};
+  }
+
+  *::selection {
+    color: ${({ theme }) => theme.selection.foreground};
+    background: ${({ theme }) => theme.selection.background};
   }
 
   *::-webkit-scrollbar {
@@ -50,11 +55,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   *::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.scrollbar.thumb};
+    background: ${({ theme }) => theme.scrollbar.thumb};
     border-radius: 4px;
 
     &:hover {
-      background: ${props => props.theme.disabled};
+      background: ${({ theme }) => theme.disabled};
     }
   }
 

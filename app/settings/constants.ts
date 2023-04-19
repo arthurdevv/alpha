@@ -1,12 +1,21 @@
-import { app } from '@electron/remote';
 import { join } from 'path';
 
-export const userData = global.isWin
-  ? app.getPath('userData')
-  : app.getPath('home');
+const { app }: typeof Electron =
+  process.type === 'browser'
+    ? require('electron')
+    : require('@electron/remote');
+
+export const userData =
+  process.platform === 'win32' ? app.getPath('userData') : app.getPath('home');
 
 export const appPath = app.isPackaged ? __dirname : app.getAppPath();
 
-export const userPath = join(userData, '.alpha.js');
+export const userPath = join(userData, '.alpha.yaml');
 
-export const defaultPath = join(appPath, 'app/settings', 'default.js');
+export const defaultPath = join(appPath, 'app/settings', 'default.yaml');
+
+export const keymapsPath = join(
+  appPath,
+  'app/keymaps/default',
+  `${process.platform}.yaml`,
+);

@@ -41,22 +41,22 @@ const config = [
         patterns: [
           {
             from: './*.json',
-            globOptions: { ignore: ['**/node_modules/**'] },
             to: '[name][ext]',
           },
           {
-            from: './app/common/keymaps/json/*.json',
-            globOptions: { ignore: ['**/node_modules/**'] },
-            to: './app/common/keymaps/json/[name][ext]',
+            from: './app/keymaps/default/*.yaml',
+            to: './app/keymaps/default/[name][ext]',
+          },
+          {
+            from: './app/settings/*.yaml',
+            to: './app/settings/[name][ext]',
           },
           {
             from: './app/common/profiles/clink',
-            globOptions: { ignore: ['**/node_modules/**'] },
             to: './app/common/profiles/clink',
           },
           {
             from: './lib/styles/fonts',
-            globOptions: { ignore: ['**/node_modules/**'] },
             to: './lib/styles/fonts',
           },
         ],

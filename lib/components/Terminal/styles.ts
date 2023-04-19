@@ -18,7 +18,7 @@ export const Container = styled.div`
   flex: auto;
   display: flex;
   overflow: hidden;
-  background: ${props => props.theme.background};
+  background: ${({ theme }) => theme.background};
 
   &.current {
     left: 0;
