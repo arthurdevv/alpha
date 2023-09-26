@@ -1,6 +1,6 @@
 import { userInfo } from 'os';
 
-const getDefaultShell = (): string => {
+const getDefaultShell = () => {
   const { env, platform } = process;
 
   if (platform === 'win32') {

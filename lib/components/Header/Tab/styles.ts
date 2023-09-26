@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Group = styled.div`
   height: 100%;
@@ -7,7 +7,7 @@ export const Group = styled.div`
   overflow: hidden;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isCurrent: boolean }>`
   position: relative;
   width: 12.5rem;
   padding-right: 1rem;
@@ -17,6 +17,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.disabled};
   transition: all 0.2s ease 0s;
   animation: ${keyframes`
     0% {
@@ -31,7 +32,9 @@ export const Container = styled.div`
 
   &:hover {
     & span:first-of-type {
-      -webkit-mask-size: calc(100% - 60px) auto, 60px auto;
+      -webkit-mask-size:
+        calc(100% - 60px) auto,
+        60px auto;
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-position: left, right;
       -webkit-mask-image: linear-gradient(#000 0 0),
@@ -44,14 +47,12 @@ export const Container = styled.div`
     }
   }
 
-  &.current {
-    cursor: default;
-    color: ${({ theme }) => theme.foreground};
-  }
-
-  &:not(.current) {
-    color: ${({ theme }) => theme.disabled};
-  }
+  ${({ $isCurrent }) =>
+    $isCurrent &&
+    css`
+      cursor: default;
+      color: ${({ theme }) => theme.foreground};
+    `}
 `;
 
 export const Label = styled.span`

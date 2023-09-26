@@ -1,22 +1,13 @@
 import { h, render } from 'preact';
-
-import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 
-import Alpha from './context/alpha';
+import Alpha from './components/alpha';
 import GlobalStyle from './styles/global';
-import theme from './styles/theme';
-
-import store from './store';
-import invokeEvents from './store/events';
-
-invokeEvents();
+import { theme } from './styles/theme';
 
 render(
   <ThemeProvider theme={theme}>
-    <Provider store={store}>
-      <Alpha />
-    </Provider>
+    <Alpha />
     <GlobalStyle />
   </ThemeProvider>,
   document.getElementById('alpha') as HTMLElement,

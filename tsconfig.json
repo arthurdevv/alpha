@@ -14,12 +14,12 @@
     "resolveJsonModule": true,
     "noImplicitAny": false,
     "baseUrl": ".",
-    "outDir": "dist",
+    "outDir": "target",
     "paths": {
       "react": ["./node_modules/preact/compat/"],
       "react-dom": ["./node_modules/preact/compat/"]
     },
     "typeRoots": ["node_modules/@types", "app/*.d.ts", "lib/*.d.ts"]
   },
-  "include": ["app/**/*", "lib/**/*"]
+  "include": ["app/**/*", "lib/**/*", "test/**/*"]
 }

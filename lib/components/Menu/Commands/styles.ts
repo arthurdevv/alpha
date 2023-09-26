@@ -16,7 +16,7 @@ export const KeyItem = styled.span`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  color: ${({ theme }) => theme.popover.foreground};
+  color: ${({ theme }) => theme.popoverForeground};
   border: 1px solid ${({ theme }) => theme.border};
   border-radius: 3px;
   transition: border-color 0.2s ease 0s;

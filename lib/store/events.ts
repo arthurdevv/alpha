@@ -1,122 +1,107 @@
-import listeners from 'app/settings/listeners';
+import createProcess, { processes } from 'app/common/process';
+import { terms } from 'app/common/terminal';
+import { execCommand } from 'app/keymaps';
 import { getSettings } from 'app/settings';
-import { execCommand } from 'app/keymaps/commands';
-import { sessions, setSession } from 'app/common/process';
+import listeners from 'app/settings/listeners';
+import defaultShell from 'app/utils/default-shell';
 
-import store from '.';
-import {
-  addProcess,
-  setProcessData,
-  clearProcessData,
-} from './actions/process';
-import {
-  requestTerminal,
-  setTerminalOptions,
-  disposeTerminal,
-} from './actions/terminal';
-import { nextTab, previousTab, specificTab } from './actions/tab';
-import { setMenu } from './actions/window';
+export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
+  const store = getState();
 
-export default () => {
-  global.on('terminal-create', ({ current }) => {
-    store.dispatch(requestTerminal(current));
+  window.on('terminal:create', (profile: IProfile) => {
+    const { cwd, useConpty } = getSettings();
+
+    const process = createProcess(
+      profile || {
+        shell: defaultShell,
+        args: [],
+      },
+      {
+        cwd,
+        useConpty,
+      },
+    );
+
+    store.createTab(process);
   });
 
-  global.on('terminal-request', ({ current, profile }) => {
-    const { session, options } = setSession(profile);
+  window.on('terminal:close', () => {
+    const { current } = getState();
 
-    sessions.set(options.id, session);
+    if (current) {
+      const process = processes[current];
 
-    global.emit('process-add', {
-      id: options.id,
-      shell: options.shell,
-      current,
-    });
+      if (process) {
+        process.kill();
+      }
 
-    session.on('data', ({ id, data }) => {
-      global.emit('process-set-data', { id, data });
-    });
+      processes[current] = null;
 
-    session.on('kill', () => {
-      const { id } = options;
-
-      global.emit('terminal-delete', { id });
-
-      sessions.delete(id);
-    });
-  });
-
-  global.on('terminal-delete', ({ id }) => {
-    store.dispatch(disposeTerminal(id, 'PROCESS_DELETE'));
-  });
-
-  global.on('process-add', ({ id, shell, current }) => {
-    store.dispatch(addProcess(id, shell, current));
-  });
-
-  global.on('process-set-data', ({ id, data }) => {
-    store.dispatch(setProcessData(id, data));
-  });
-
-  global.on('process-send-data', ({ id, data }) => {
-    const session = sessions.get(id);
-
-    if (session) {
-      session.write(data);
+      store.onClose(current);
     }
   });
 
-  global.on('process-kill', ({ id }) => {
-    const process = sessions.get(id);
+  window.on('terminal:focus', () => {
+    const { current } = getState();
 
-    if (process) {
-      process.kill();
+    const term = terms[current!];
+
+    if (term) {
+      term.focus();
     }
   });
 
-  global.on('terminal-clear-buffer', () => {
-    store.dispatch(clearProcessData());
+  window.on('terminal:clear', () => {
+    store.setCurrentClear();
   });
 
-  global.on('terminal-dispose-current', () => {
-    store.dispatch(disposeTerminal('current', 'PROCESS_KILL'));
+  window.on('terminal:settings', () => {
+    store.createTab(
+      {
+        process: null,
+        shell: null,
+      },
+      false,
+    );
   });
 
-  global.on('terminal-open-settings', () => {
-    store.dispatch(setMenu('Settings'));
+  window.on('terminal:commands', () => {
+    setMenu('Commands');
   });
 
-  global.on('profile-select', ({ profile }) => {
-    store.dispatch(requestTerminal(undefined, profile));
+  window.on('terminal:profiles', () => {
+    const { menu } = getState();
+
+    if (menu === 'Commands') {
+      setTimeout(() => {
+        setMenu('Profiles');
+      }, 100);
+    } else {
+      setMenu('Profiles');
+    }
   });
 
-  global.on('tab-move-to-next', () => {
-    store.dispatch(nextTab());
+  window.on('tab:next', () => {
+    store.moveTo(1);
   });
 
-  global.on('tab-move-to-previous', () => {
-    store.dispatch(previousTab());
+  window.on('tab:previous', () => {
+    store.moveTo(-1);
   });
 
-  global.on('tab-move-to-specific', index => {
-    store.dispatch(specificTab(index));
+  window.on('tab:specific', index => {
+    store.moveTo(0, index);
   });
 
-  global.on('window-show-commands', () => {
-    store.dispatch(setMenu('Commands'));
+  listeners.subscribe(() => {
+    store.setOptions(getSettings());
   });
 
-  global.on('exec-command', command => {
-    execCommand(command);
-  });
+  listeners.watch();
 
-  (() => {
-    store.dispatch(setTerminalOptions(getSettings()));
+  const { openOnStart } = getSettings();
 
-    listeners.subscribe(() => {
-      store.dispatch(setTerminalOptions(getSettings()));
-    });
-
-    listeners.watch();
-  })();
+  if (openOnStart) {
+    setTimeout(() => execCommand('terminal:create'), 3200);
+  }
 };

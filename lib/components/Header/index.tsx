@@ -1,13 +1,11 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
+import React, { memo, useState } from 'preact/compat';
 
-import {
-  Container,
-  DragRegion,
-  Actions,
-  ActionItem,
-  MacWindowControl,
-} from './styles';
+import { getCurrentWindow } from '@electron/remote';
+import { execCommand } from 'app/keymaps';
+import useStore from 'lib/store';
+
+import { Container, DragRegion, Actions, ActionItem } from './styles';
 import {
   PlusIcon,
   ProfilesIcon,
@@ -17,69 +15,41 @@ import {
   RestoreIcon,
   CloseIcon,
 } from '../Icon';
+import TabGroup from './Tab';
 import Popover from './Popover';
-import TabGroup from './Tab/group';
 
-const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
-  const { tabs, isMaximized, isFullScreen } = props;
+const Header: React.FC = () => {
+  const { context } = useStore();
 
-  return global.isMac ? (
-    <Container>
-      <Actions>
-        <MacWindowControl aria-label="Close" onClick={props.closeWindow}>
-          <Popover label="Close" />
-        </MacWindowControl>
-        <MacWindowControl aria-label="Minimize" onClick={props.minimizeWindow}>
-          <Popover label="Minimize" />
-        </MacWindowControl>
-        <MacWindowControl
-          aria-label={isFullScreen ? 'Restore' : 'Maximize'}
-          onClick={props.toggleFullScreen}
-        >
-          <Popover label={isFullScreen ? 'Restore' : 'Maximize'} />
-        </MacWindowControl>
-      </Actions>
-      <TabGroup tabs={tabs} onSelect={props.onSelect} onClose={props.onClose} />
-      <Actions>
-        <ActionItem aria-label="New Terminal" onClick={props.newTerminal}>
-          <PlusIcon />
-          <Popover label="New Terminal" />
-        </ActionItem>
-        <ActionItem
-          aria-label="Profiles"
-          onClick={() => props.setMenu('Profiles')}
-        >
-          <ProfilesIcon />
-          <Popover label="Profiles" />
-        </ActionItem>
-      </Actions>
-      <DragRegion />
+  const [isMaximized, setMaximized] = useState<boolean>(false);
+
+  const handleWindow = (event: React.TargetedEvent<any>) => {
+    const { ariaLabel } = event.currentTarget;
+
+    const currentWindow = getCurrentWindow();
+
+    currentWindow[ariaLabel.toLowerCase()]();
+
+    if (ariaLabel === 'Maximize' || ariaLabel === 'Restore') {
+      setMaximized(!isMaximized);
+    }
+  };
+
+  return (
+    <Container onClick={() => execCommand('terminal:focus')}>
+      <TabGroup />
       <Actions>
         <ActionItem
-          aria-label="Settings"
-          onClick={() => props.setMenu('Settings')}
-        >
-          <SettingsIcon />
-          <Popover label="Settings" />
-        </ActionItem>
-      </Actions>
-    </Container>
-  ) : (
-    <Container>
-      <TabGroup tabs={tabs} onSelect={props.onSelect} onClose={props.onClose} />
-      <Actions>
-        <ActionItem
+          className={Object.keys(context).length >= 1 && 'visited'}
           aria-label="New Terminal"
-          onClick={props.newTerminal}
-          className={tabs.length > 0 ? 'visited' : ''}
+          onClick={() => execCommand('terminal:create')}
         >
           <PlusIcon />
           <Popover label="New Terminal" />
         </ActionItem>
         <ActionItem
           aria-label="Profiles"
-          onClick={() => props.setMenu('Profiles')}
-          className={tabs.length > 0 ? 'visited' : ''}
+          onClick={() => execCommand('terminal:profiles')}
         >
           <ProfilesIcon />
           <Popover label="Profiles" />
@@ -89,23 +59,23 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
       <Actions>
         <ActionItem
           aria-label="Settings"
-          onClick={() => props.setMenu('Settings')}
+          onClick={() => execCommand('terminal:settings')}
         >
           <SettingsIcon />
           <Popover label="Settings" />
         </ActionItem>
-        <ActionItem aria-label="Minimize" onClick={props.minimizeWindow}>
+        <ActionItem aria-label="Minimize" onClick={handleWindow}>
           <MinimizeIcon />
           <Popover label="Minimize" />
         </ActionItem>
         <ActionItem
           aria-label={isMaximized ? 'Restore' : 'Maximize'}
-          onClick={isMaximized ? props.restoreWindow : props.maximizeWindow}
+          onClick={handleWindow}
         >
           {isMaximized ? <RestoreIcon /> : <MaximizeIcon />}
           <Popover label={isMaximized ? 'Restore' : 'Maximize'} />
         </ActionItem>
-        <ActionItem aria-label="Close" onClick={props.closeWindow}>
+        <ActionItem aria-label="Close" onClick={handleWindow}>
           <CloseIcon />
           <Popover label="Close" />
         </ActionItem>

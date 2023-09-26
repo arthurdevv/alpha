@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
   position: absolute;
@@ -8,24 +8,81 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-
-  & svg {
-    width: 3rem;
-    height: 3rem;
-  }
 `;
 
 export const Logo = styled.div`
-  font-size: 4.0625rem;
-  font-weight: 700;
-  line-height: 1.6;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  & svg {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    z-index: 10;
+    background: ${({ theme }) => theme.background};
+    transform: translateX(180%);
+
+    animation: ${keyframes`
+      0% {
+        transform: translateX(180%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    `} 1s ease 2s forwards;
+
+    & path {
+      animation: ${keyframes`
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+    `} 3.6s ease forwards;
+    }
+  }
+`;
+
+export const LogoName = styled.div`
+  position: relative;
+  font-size: 4.0625rem;
+  font-weight: 700;
+  line-height: 1.6;
+  opacity: 0;
+
+  animation: ${keyframes`
+      0% {
+        transform: translateX(-3.3rem);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    `} 1s ease 2.85s forwards;
 `;
 
 export const Shortcuts = styled.div`
   display: block;
+  opacity: 0;
+
+  animation: ${keyframes`
+      0% {
+        transform: translateY(2rem);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    `} 1s ease 2.85s forwards;
 `;
 
 export const ShortcutItem = styled.div`
@@ -68,4 +125,15 @@ export const Footer = styled.footer`
 export const Version = styled.div`
   font-size: 0.8125rem;
   color: ${({ theme }) => theme.disabled};
+  opacity: 0;
+
+  animation: ${keyframes`
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    `} 1s ease 2.3s forwards;
 `;

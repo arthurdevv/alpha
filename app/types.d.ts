@@ -1,47 +1,43 @@
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'events';
+import { IPty } from 'node-pty';
 import { FontWeight, ITheme } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { Unicode11Addon } from 'xterm-addon-unicode11';
-import { LigaturesAddon } from 'xterm-addon-ligatures';
 
 declare global {
-  var on: EventEmitter['on'];
+  var [isWin, isMac]: boolean[];
 
-  var emit: EventEmitter['emit'];
+  interface Window {
+    on: EventEmitter['on'];
 
-  var send: Electron.IpcRenderer['send'];
+    emit: EventEmitter['emit'];
 
-  var isWin: boolean;
+    send: Electron.IpcRenderer['send'];
+  }
 
-  var isMac: boolean;
+  type SettingsTag = 'application' | 'appearance' | 'terminal' | 'command-line';
 
-  type ISettings = IAppOptions & {
+  type IRawSettings = Record<SettingsTag, ISettings>;
+
+  type ISettings = {
+    language: string;
+    autoUpdates: boolean;
+    gpu: boolean;
+    renderer: 'dom' | 'webgl' | 'canvas';
+    copyOnSelect: boolean;
+    openOnStart: boolean;
     cwd: string | null;
     useConpty: boolean;
   } & ITerminalOptions;
 
-  type IRawSettings = Record<
-    'application' | 'appearance' | 'command-line',
-    ISettings
-  >;
-
-  type IAppOptions = {
-    language: string;
-    autoUpdates: boolean;
-    alwaysOnTop: boolean;
-    gpu: boolean;
-  };
-
-  type IProcessOptions = {
-    id: string;
-    cwd: string;
-    shell: string;
-    args: string[];
-    env: {
-      [key: string]: string;
+  type ISettingsKey = {
+    label: string;
+    type: 'input' | 'checkbox' | 'select' | 'button';
+    valueType: 'text' | 'number' | 'boolean' | 'void';
+    description: string;
+    options?: any[];
+    range?: {
+      min: number;
+      max: number;
     };
-    useConpty: boolean;
   };
 
   type ITerminalOptions = {
@@ -53,17 +49,20 @@ declare global {
     letterSpacing: number;
     cursorStyle: 'block' | 'underline' | 'bar';
     cursorBlink: boolean;
+    scrollback: number;
     theme: ITheme;
-    scrollback?: number | undefined;
-    allowProposedApi?: boolean | undefined;
-    allowTransparency?: boolean | undefined;
+    allowProposedApi?: boolean;
+    allowTransparency?: boolean;
   };
 
-  type ITerminalAddons = {
-    fitAddon: FitAddon;
-    webLinksAddon: WebLinksAddon;
-    unicode11Addon: Unicode11Addon;
-    ligaturesAddon: LigaturesAddon | undefined;
+  type IProcessParam = {
+    shell: string;
+    args: string[];
+  };
+
+  type IProcessArgs = {
+    process: IPty | null;
+    shell: string | null;
   };
 
   type IProfile = {
@@ -71,33 +70,4 @@ declare global {
     shell: string;
     args: string[];
   };
-
-  type Commands = Record<string, () => void>;
-
-  type IMenuCommand = Record<
-    string,
-    {
-      keys: string[];
-      onClick: () => void;
-    }
-  >;
-
-  type ISettingsKey = Record<
-    string,
-    {
-      label: string;
-      type: 'input' | 'checkbox' | 'select';
-      valueType: 'text' | 'number' | 'boolean';
-      description: string;
-      options?: any[] | undefined;
-      range?:
-        | {
-            min?: number | undefined;
-            max?: number | undefined;
-          }
-        | undefined;
-    }
-  >;
 }
-
-export {};

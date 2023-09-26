@@ -1,16 +1,18 @@
-import { h } from 'preact';
+import { h, createElement, Fragment } from 'preact';
 import { memo } from 'preact/compat';
 import { useState, useEffect } from 'preact/hooks';
 
-import { Overlay, Content } from './styles';
+import { execCommand } from 'app/keymaps';
+import useStore from 'lib/store';
+
+import { Overlay } from './styles';
 import Profiles from './Profiles';
 import Commands from './Commands';
-import Settings from './Settings';
 
-const Menu: React.FC<MenuProps> = (props: MenuProps) => {
-  const { menu } = props;
+const Menu: React.FC = () => {
+  const { menu, setMenu } = useStore();
 
-  const [visible, setVisible] = useState<boolean>(false);
+  const [isVisible, setVisible] = useState<boolean>(false);
 
   const handleOverlay = (event: React.TargetedEvent<HTMLElement>) => {
     const { target, currentTarget } = event;
@@ -18,28 +20,26 @@ const Menu: React.FC<MenuProps> = (props: MenuProps) => {
     if (target === currentTarget) {
       setVisible(false);
 
-      setTimeout(props.hideMenu, 200);
+      setTimeout(() => {
+        setMenu(undefined);
+
+        execCommand('terminal:focus');
+      }, 200);
     }
   };
 
-  useEffect(() => {
-    setVisible(Boolean(menu));
-  }, [menu]);
+  useEffect(() => setVisible(Boolean(menu)), [menu]);
 
-  return (
-    menu && (
-      <Overlay state={props} onClick={handleOverlay}>
-        <Content state={props} visible={visible}>
-          {menu === 'Profiles' ? (
-            <Profiles {...props} />
-          ) : menu === 'Commands' ? (
-            <Commands {...props} />
-          ) : (
-            <Settings />
-          )}
-        </Content>
-      </Overlay>
-    )
+  return menu ? (
+    <Overlay onClick={handleOverlay}>
+      {createElement({ Profiles, Commands }[menu as any], {
+        menu,
+        setMenu,
+        isVisible,
+      })}
+    </Overlay>
+  ) : (
+    <Fragment />
   );
 };
 

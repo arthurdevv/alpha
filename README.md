@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/77799470/222617983-2e1ec1b7-f5b7-4168-b1d1-2c5db802d229.png" alt="Alpha">
+  <img src="https://user-images.githubusercontent.com/77799470/232949538-fb2dcd34-e051-4516-8c74-96fecbb7d6b6.png" alt="Alpha">
 </p>
 
 <p align="center">
@@ -30,7 +30,6 @@ Alpha will **automatically** update when a new release is available.
 
 ## Features
 
-- User settings
 - Shell profiles
 - Font ligatures
 - Unicode support

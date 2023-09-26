@@ -1,20 +1,16 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { initialize, enable } from '@electron/remote/main';
-import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import { resolve } from 'path';
 import { getSettings } from 'app/settings';
-import invokeEvents from './events';
 import checkForUpdates from './updater';
 
 initialize();
 
 const { gpu, autoUpdates } = getSettings();
 
-if (!gpu) {
-  app.disableHardwareAcceleration();
-}
-
 let mainWindow: Electron.BrowserWindow | null;
+
+const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -22,7 +18,6 @@ function createWindow(): void {
     height: 560,
     minWidth: 400,
     minHeight: 300,
-    show: false,
     frame: false,
     title: 'Alpha',
     titleBarStyle: 'hidden',
@@ -38,12 +33,8 @@ function createWindow(): void {
   enable(mainWindow.webContents);
 
   mainWindow.loadURL(
-    is.dev ? 'http://localhost:4000' : `file://${__dirname}/index.html`,
+    isDev ? 'http://localhost:4000' : `file://${__dirname}/index.html`,
   );
-
-  if (is.dev) {
-    mainWindow.webContents.openDevTools();
-  }
 
   mainWindow.on('ready-to-show', () => {
     if (mainWindow) {
@@ -59,24 +50,27 @@ function createWindow(): void {
     mainWindow = null;
   });
 
-  invokeEvents();
+  ipcMain.on('window:devtools', () => {
+    if (mainWindow) {
+      const { webContents } = mainWindow;
+
+      if (webContents.isDevToolsOpened()) {
+        webContents.closeDevTools();
+      } else {
+        webContents.openDevTools();
+      }
+    }
+  });
+
+  if (autoUpdates) checkForUpdates(mainWindow);
+}
+
+if (!gpu) {
+  app.disableHardwareAcceleration();
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('alpha.app');
-
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window, {
-      zoom: true,
-      escToCloseWindow: false,
-    });
-  });
-
   createWindow();
-
-  if (mainWindow && autoUpdates) {
-    checkForUpdates(mainWindow);
-  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -92,3 +86,5 @@ app.on('window-all-closed', () => {
 });
 
 app.allowRendererProcessReuse = false;
+
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';

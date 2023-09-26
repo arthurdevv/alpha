@@ -9,8 +9,9 @@ lerna-debug.log*
 
 # Development
 node_modules
-dist
+target
 release
+test-results
 
 # Editor directories and files
 .vscode/*

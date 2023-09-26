@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Group = styled.div`
   position: relative;
@@ -9,7 +9,7 @@ export const Group = styled.div`
   display: flex;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isCurrent: boolean }>`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -20,9 +20,11 @@ export const Container = styled.div`
   overflow: hidden;
   background: ${({ theme }) => theme.background};
 
-  &.current {
-    left: 0;
-  }
+  ${({ $isCurrent }) =>
+    $isCurrent &&
+    css`
+      left: 0;
+    `}
 `;
 
 export const Content = styled.div`

@@ -29,7 +29,7 @@ const config = [
       ],
     },
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'target'),
       filename: 'index.js',
     },
     node: {
@@ -44,20 +44,20 @@ const config = [
             to: '[name][ext]',
           },
           {
-            from: './app/keymaps/default/*.yaml',
-            to: './app/keymaps/default/[name][ext]',
+            from: './lib/styles/fonts',
+            to: './lib/styles/fonts',
           },
           {
             from: './app/settings/*.yaml',
             to: './app/settings/[name][ext]',
           },
           {
-            from: './app/common/profiles/clink',
-            to: './app/common/profiles/clink',
+            from: './app/keymaps/schema/*.yaml',
+            to: './app/keymaps/schema/[name][ext]',
           },
-          {
-            from: './lib/styles/fonts',
-            to: './lib/styles/fonts',
+{
+            from: './app/utils/clink',
+            to: './app/utils/clink',
           },
         ],
       }),
@@ -95,12 +95,12 @@ const config = [
       ],
     },
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'target'),
       filename: 'renderer/bundle.js',
       publicPath: './',
     },
     devServer: {
-      contentBase: path.join(__dirname, 'dist'),
+      contentBase: path.join(__dirname, 'target'),
       historyApiFallback: true,
       compress: true,
       hot: true,

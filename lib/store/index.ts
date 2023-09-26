@@ -1,29 +1,21 @@
-import {
-  configureStore,
-  combineReducers,
-  ConfigureStoreOptions,
-} from '@reduxjs/toolkit';
-import { callbackMiddleware, writeMiddleware } from './middlewares';
-import windowReducer from './reducers/window';
-import processReducer from './reducers/process';
-import terminalReducer from './reducers/terminal';
-import profilesReducer from './reducers/profiles';
+import { create } from 'zustand';
 
-const rootReducer: AlphaReducer = combineReducers({
-  window: windowReducer,
-  process: processReducer,
-  terminal: terminalReducer,
-  profiles: profilesReducer,
-});
+import actions from './actions';
+import methods from './methods';
 
-const config: ConfigureStoreOptions = {
-  reducer: rootReducer,
-  middleware: gDM =>
-    gDM({
-      serializableCheck: false,
-    }).concat(callbackMiddleware, writeMiddleware),
+const initialState: AlphaState = {
+  context: {},
+  options: {},
+  menu: undefined,
+  cols: undefined,
+  rows: undefined,
+  current: undefined,
 };
 
-const store: AlphaStore = configureStore(config);
+const useStore = create<AlphaStore>((set, getState) => ({
+  ...initialState,
+  ...actions(set),
+  ...methods(set, getState),
+}));
 
-export default store;
+export default useStore;

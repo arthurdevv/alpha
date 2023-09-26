@@ -1,133 +1,88 @@
 import * as xterm from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { Unicode11Addon } from 'xterm-addon-unicode11';
-import { LigaturesAddon } from 'xterm-addon-ligatures';
-import { shell, clipboard } from '@electron/remote';
+import { clipboard } from '@electron/remote';
+import { getSettings } from 'app/settings';
+import { theme } from 'lib/styles/theme';
+import { processes } from './process';
+import addons from './addons';
 
-export const getOptions = (props: TermProps): ITerminalOptions => ({
-  fontSize: props.fontSize,
-  fontFamily: props.fontFamily,
-  fontWeight: props.fontWeight,
-  fontLigatures: props.fontLigatures,
-  lineHeight: props.lineHeight,
-  letterSpacing: props.letterSpacing,
-  cursorStyle: props.cursorStyle,
-  cursorBlink: props.cursorBlink,
-  theme: {
-    foreground: props.theme.foreground,
-    background: props.theme.background,
-    cursor: props.theme.cursor,
-    cursorAccent: props.theme.cursorAccent,
-    selectionForeground: props.theme.selectionForeground,
-    selectionBackground: props.theme.selectionBackground,
-    black: props.theme.black,
-    red: props.theme.red,
-    green: props.theme.green,
-    yellow: props.theme.yellow,
-    blue: props.theme.blue,
-    magenta: props.theme.magenta,
-    cyan: props.theme.cyan,
-    white: props.theme.white,
-    brightBlack: props.theme.brightBlack,
-    brightRed: props.theme.brightRed,
-    brightGreen: props.theme.brightGreen,
-    brightYellow: props.theme.brightYellow,
-    brightBlue: props.theme.brightBlue,
-    brightMagenta: props.theme.brightMagenta,
-    brightCyan: props.theme.brightCyan,
-    brightWhite: props.theme.brightWhite,
-  },
-  scrollback: 25000,
+export const terms: Record<string, xterm.Terminal | null> = {};
+
+const defaultOptions: xterm.ITerminalOptions = {
   allowProposedApi: true,
   allowTransparency: true,
-});
+  theme,
+};
 
-export default class Instance {
-  public instance!: xterm.Terminal;
+const customKeys = ['Alt', 'F4', 'F11', 'Tab', '3', '4', '5', '6', '7', '8'];
 
-  public options: ITerminalOptions;
+class Terminal {
+  term: xterm.Terminal;
 
-  private addons!: ITerminalAddons;
+  constructor(private props: TermProps) {
+    const options = Object.assign(props.options, defaultOptions);
 
-  public observer!: ResizeObserver;
+    this.term = new xterm.Terminal(options);
 
-  constructor(options: ITerminalOptions) {
-    this.options = options;
-  }
+    this.term.onData(data => {
+      const process = processes[props.id];
 
-  public open(parent: HTMLElement | null, props: TermProps): void {
-    if (!parent) {
-      if (this.observer) {
-        this.observer.disconnect();
-      }
-
-      return;
-    }
-
-    this.instance = new xterm.Terminal(this.options);
-
-    this.instance.open(parent);
-
-    this.addons = {
-      fitAddon: new FitAddon(),
-      unicode11Addon: new Unicode11Addon(),
-      webLinksAddon: new WebLinksAddon(
-        (event, uri) => void shell.openExternal(uri),
-      ),
-      ligaturesAddon: this.options.fontLigatures
-        ? new LigaturesAddon()
-        : undefined,
-    };
-
-    Object.values(this.addons).forEach(addon => {
-      if (addon) {
-        this.instance.loadAddon(addon);
+      if (process) {
+        process.write(data);
       }
     });
 
-    props.isCurrent && this.instance.focus();
-
-    this.instance.onData(props.onData);
-
-    this.instance.onTitleChange(props.onTitle);
-
-    this.instance.textarea?.addEventListener('focus', props.onCurrent);
-
-    this.addons.fitAddon.fit();
-
-    this.instance.unicode.activeVersion = '11';
-
-    this.instance.attachCustomKeyEventHandler(event => {
-      const tabKeys = ['Tab', '3', '4', '5', '6', '7', '8'];
-
-      if (event.ctrlKey && tabKeys.includes(event.key)) return false;
-
-      const windowKeys = ['Alt', 'F4', 'F11'];
-
-      if (windowKeys.includes(event.key)) return false;
-
-      return true;
+    Object.keys(props).forEach(key => {
+      if (key in this.term && typeof props[key] === 'function') {
+        this.term[key](props[key]);
+      }
     });
 
-    this.observer = new ResizeObserver(() => {
-      this.addons.fitAddon.fit();
+    this.term.attachCustomKeyEventHandler(
+      ({ key }) => !customKeys.includes(key),
+    );
 
-      props.onResize(this.instance.cols, this.instance.rows);
+    this.term.onSelectionChange(() => {
+      if (this.props.options['copyOnSelect']) {
+        const selection = this.term.getSelection();
+
+        if (selection) {
+          clipboard.writeText(selection, 'selection');
+        }
+      }
+    });
+  }
+
+  open(parent: HTMLElement): void {
+    this.term.open(parent);
+
+    Object.keys(addons).forEach(key => {
+      const value = addons[key];
+
+      if (key === 'options') {
+        const { renderer, fontLigatures } = getSettings();
+
+        if (renderer !== 'dom') {
+          this.term.loadAddon(value[renderer]);
+        }
+
+        if (fontLigatures) {
+          this.term.loadAddon(value['fontLigatures']);
+        }
+      } else {
+        this.term.loadAddon(value);
+      }
     });
 
-    this.observer.observe(parent);
-  }
+    const observer = new ResizeObserver(() => {
+      addons.FitAddon.fit();
 
-  public hasSelection(): boolean {
-    return this.instance.hasSelection();
-  }
+      const { cols, rows } = this.term;
 
-  public getSelection(): string {
-    return this.instance.getSelection();
-  }
+      this.props.onResize(cols, rows);
+    });
 
-  public get clipboard(): typeof clipboard {
-    return clipboard;
+    observer.observe(parent, { box: 'border-box' });
   }
 }
+
+export default Terminal;

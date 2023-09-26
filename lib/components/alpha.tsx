@@ -3,22 +3,23 @@ import { memo } from 'preact/compat';
 import { useEffect } from 'preact/hooks';
 
 import Mousetrap from 'mousetrap';
-import { commands } from 'app/keymaps/commands';
-import { getKeymapsParsed } from 'app/keymaps';
-
+import useStore from 'lib/store';
+import invokeEvents from 'lib/store/events';
+import { keymaps, execCommand } from 'app/keymaps';
 import { Content } from 'lib/styles/global';
-import Menu from 'lib/context/menu';
-import Header from 'lib/context/header';
-import Terminal from 'lib/context/terminal';
-import Watermark from './Watermark';
 
-const Alpha: React.FC<AlphaProps> = (props: AlphaProps) => {
+import Header from './Header';
+import Terminal from './Terminal';
+import Watermark from './Watermark';
+import Menu from './Menu';
+
+const Alpha: React.FC = () => {
   const mousetrap: Mousetrap.MousetrapInstance = new (Mousetrap as any)(window);
+
+  const { getState, setMenu } = useStore();
 
   useEffect(() => {
     mousetrap.stopCallback = () => false;
-
-    const keymaps = getKeymapsParsed();
 
     Object.keys(keymaps).forEach(command => {
       const keys = keymaps[command];
@@ -28,24 +29,16 @@ const Alpha: React.FC<AlphaProps> = (props: AlphaProps) => {
         event => {
           event.preventDefault();
 
-          const callback = commands[command];
-
-          props.execCommand(command, callback, event);
+          execCommand(command);
         },
         'keydown',
       );
     });
 
-    const handleResize = () => {
-      props.resizeWindow(window.innerWidth, window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
+    invokeEvents(getState, setMenu);
 
     return () => {
       mousetrap.reset();
-
-      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

@@ -1,13 +1,25 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Container = styled.div`
+  position: relative;
   width: 100%;
   height: 2.375rem;
+  z-index: 1000;
   display: flex;
+  opacity: 0;
+  animation: ${keyframes`
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  `} 1s ease 3s forwards;
 `;
 
 export const DragRegion = styled.div`
-  min-width: ${`${global.isMac ? '4.5' : '3.125'}rem`};
+  min-width: ${`${isMac ? '4.5' : '3.125'}rem`};
   height: calc(100% - 0.125rem);
   margin-top: 0.125rem;
   flex: 1 0 1%;
@@ -20,7 +32,7 @@ export const Actions = styled.div`
   align-items: center;
 
   &:first-of-type {
-    padding: ${global.isMac && '0 0.5rem'};
+    padding: ${isMac && '0 0.5rem'};
   }
 `;
 
@@ -61,7 +73,7 @@ export const ActionItem = styled.div`
   }
 
   &[aria-label='Settings'] div span:last-of-type {
-    right: ${global.isMac && '0.5rem'};
+    right: ${isMac && '0.5rem'};
   }
 
   &[aria-label='New Terminal'].visited div span:last-of-type {
@@ -69,44 +81,7 @@ export const ActionItem = styled.div`
   }
 
   &[aria-label='New Terminal'] div span:last-of-type {
-    left: ${!global.isMac && '0.5rem'};
-  }
-
-  &[aria-label='Profiles'] div span:last-of-type,
-  &[aria-label='Maximize'] div span:last-of-type,
-  &[aria-label='Restore'] div span:last-of-type {
-    padding: 0.25rem 0.5rem;
-  }
-`;
-
-export const MacWindowControl = styled.div`
-  width: 0.75rem;
-  height: 0.75rem;
-  margin: 0 0.25rem;
-  cursor: pointer;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: ${({ theme }) => theme.border};
-  border-radius: 50%;
-
-  &:hover div span {
-    opacity: 1;
-    transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
-  }
-
-  &[aria-label] div span:first-of-type {
-    left: auto !important;
-    right: auto !important;
-  }
-
-  &[aria-label='Close'] div span:last-of-type {
-    left: 0.5rem;
-  }
-
-  &[aria-label='Minimize'] div span:last-of-type {
-    left: 1.75rem;
+    left: ${!isMac && '0.5rem'};
   }
 
   &[aria-label='Profiles'] div span:last-of-type,

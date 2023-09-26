@@ -1,14 +1,26 @@
-import { EventEmitter } from 'events';
+import EventEmitter from 'events';
 import { ipcRenderer } from 'electron';
 
-const eventEmitter = new EventEmitter();
+const ipc = new EventEmitter();
 
-global.on = eventEmitter.on;
+const GLOBAL = {
+  isMac: process.platform === 'darwin',
 
-global.emit = eventEmitter.emit;
+  isWin: process.platform === 'win32',
 
-global.send = ipcRenderer.send;
+  on(eventName: string, listener: (...args: any[]) => void) {
+    return ipc.on(eventName, listener);
+  },
 
-global.isWin = process.platform === 'win32';
+  emit(eventName: string, ...args: any[]) {
+    return ipc.emit(eventName, ...args);
+  },
 
-global.isMac = process.platform === 'darwin';
+  send(channel: string, ...args: any[]) {
+    return ipcRenderer.send(channel, ...args);
+  },
+} as const;
+
+Object.keys(GLOBAL).forEach(key => {
+  window[key] = GLOBAL[key];
+});
