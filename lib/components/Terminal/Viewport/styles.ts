@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.div<{ $isVisible: boolean }>`
   position: fixed;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
@@ -19,7 +19,9 @@ export const Container = styled.div`
   box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.35s;
 
-  &.visible {
-    opacity: 1;
-  }
+  ${({ $isVisible }) =>
+    $isVisible &&
+    css`
+      opacity: 1;
+    `}
 `;

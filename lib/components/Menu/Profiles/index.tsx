@@ -1,75 +1,62 @@
-import { Fragment, h } from 'preact';
+import { h } from 'preact';
 import { memo } from 'preact/compat';
 
-import userProfiles from 'app/common/profiles';
-import { Shell } from './styles';
+import profiles from 'app/common/profiles';
+import { execCommand } from 'app/keymaps';
+import { sortArray, onSearch } from '../utils';
+
 import {
+  Container,
+  Content,
+  Tag,
   Search,
   SearchInput,
-  Separator,
   Wrapper,
   Title,
-  Label,
   List,
   ListItem,
 } from '../styles';
-import { onSearch, sortArray } from '../utils';
+import { ProfilesIcon } from 'lib/components/Icon';
+import { KeyItem, Keys } from '../Commands/styles';
 
-const Profiles: React.FC<MenuProps> = (props: MenuProps) => {
-  const { recent } = props;
-
-  const schema = {
-    Recent: recent,
-    Profiles: userProfiles,
-  };
-
-  return (
-    <Fragment>
+const Profiles: React.FC<MenuProps> = ({ setMenu, isVisible }: MenuProps) => (
+  <Container $isVisible={isVisible}>
+    <Tag>
+      <ProfilesIcon />
+      Profiles
+    </Tag>
+    <Content>
       <Search>
         <SearchInput
           placeholder="Select or type a profile"
           onChange={onSearch}
         />
       </Search>
-      {Object.keys(schema).map((title, index) => {
-        const array = schema[title];
+      <Wrapper>
+        <List role="group">
+          {sortArray(profiles).map((profile: IProfile, index) => {
+            const { title, shell } = profile;
 
-        const isRecent = array === recent;
+            const handleClick = () =>
+              execCommand('terminal:create', profile).then(response => {
+                if (response) {
+                  setMenu(undefined);
+                }
+              });
 
-        return (
-          <Wrapper
-            key={index}
-            className={isRecent && recent.length < 1 && 'hidden'}
-          >
-            <Separator />
-            <Title>{title}</Title>
-            <List role="group">
-              {sortArray(array).map((profile: IProfile, index) => {
-                const { title: label, shell } = profile;
-
-                return (
-                  <ListItem
-                    key={index}
-                    state={props}
-                    data-label={label}
-                    onClick={() => props.selectProfile(profile)}
-                  >
-                    <Label>{label}</Label>
-                    <Shell>{shell}</Shell>
-                  </ListItem>
-                );
-              })}
-              {isRecent && (
-                <ListItem state={props} onClick={props.clearRecent}>
-                  <Label>Clear recently opened</Label>
-                </ListItem>
-              )}
-            </List>
-          </Wrapper>
-        );
-      })}
-    </Fragment>
-  );
-};
+            return (
+              <ListItem key={index} data-title={title} onClick={handleClick}>
+                <Title>{title}</Title>
+                <Keys>
+                  <KeyItem>{shell.split(/(\\|\/)/g).pop()}</KeyItem>
+                </Keys>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Wrapper>
+    </Content>
+  </Container>
+);
 
 export default memo(Profiles);

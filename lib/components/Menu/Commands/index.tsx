@@ -1,63 +1,63 @@
 import { h } from 'preact';
-import { memo, Fragment } from 'preact/compat';
+import { memo } from 'preact/compat';
 
-import { menuCommands } from 'app/keymaps/commands';
+import commands from './commands';
+import { onSearch } from '../utils';
+
 import { Keys, KeyItem } from './styles';
 import {
+  Container,
+  Content,
+  Tag,
   Search,
   SearchInput,
-  Separator,
   Wrapper,
   Title,
-  Label,
   List,
   ListItem,
 } from '../styles';
-import { onSearch } from '../utils';
+import { CommandPaletteIcon } from 'lib/components/Icon';
 
-const Commands: React.FC<MenuProps> = (props: MenuProps) => (
-  <Fragment>
-    <Search>
-      <SearchInput placeholder="Select or type a command" onInput={onSearch} />
-    </Search>
-    {Object.keys(menuCommands).map((tag, index) => {
-      const tags = menuCommands[tag];
+const Commands: React.FC<MenuProps> = ({ setMenu, isVisible }: MenuProps) => (
+  <Container $isVisible={isVisible}>
+    <Tag>
+      <CommandPaletteIcon />
+      Command Palette
+    </Tag>
+    <Content>
+      <Search>
+        <SearchInput
+          placeholder="Select or type a command"
+          onChange={onSearch}
+        />
+      </Search>
+      <Wrapper>
+        <List role="group">
+          {Object.keys(commands).map((title, index) => {
+            const { keys, exec } = commands[title];
 
-      return (
-        <Wrapper key={index}>
-          <Separator />
-          <Title>{tag}</Title>
-          <List role="group">
-            {Object.keys(tags).map((label, index) => {
-              const { keys, onClick } = tags[label];
+            const handleClick = () =>
+              exec().then(response => {
+                if (response) {
+                  setMenu(undefined);
+                }
+              });
 
-              const handleClick = () => {
-                onClick();
-
-                props.hideMenu();
-              };
-
-              return (
-                <ListItem
-                  key={index}
-                  state={props}
-                  data-label={label}
-                  onClick={handleClick}
-                >
-                  <Label>{label}</Label>
-                  <Keys>
-                    {keys.map((key, index) => (
-                      <KeyItem key={index}>{key}</KeyItem>
-                    ))}
-                  </Keys>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Wrapper>
-      );
-    })}
-  </Fragment>
+            return (
+              <ListItem key={index} data-title={title} onClick={handleClick}>
+                <Title>{title}</Title>
+                <Keys>
+                  {keys.map((key, index) => (
+                    <KeyItem key={index}>{key}</KeyItem>
+                  ))}
+                </Keys>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Wrapper>
+    </Content>
+  </Container>
 );
 
 export default memo(Commands);

@@ -1,20 +1,43 @@
 import yaml from 'js-yaml';
 import { readFileSync } from 'fs';
 import { keymapsPath } from 'app/settings/constants';
-import { commands } from './commands';
 
-const getSpecificKeys = (): Record<string, string> => {
+const commands: Record<string, Function> = {};
+
+function assignCommand(command: string) {
+  commands[command] = (...args: any[]) => {
+    if (command.includes('window')) {
+      window.send(command, ...args);
+    } else {
+      window.emit(command, ...args);
+    }
+  };
+}
+
+function execCommand(command: string, ...args: any[]): Promise<boolean> {
+  return new Promise<boolean>(resolve => {
+    resolve(true);
+
+    if (!Object.prototype.hasOwnProperty.call(commands, command)) {
+      assignCommand(command);
+    }
+
+    void commands[command](...args);
+  });
+}
+
+const getNumericKeys = (): Record<string, string> => {
   const keys: Record<string, string> = {};
 
   for (let i = 1; i <= 9; i += 1) {
     const index = i === 9 ? 9 : i;
 
-    keys[`tab-${index}`] = `ctrl+${i}`;
+    keys[`tab:${index}`] = `ctrl+${i}`;
 
     const commandIndex = i === 9 ? 9 : i - 1;
 
-    commands[`tab-${index}`] = () => {
-      global.emit('tab-move-to-specific', commandIndex);
+    commands[`tab:${index}`] = () => {
+      window.emit(`tab:specific`, commandIndex);
     };
   }
 
@@ -22,7 +45,7 @@ const getSpecificKeys = (): Record<string, string> => {
 };
 
 const getKeymapsParsed = (): Record<string, string> => {
-  let keymaps = {};
+  let keymaps: Record<string, string> = {};
 
   try {
     keymaps = yaml.load(readFileSync(keymapsPath, 'utf-8')) as typeof keymaps;
@@ -37,14 +60,16 @@ const getKeymapsParsed = (): Record<string, string> => {
       keymaps[key] = mapping[0];
     }
 
-    if (key.endsWith('-specific')) {
-      const specificKeys = getSpecificKeys();
-
-      keymaps = Object.assign(keymaps, specificKeys);
-    }
+    assignCommand(key);
   });
+
+  const numericKeys = getNumericKeys();
+
+  keymaps = Object.assign(keymaps, numericKeys);
 
   return keymaps;
 };
 
-export { getKeymapsParsed };
+const keymaps = getKeymapsParsed();
+
+export { commands, keymaps, execCommand };

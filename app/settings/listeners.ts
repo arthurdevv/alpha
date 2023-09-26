@@ -9,6 +9,8 @@ const watcher = chokidar.watch(userPath, {
 });
 
 function subscribe(callback: Function): () => void {
+  callback();
+
   listeners.push(callback);
 
   return () => {
@@ -16,16 +18,18 @@ function subscribe(callback: Function): () => void {
   };
 }
 
-function watch(): void {
-  const onChange = () => {
-    setTimeout(() => {
-      listeners.forEach(callback => {
-        callback();
-      });
-    }, 100);
+function watch(): () => void {
+  const listener = () => {
+    listeners.forEach(callback => {
+      callback();
+    });
   };
 
-  watcher.on('change', onChange);
+  watcher.on('change', listener);
+
+  return () => {
+    watcher.removeListener('change', listener);
+  };
 }
 
 export default { subscribe, watch };

@@ -53,7 +53,7 @@ pnpm run package
 4. To make sure that your binaries works, run:
 
 ```sh
-pnpm run test
+npx playwright test
 ```
 
 ## Pull Request

@@ -1,29 +1,12 @@
 import { h } from 'preact';
 import { memo } from 'preact/compat';
 
+import getKeys from './keys';
+
 import { Container, Content, Keys, KeyItem, Arrow } from './styles';
 
 const Popover: React.FC<PopoverProps> = (props: PopoverProps) => {
-  const keys = ((props: PopoverProps): string[] => {
-    switch (props.label) {
-      case 'New Terminal':
-        return global.isMac ? ['⌘', 't'] : ['Ctrl', '⇧', 't'];
-
-      case 'Settings':
-        return global.isMac ? ['⌘', ','] : ['Ctrl', ','];
-
-      case 'Minimize':
-        return global.isMac ? ['⌘', 'm'] : ['Ctrl', '⇧', 'm'];
-
-      case 'Close':
-        return global.isMac ? ['⌘', '⇧', 'w'] : ['Alt', 'f4'];
-
-      case 'Close Terminal':
-        return global.isMac ? ['⌘', 'w'] : ['Ctrl', '⇧', 'w'];
-    }
-
-    return [];
-  })(props);
+  const keys = getKeys(props.label);
 
   return (
     <Container>

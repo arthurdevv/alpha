@@ -1,43 +1,44 @@
-import { app, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import { dialog, ipcMain } from 'electron';
 
 export default (mainWindow: Electron.BrowserWindow) => {
-  if (app.isPackaged) {
-    autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdates();
 
-    autoUpdater.on('update-downloaded', event => {
-      const { releaseName, releaseNotes } = event;
+  autoUpdater.once('update-downloaded', event => {
+    const { releaseName } = event;
 
-      const options: Electron.MessageBoxOptions = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Update Downloaded',
-        message: String(global.isWin ? releaseNotes : releaseName),
-        detail:
-          'A new update has been downloaded. Restart Alpha to apply the updates.',
-      };
+    const options: Electron.MessageBoxOptions = {
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      message: String(releaseName),
+      detail:
+        'A new update has been downloaded. Restart Alpha to apply the latest update.',
+    };
 
-      dialog.showMessageBox(options).then(returnValue => {
-        if (returnValue.response === 0) {
-          autoUpdater.quitAndInstall();
-        }
-      });
+    dialog.showMessageBox(options).then(({ response }) => {
+      if (response === 0) {
+        autoUpdater.quitAndInstall();
+      }
     });
+  });
 
-    autoUpdater.on('error', message => {
-      const options: Electron.MessageBoxOptions = {
-        type: 'error',
-        buttons: ['Ok'],
-        title: message.name,
-        message: '',
-        detail: 'There was a problem updating the application.',
-      };
+  mainWindow.on('close', () => {
+    autoUpdater.removeAllListeners();
+  });
+};
 
-      dialog.showMessageBox(options);
-    });
+ipcMain.on('app:check-for-updates', () => {
+  autoUpdater.checkForUpdates();
 
-    mainWindow.on('close', () => {
+  autoUpdater.once('update-not-available', () => {
+    const options: Electron.MessageBoxOptions = {
+      type: 'info',
+      detail: 'There are currently no updates available.',
+      message: String(),
+    };
+
+    dialog.showMessageBox(options).then(() => {
       autoUpdater.removeAllListeners();
     });
-  }
-};
+  });
+});

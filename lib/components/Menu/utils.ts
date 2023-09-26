@@ -9,7 +9,7 @@ function onSearch(event: React.ChangeEvent<HTMLInputElement>): void {
     const elements = Array.from(container.getElementsByTagName('li'));
 
     elements.forEach(item => {
-      const dataTitle = item.getAttribute('data-label')?.toLowerCase();
+      const dataTitle = item.getAttribute('data-title')?.toLowerCase();
 
       if (dataTitle) {
         const index = dataTitle.indexOf(value.toLowerCase());

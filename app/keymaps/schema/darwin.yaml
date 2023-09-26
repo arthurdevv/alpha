@@ -1,0 +1,22 @@
+terminal:create:
+  - command+t
+terminal:clear:
+  - command+k
+terminal:close:
+  - command+w
+terminal:settings:
+  - command+,
+terminal:commands:
+  - shift+command+p
+tab:next:
+  - ctrl+tab
+tab:previous:
+  - ctrl+shift+tab
+window:devtools:
+  - command+alt+i
+window:fullscreen:
+  - command+ctrl+f
+window:minimize:
+  - command+m
+window:close:
+  - command+shift+w

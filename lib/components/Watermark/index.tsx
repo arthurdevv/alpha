@@ -2,9 +2,11 @@ import { h } from 'preact';
 import { memo } from 'preact/compat';
 
 import { app } from '@electron/remote';
+
 import {
   Container,
   Logo,
+  LogoName,
   Shortcuts,
   ShortcutItem,
   ShortcutLabel,
@@ -18,7 +20,7 @@ const Watermark: React.FC = () => (
   <Container>
     <Logo>
       <AlphaIcon />
-      LPHA
+      <LogoName>LPHA</LogoName>
     </Logo>
     <Shortcuts>
       <ShortcutItem>

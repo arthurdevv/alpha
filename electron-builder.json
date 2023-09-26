@@ -4,16 +4,16 @@
   "productName": "Alpha",
   "copyright": "Arthur Henrique",
   "afterSign": "./build/mac/afterSign.js",
-  "files": ["dist/**/*", "package.json"],
+  "files": ["target/**/*", "package.json"],
   "directories": {
     "output": "release"
   },
   "extraMetadata": {
-    "main": "./dist/index.js"
+    "main": "./target/index.js"
   },
-  "extraResources": [
+"extraResources": [
     {
-      "from": "./app/common/profiles/clink",
+      "from": "./app/utils/clink",
       "to": "./clink"
     }
   ],

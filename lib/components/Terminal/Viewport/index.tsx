@@ -5,7 +5,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { Container } from './styles';
 
 const Viewport: React.FC<ViewportProps> = (props: ViewportProps) => {
-  const [visible, setVisible] = useState(false);
+  const [isVisible, setVisible] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -24,7 +24,7 @@ const Viewport: React.FC<ViewportProps> = (props: ViewportProps) => {
   }, [props]);
 
   return (
-    <Container className={visible ? 'visible' : undefined}>
+    <Container $isVisible={isVisible}>
       {props.cols}x{props.rows}
     </Container>
   );

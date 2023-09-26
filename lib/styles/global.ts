@@ -41,8 +41,8 @@ const GlobalStyle = createGlobalStyle`
   }
 
   *::selection {
-    color: ${({ theme }) => theme.selection.foreground};
-    background: ${({ theme }) => theme.selection.background};
+    color: ${({ theme }) => theme.selectionForeground};
+    background: ${({ theme }) => theme.selectionBackground};
   }
 
   *::-webkit-scrollbar {
@@ -55,11 +55,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   *::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.scrollbar.thumb};
+    background: ${({ theme }) => theme.scrollbarThumb};
     border-radius: 4px;
 
     &:hover {
-      background: ${({ theme }) => theme.disabled};
+      background: ${({ theme }) => theme.scrollbarHover};
     }
   }
 
