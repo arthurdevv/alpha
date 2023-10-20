@@ -34,6 +34,12 @@ export default (set: AlphaSet) => ({
     set(state => {
       let { context, current } = state;
 
+      const process = processes[id];
+
+      if (process) {
+        process.kill();
+      }
+
       const tabs = Object.keys(context);
 
       if (tabs.length > 0) {
@@ -53,6 +59,8 @@ export default (set: AlphaSet) => ({
           state.set('current', current);
         }, 10);
       }
+
+      processes[id] = null;
 
       delete context[id];
 

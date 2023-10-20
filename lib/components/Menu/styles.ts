@@ -47,6 +47,7 @@ export const Content = styled.div`
 
 export const Tag = styled.div`
   max-width: 100%;
+  height: 1.5rem;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
   display: inline-flex;
@@ -74,7 +75,7 @@ export const Search = styled.div`
 `;
 
 export const SearchInput = styled.input`
-  width: 100%;
+  flex: 1;
   line-height: 1;
   letter-spacing: -0.011em;
   font: inherit;

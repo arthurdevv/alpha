@@ -10,7 +10,7 @@ export const Container = styled.div`
 export const Content = styled.span`
   position: fixed;
   height: 1.875rem;
-  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   top: calc(2.275rem + 6px);
   z-index: 1000;
   opacity: 0;

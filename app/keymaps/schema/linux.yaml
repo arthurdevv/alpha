@@ -4,6 +4,8 @@ terminal:clear:
   - ctrl+shift+k
 terminal:close:
   - ctrl+shift+w
+terminal:search:
+  - ctrl+shift+f
 terminal:settings:
   - ctrl+,
 terminal:commands:
@@ -14,9 +16,3 @@ tab:previous:
   - ctrl+shift+tab
 window:devtools:
   - ctrl+shift+i
-window:fullscreen:
-  - f11
-window:minimize:
-  - ctrl+shift+m
-window:close:
-  - ctrl+shift+q

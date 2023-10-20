@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'events';
-import { IPty } from 'node-pty';
 import { FontWeight, ITheme } from 'xterm';
+import { IPty } from 'node-pty';
 
 declare global {
   var [isWin, isMac]: boolean[];
@@ -13,7 +13,12 @@ declare global {
     send: Electron.IpcRenderer['send'];
   }
 
-  type SettingsTag = 'application' | 'appearance' | 'terminal' | 'command-line';
+  type SettingsTag =
+    | 'application'
+    | 'appearance'
+    | 'keymaps'
+    | 'terminal'
+    | 'command-line';
 
   type IRawSettings = Record<SettingsTag, ISettings>;
 
@@ -24,7 +29,8 @@ declare global {
     renderer: 'dom' | 'webgl' | 'canvas';
     copyOnSelect: boolean;
     openOnStart: boolean;
-    cwd: string | null;
+    shell: string;
+    cwd: string | undefined;
     useConpty: boolean;
   } & ITerminalOptions;
 
@@ -37,6 +43,7 @@ declare global {
     range?: {
       min: number;
       max: number;
+      step: number;
     };
   };
 

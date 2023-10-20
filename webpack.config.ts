@@ -2,7 +2,7 @@ import path from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { IgnorePlugin, ProvidePlugin } from 'webpack';
+import { DefinePlugin, IgnorePlugin, ProvidePlugin } from 'webpack';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -16,6 +16,7 @@ const config = [
     resolve: {
       alias: {
         app: path.resolve(__dirname, 'app/'),
+        cli: path.resolve(__dirname, 'cli/'),
       },
       extensions: ['.ts', '.tsx', '.js', '.json'],
     },
@@ -55,13 +56,16 @@ const config = [
             from: './app/keymaps/schema/*.yaml',
             to: './app/keymaps/schema/[name][ext]',
           },
-{
+          {
             from: './app/utils/clink',
             to: './app/utils/clink',
           },
         ],
       }),
     ],
+    externals: {
+      'native-reg': 'commonjs2 native-reg',
+    },
   },
   {
     name: 'renderer',
@@ -123,6 +127,43 @@ const config = [
       'node-pty': 'commonjs2 node-pty',
       'native-reg': 'commonjs2 native-reg',
     },
+    optimization: {
+      minimize: !isDev,
+      minimizer: [new TerserPlugin()],
+    },
+  },
+  {
+    name: 'cli',
+    target: 'node',
+    devtool: false,
+    mode: 'none',
+    entry: path.resolve(__dirname, 'cli', 'index.ts'),
+    resolve: {
+      extensions: ['.js', '.ts'],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(js|ts)$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+        },
+        {
+          test: /index.js/,
+          include: /node_modules\/rc/,
+          loader: 'shebang-loader',
+        },
+      ],
+    },
+    output: {
+      path: path.join(__dirname, 'target'),
+      filename: 'cli.js',
+    },
+    plugins: [
+      new DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      }),
+    ],
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],

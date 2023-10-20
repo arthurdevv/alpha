@@ -1,20 +1,22 @@
-import createProcess, { processes } from 'app/common/process';
+import createProcess from 'app/common/process';
 import { terms } from 'app/common/terminal';
-import { execCommand } from 'app/keymaps';
 import { getSettings } from 'app/settings';
-import listeners from 'app/settings/listeners';
+import { getShellArgs } from 'app/common/profiles';
+import { mousetrap, getKeymaps, execCommand } from 'app/keymaps';
+import { userPath, userKeymapsPath, appDir } from 'app/settings/constants';
+import listeners, { getWatcher } from 'app/settings/listeners';
 import defaultShell from 'app/utils/default-shell';
 
-export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
+export default ({ getState, setMenu }: AlphaStore) => {
   const store = getState();
 
   window.on('terminal:create', (profile: IProfile) => {
-    const { cwd, useConpty } = getSettings();
+    const { shell, cwd, useConpty } = getSettings();
 
     const process = createProcess(
       profile || {
-        shell: defaultShell,
-        args: [],
+        shell: shell || defaultShell,
+        args: getShellArgs(shell),
       },
       {
         cwd,
@@ -29,14 +31,6 @@ export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
     const { current } = getState();
 
     if (current) {
-      const process = processes[current];
-
-      if (process) {
-        process.kill();
-      }
-
-      processes[current] = null;
-
       store.onClose(current);
     }
   });
@@ -44,10 +38,12 @@ export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
   window.on('terminal:focus', () => {
     const { current } = getState();
 
-    const term = terms[current!];
+    if (current) {
+      const term = terms[current];
 
-    if (term) {
-      term.focus();
+      if (term) {
+        term.focus();
+      }
     }
   });
 
@@ -65,6 +61,14 @@ export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
     );
   });
 
+  window.on('terminal:search', () => {
+    const { context } = getState();
+
+    if (Object.keys(context).length >= 1) {
+      setMenu('Search');
+    }
+  });
+
   window.on('terminal:commands', () => {
     setMenu('Commands');
   });
@@ -72,7 +76,7 @@ export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
   window.on('terminal:profiles', () => {
     const { menu } = getState();
 
-    if (menu === 'Commands') {
+    if (menu !== 'Profiles') {
       setTimeout(() => {
         setMenu('Profiles');
       }, 100);
@@ -93,15 +97,37 @@ export default (getState: () => AlphaStore, setMenu: AlphaStore['setMenu']) => {
     store.moveTo(0, index);
   });
 
-  listeners.subscribe(() => {
-    store.setOptions(getSettings());
-  });
+  listeners
+    .subscribe('options', () => {
+      store.setOptions(getSettings());
+    })
+    .watch(getWatcher(userPath), 'options');
 
-  listeners.watch();
+  listeners
+    .subscribe('keymaps', () => {
+      const keymaps = getKeymaps();
+
+      mousetrap.reset().stopCallback = () => false;
+
+      Object.keys(keymaps).forEach(command => {
+        const keys = keymaps[command][0];
+
+        mousetrap.bind(
+          keys,
+          event => {
+            event.preventDefault();
+
+            execCommand(command);
+          },
+          'keydown',
+        );
+      });
+    })
+    .watch(getWatcher(userKeymapsPath), 'keymaps');
 
   const { openOnStart } = getSettings();
 
-  if (openOnStart) {
-    setTimeout(() => execCommand('terminal:create'), 3200);
+  if (openOnStart || process.env.ALPHA_CLI || process.cwd() !== appDir) {
+    setTimeout(() => execCommand('terminal:create'), 3700);
   }
 };

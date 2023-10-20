@@ -9,7 +9,7 @@ export const Content = styled.div`
   flex-direction: column;
 `;
 
-const GlobalStyle = createGlobalStyle`
+export default createGlobalStyle`
   *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -74,5 +74,3 @@ const GlobalStyle = createGlobalStyle`
     src: url('lib/styles/fonts/Inter.ttf') format('truetype');
   }
 `;
-
-export default GlobalStyle as any;

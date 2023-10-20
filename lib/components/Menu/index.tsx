@@ -8,36 +8,45 @@ import useStore from 'lib/store';
 import { Overlay } from './styles';
 import Profiles from './Profiles';
 import Commands from './Commands';
+import Search from './Search';
 
 const Menu: React.FC = () => {
   const { menu, setMenu } = useStore();
 
   const [isVisible, setVisible] = useState<boolean>(false);
 
+  const handleVisible = () => {
+    setVisible(false);
+
+    setTimeout(() => {
+      setMenu(undefined);
+
+      execCommand('terminal:focus');
+    }, 200);
+  };
+
   const handleOverlay = (event: React.TargetedEvent<HTMLElement>) => {
     const { target, currentTarget } = event;
 
     if (target === currentTarget) {
-      setVisible(false);
-
-      setTimeout(() => {
-        setMenu(undefined);
-
-        execCommand('terminal:focus');
-      }, 200);
+      handleVisible();
     }
   };
 
   useEffect(() => setVisible(Boolean(menu)), [menu]);
 
   return menu ? (
-    <Overlay onClick={handleOverlay}>
-      {createElement({ Profiles, Commands }[menu as any], {
-        menu,
-        setMenu,
-        isVisible,
-      })}
-    </Overlay>
+    menu === 'Search' ? (
+      <Search isVisible={isVisible} onClose={handleVisible} />
+    ) : (
+      <Overlay onClick={handleOverlay}>
+        {createElement({ Profiles, Commands }[menu]!, {
+          menu,
+          setMenu,
+          isVisible,
+        })}
+      </Overlay>
+    )
   ) : (
     <Fragment />
   );
