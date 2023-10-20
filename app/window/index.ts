@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { initialize, enable } from '@electron/remote/main';
 import { resolve } from 'path';
 import { getSettings } from 'app/settings';
+import installCLI from 'cli/install';
 import checkForUpdates from './updater';
 
 initialize();
@@ -21,7 +22,6 @@ function createWindow(): void {
     frame: false,
     title: 'Alpha',
     titleBarStyle: 'hidden',
-    transparent: process.platform === 'darwin',
     autoHideMenuBar: true,
     webPreferences: {
       preload: resolve(__dirname, 'app/window', 'preload.js'),
@@ -77,6 +77,8 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+
+  installCLI();
 });
 
 app.on('window-all-closed', () => {

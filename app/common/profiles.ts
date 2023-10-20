@@ -4,7 +4,7 @@ import { app } from '@electron/remote';
 import { appPath } from 'app/settings/constants';
 import getRegistryPath from 'app/utils/registry-path';
 
-const defaultProfiles: IProfile[] = [
+const profiles: IProfile[] = [
   {
     title: 'Command Prompt',
     shell: join('C:\\Windows', 'system32', 'cmd.exe'),
@@ -55,10 +55,16 @@ const defaultProfiles: IProfile[] = [
     args: [],
   },
   {
-    title: 'WSL (Ubuntu)',
+    title: 'WSL',
     shell: join('C:\\Windows', 'system32', 'wsl.exe'),
     args: [],
   },
 ].filter(profile => existsSync(profile.shell));
 
-export default defaultProfiles;
+export const getShellArgs = (shell: string): string[] =>
+  profiles.filter(
+    profile =>
+      profile[Object.keys(profile).find(key => profile[key].includes(shell))!],
+  )[0].args;
+
+export default profiles;

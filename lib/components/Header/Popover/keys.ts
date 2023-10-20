@@ -1,21 +1,14 @@
-export default (label: string): string[] => {
-  switch (label) {
-    case 'New Terminal':
-      return isMac ? ['⌘', 't'] : ['Ctrl', '⇧', 't'];
+import listeners from 'app/settings/listeners';
+import schema, { parseKeys } from 'lib/components/Settings/Keymaps/schema';
 
-    case 'Settings':
-      return isMac ? ['⌘', ','] : ['Ctrl', ','];
+export default (label: string, setKeys: React.StateUpdater<string[]>) => {
+  const command = Object.keys(schema).find(key => schema[key] === label);
 
-    case 'Minimize':
-      return isMac ? ['⌘', 'm'] : ['Ctrl', '⇧', 'm'];
+  if (command) {
+    listeners.subscribe('keymaps', () => {
+      const keys = parseKeys(command).map(key => (key === 'shift' ? '⇧' : key));
 
-    case 'Close':
-      return isMac ? ['⌘', '⇧', 'w'] : ['Alt', 'f4'];
-
-    case 'Close Terminal':
-    case 'Close Settings':
-      return isMac ? ['⌘', 'w'] : ['Ctrl', '⇧', 'w'];
+      setKeys(keys);
+    });
   }
-
-  return [];
 };

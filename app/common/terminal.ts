@@ -13,7 +13,10 @@ const defaultOptions: xterm.ITerminalOptions = {
   theme,
 };
 
-const customKeys = ['Alt', 'F4', 'F11', 'Tab', '3', '4', '5', '6', '7', '8'];
+const customKeys = {
+  tab: ['Tab', '3', '4', '5', '6', '7', '8'],
+  window: ['Alt', 'F4', 'F11'],
+};
 
 class Terminal {
   term: xterm.Terminal;
@@ -37,9 +40,11 @@ class Terminal {
       }
     });
 
-    this.term.attachCustomKeyEventHandler(
-      ({ key }) => !customKeys.includes(key),
-    );
+    this.term.attachCustomKeyEventHandler(({ key, ctrlKey }) => {
+      const { tab, window } = customKeys;
+
+      return !((ctrlKey && tab.includes(key)) || window.includes(key));
+    });
 
     this.term.onSelectionChange(() => {
       if (this.props.options['copyOnSelect']) {

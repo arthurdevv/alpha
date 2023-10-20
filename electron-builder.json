@@ -2,19 +2,27 @@
   "$schema": "http://json.schemastore.org/electron-builder",
   "appId": "alpha.app",
   "productName": "Alpha",
-  "copyright": "Arthur Henrique",
-  "afterSign": "./build/mac/afterSign.js",
   "files": ["target/**/*", "package.json"],
   "directories": {
     "output": "release"
   },
   "extraMetadata": {
-    "main": "./target/index.js"
+    "main": "target/index.js"
   },
-"extraResources": [
+  "extraResources": [
     {
-      "from": "./app/utils/clink",
-      "to": "./clink"
+      "from": "app/utils/clink",
+      "to": "clink"
+    },
+    {
+      "from": "target/",
+      "to": "bin",
+      "filter": ["cli*"]
+    },
+    {
+      "from": "cli/",
+      "to": "bin",
+      "filter": ["alpha*"]
     }
   ],
   "publish": {
@@ -24,16 +32,28 @@
   },
   "win": {
     "target": "nsis",
-    "icon": "build/icon.ico"
+    "icon": "build/icon.ico",
+    "rfc3161TimeStampServer": "http://timestamp.sectigo.com"
   },
   "nsis": {
     "artifactName": "${productName}-Setup-${version}.${ext}",
-    "include": "./build/windows/installer.nsh",
-    "installerIcon": "./build/icon.ico",
+    "include": "build/windows/installer.nsh",
+    "installerIcon": "build/icon.ico",
     "shortcutName": "Alpha",
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true
+  },
+  "mac": {
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "category": "public.app-category.developer-tools",
+    "entitlements": "build/mac/entitlements.plist",
+    "entitlementsInherit": "build/mac/entitlements.plist",
+    "target": {
+      "target": "default",
+      "arch": ["x64", "arm64"]
+    },
+    "darkModeSupport": true
   },
   "linux": {
     "icon": "build/icons",
@@ -57,19 +77,8 @@
       }
     ]
   },
-  "mac": {
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "category": "public.app-category.developer-tools",
-    "entitlements": "./build/mac/entitlements.plist",
-    "entitlementsInherit": "./build/mac/entitlements.plist",
-    "target": {
-      "target": "default",
-      "arch": ["x64", "arm64"]
-    },
-    "darkModeSupport": true
-  },
   "deb": {
-    "afterInstall": "./build/linux/after-install.tpl",
+    "afterInstall": "build/linux/after-install.tpl",
     "compression": "bzip2"
   },
   "rpm": {

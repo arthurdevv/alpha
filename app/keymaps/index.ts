@@ -1,6 +1,9 @@
 import yaml from 'js-yaml';
-import { readFileSync } from 'fs';
-import { keymapsPath } from 'app/settings/constants';
+import Mousetrap, { MousetrapInstance } from 'mousetrap';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { keymapsPath, userKeymapsPath } from 'app/settings/constants';
+
+const mousetrap: MousetrapInstance = new (Mousetrap as any)(window);
 
 const commands: Record<string, Function> = {};
 
@@ -26,13 +29,13 @@ function execCommand(command: string, ...args: any[]): Promise<boolean> {
   });
 }
 
-const getNumericKeys = (): Record<string, string> => {
-  const keys: Record<string, string> = {};
+const getNumericKeys = (): Record<string, string[]> => {
+  const keys: Record<string, string[]> = {};
 
   for (let i = 1; i <= 9; i += 1) {
     const index = i === 9 ? 9 : i;
 
-    keys[`tab:${index}`] = `ctrl+${i}`;
+    keys[`tab:${index}`] = [`ctrl+${i}`];
 
     const commandIndex = i === 9 ? 9 : i - 1;
 
@@ -44,23 +47,24 @@ const getNumericKeys = (): Record<string, string> => {
   return keys;
 };
 
-const getKeymapsParsed = (): Record<string, string> => {
-  let keymaps: Record<string, string> = {};
+const getKeymaps = (initial?: boolean): Record<string, string[]> => {
+  let keymaps: Record<string, string[]> = {};
 
   try {
-    keymaps = yaml.load(readFileSync(keymapsPath, 'utf-8')) as typeof keymaps;
+    const content = readFileSync(
+      initial ? keymapsPath : userKeymapsPath,
+      'utf-8',
+    );
+
+    keymaps = yaml.load(content, {
+      schema: yaml.DEFAULT_SCHEMA,
+    }) as typeof keymaps;
   } catch (error) {
     console.error(error);
   }
 
-  Object.keys(keymaps).forEach(key => {
-    const mapping = keymaps[key];
-
-    if (typeof mapping === 'object') {
-      keymaps[key] = mapping[0];
-    }
-
-    assignCommand(key);
+  Object.keys(keymaps).forEach(command => {
+    assignCommand(command);
   });
 
   const numericKeys = getNumericKeys();
@@ -70,6 +74,27 @@ const getKeymapsParsed = (): Record<string, string> => {
   return keymaps;
 };
 
-const keymaps = getKeymapsParsed();
+function writeKeymaps(keymaps: Record<string, string[]>) {
+  try {
+    const content = yaml
+      .dump(keymaps, {
+        indent: 2,
+        schema: yaml.DEFAULT_SCHEMA,
+      })
+      .replace(/\r\n/g, isWin ? '\r\n' : '\n');
 
-export { commands, keymaps, execCommand };
+    writeFileSync(userKeymapsPath, content, 'utf-8');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const hasKeymapsFile = existsSync(userKeymapsPath);
+
+if (!hasKeymapsFile) {
+  const keymaps = getKeymaps(true);
+
+  writeKeymaps(keymaps);
+}
+
+export { commands, mousetrap, execCommand, getKeymaps, writeKeymaps };

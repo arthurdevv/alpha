@@ -1,6 +1,9 @@
 import * as pty from 'node-pty';
 import { homedir } from 'os';
+import { existsSync } from 'fs';
+import { isAbsolute } from 'path';
 import { terms } from './terminal';
+import { appDir } from 'app/settings/constants';
 
 export const processes: Record<string, pty.IPty | null> = {};
 
@@ -8,21 +11,34 @@ const defaultOptions: pty.IWindowsPtyForkOptions = {
   name: 'xterm-color',
   cols: 80,
   rows: 30,
-  cwd: homedir(),
   env: Object(process.env),
+};
+
+const getExistingCWD = (path: string) => {
+  const cwd = process.cwd();
+
+  if (path && isAbsolute(path) && existsSync(path)) {
+    return path;
+  }
+
+  if (process.env.ALPHA_CLI || cwd !== appDir) {
+    return cwd;
+  }
+
+  return homedir();
 };
 
 function createProcess(
   { shell, args }: IProcessParam,
-  customOptions?: pty.IWindowsPtyForkOptions | {},
+  customOptions?: pty.IWindowsPtyForkOptions,
 ) {
   const options = defaultOptions;
 
   if (customOptions) {
     Object.keys(customOptions).forEach(key => {
-      const hasValue = Boolean(customOptions[key]);
+      const value = customOptions[key];
 
-      options[key] = (hasValue ? customOptions : defaultOptions)[key];
+      options[key] = key === 'cwd' ? getExistingCWD(value) : value;
     });
   }
 

@@ -1,10 +1,12 @@
-const schema: Record<Section, { [key: string]: ISettingsKey }> = {
+import defaultProfiles from 'app/common/profiles';
+
+const schema: Record<Section, Record<string, ISettingsKey>> = {
   Application: {
     language: {
       label: 'Language',
       type: 'select',
       valueType: 'text',
-      description: 'Alpha display will appear in this language.',
+      description: 'Alpha will be displayed in this language.',
       options: ['English (US)'],
     },
     autoUpdates: {
@@ -31,6 +33,7 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
       range: {
         min: 1,
         max: 99,
+        step: 1,
       },
     },
     fontFamily: {
@@ -60,6 +63,7 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
       range: {
         min: 1,
         max: 99,
+        step: 1,
       },
     },
     letterSpacing: {
@@ -70,6 +74,7 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
       range: {
         min: 0,
         max: 99,
+        step: 1,
       },
     },
     cursorStyle: {
@@ -86,6 +91,7 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
       description: 'Controls whether the cursor blinks.',
     },
   },
+  Keymaps: {},
   Terminal: {
     renderer: {
       label: 'Renderer',
@@ -104,6 +110,7 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
       range: {
         min: 1,
         max: 50000,
+        step: 1000,
       },
     },
     copyOnSelect: {
@@ -121,6 +128,18 @@ const schema: Record<Section, { [key: string]: ISettingsKey }> = {
     },
   },
   'Command Line': {
+    shell: {
+      label: 'Default Shell',
+      type: 'select',
+      valueType: 'text',
+      description: 'Controls the default shell to run for new child programs.',
+      options: defaultProfiles
+        .map(({ shell }) => shell)
+        .filter(
+          (shell, index, array) =>
+            array.findIndex(value => value === shell) === index,
+        ),
+    },
     cwd: {
       label: 'Working Directory',
       type: 'input',

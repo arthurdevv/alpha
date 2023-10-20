@@ -14,7 +14,7 @@
       "impliedStrict": true,
       "experimentalObjectRestSpread": true
     },
-    "project": ["./tsconfig.json", "./tsconfig.eslint.json"]
+    "project": ["./tsconfig.json"]
   },
   "plugins": ["@typescript-eslint", "react", "prettier"],
   "extends": [

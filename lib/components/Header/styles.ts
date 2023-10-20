@@ -84,9 +84,8 @@ export const ActionItem = styled.div`
     left: ${!isMac && '0.5rem'};
   }
 
-  &[aria-label='Profiles'] div span:last-of-type,
-  &[aria-label='Maximize'] div span:last-of-type,
-  &[aria-label='Restore'] div span:last-of-type {
-    padding: 0.25rem 0.5rem;
+  &[aria-label='New Terminal'] div span:last-of-type,
+  &[aria-label='Settings'] div span:last-of-type {
+    padding: 0.25rem 0.25rem 0.25rem 0.5rem;
   }
 `;

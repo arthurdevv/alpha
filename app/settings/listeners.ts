@@ -1,26 +1,33 @@
 import * as chokidar from 'chokidar';
-import { userPath } from './constants';
 
-const listeners: Function[] = [];
+export const handlers: Record<string, Function[]> = {
+  options: [],
+  keymaps: [],
+};
 
-const watcher = chokidar.watch(userPath, {
+const watchOptions: chokidar.WatchOptions = {
   atomic: true,
   persistent: true,
-});
+};
 
-function subscribe(callback: Function): () => void {
+export const getWatcher = (path: string): chokidar.FSWatcher =>
+  chokidar.watch(path, watchOptions);
+
+function subscribe(key: string, callback: Function) {
   callback();
 
-  listeners.push(callback);
+  const handler = handlers[key];
 
-  return () => {
-    listeners.splice(listeners.indexOf(callback), 1);
-  };
+  handler.push(callback);
+
+  return { watch };
 }
 
-function watch(): () => void {
+function watch(watcher: chokidar.FSWatcher, key: string) {
   const listener = () => {
-    listeners.forEach(callback => {
+    const handler = handlers[key];
+
+    handler.forEach(callback => {
       callback();
     });
   };

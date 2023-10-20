@@ -1,0 +1,22 @@
+application:
+  language: en-US
+  autoUpdates: true
+  gpu: false
+appearance:
+  fontSize: 16
+  fontFamily: Menlo, Consolas, Lucida Console, monospace
+  fontWeight: 400
+  fontLigatures: true
+  lineHeight: 1
+  letterSpacing: 0
+  cursorStyle: block
+  cursorBlink: true
+terminal:
+  renderer: dom
+  scrollback: 25000
+  copyOnSelect: true
+  openOnStart: false
+command-line:
+  shell: cmd.exe
+  cwd: null
+  useConpty: true

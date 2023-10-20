@@ -1,4 +1,4 @@
-import 'styled-components';
+import { ISearchDecorationOptions } from 'xterm-addon-search';
 
 export const theme = {
   foreground: 'rgba(230, 230, 230, 1.0)',
@@ -15,6 +15,15 @@ export const theme = {
   scrollbarThumb: 'rgba(255, 255, 255, 0.10)',
   scrollbarHover: 'rgba(255, 255, 255, 0.20)',
   boxShadow: 'rgba(0, 0, 0, 0.15)',
+} as const;
+
+export const decorations: ISearchDecorationOptions = {
+  matchBorder: '#00000000',
+  matchBackground: '#505050',
+  matchOverviewRuler: '#00000000',
+  activeMatchBorder: '#00000000',
+  activeMatchBackground: '#E6D169',
+  activeMatchColorOverviewRuler: '#00000000',
 } as const;
 
 declare module 'styled-components' {

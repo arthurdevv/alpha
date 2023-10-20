@@ -85,6 +85,11 @@ declare global {
     isCurrent: boolean;
   }
 
+  interface SearchProps {
+    isVisible: boolean;
+    onClose: (event: React.TargetedEvent<HTMLElement>) => void;
+  }
+
   type MenuCommands = {
     [label: string]: {
       keys: string[];
@@ -92,5 +97,18 @@ declare global {
     };
   };
 
-  type Section = 'Application' | 'Appearance' | 'Command Line' | 'Terminal';
+  type Section =
+    | 'Application'
+    | 'Appearance'
+    | 'Keymaps'
+    | 'Terminal'
+    | 'Command Line';
+
+  type ISearchControls = {
+    up?: boolean;
+    down?: boolean;
+    regex?: boolean;
+    wholeWord?: boolean;
+    caseSensitive?: boolean;
+  };
 }
