@@ -10,7 +10,7 @@ const keys = [
   'Software\\Classes\\Directory\\Background\\shell\\Alpha',
 ];
 
-function enableShellIntegration() {
+function enableShellIntegration(): void {
   try {
     keys.forEach(key => {
       let regKey = Registry.openKey(HKCU, key, Access.ALL_ACCESS);

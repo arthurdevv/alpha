@@ -30,7 +30,14 @@
     }
   },
   "rules": {
-    "import/order": 0,
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false
+      }
+    ],
     "import/extensions": 0,
     "import/no-unresolved": 0,
     "import/prefer-default-export": 0,

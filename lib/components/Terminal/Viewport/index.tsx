@@ -1,6 +1,5 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
-import { useState, useEffect } from 'preact/hooks';
+import { memo, useState, useEffect } from 'preact/compat';
 
 import { Container } from './styles';
 

@@ -5,22 +5,20 @@ const { app }: typeof Electron =
     ? require('electron')
     : require('@electron/remote');
 
-export const isWin = process.platform === 'win32';
-
 export const appPath = app.isPackaged ? __dirname : app.getAppPath();
 
 export const appDir = join(dirname(appPath), '../..');
 
-export const userData = app.getPath(isWin ? 'userData' : 'home');
+export const appExec = dirname(app.getPath('exe'));
+
+export const userData = app.getPath('userData');
 
 export const userPath = join(userData, '.alpha.yaml');
 
-export const defaultPath = join(appPath, 'app/settings', 'schema.yaml');
+export const defaultPath = join(appPath, 'app/settings', 'default.yaml');
 
 export const userKeymapsPath = join(userData, 'keymaps.yaml');
 
-export const keymapsPath = join(
-  appPath,
-  'app/keymaps/schema',
-  `${process.platform}.yaml`,
-);
+export const keymapsPath = join(appPath, 'app/keymaps', 'default.yaml');
+
+export const boundsPath = join(userData, 'bounds.yaml');

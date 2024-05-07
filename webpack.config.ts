@@ -6,6 +6,19 @@ import { DefinePlugin, IgnorePlugin, ProvidePlugin } from 'webpack';
 
 const isDev = process.env.NODE_ENV === 'development';
 
+const externals = {};
+
+const deps = [
+  'node-pty',
+  'native-reg',
+  'native-process-working-directory',
+  '@pyke/vibe'
+];
+
+deps.forEach(dep => {
+  externals[dep] = `commonjs ${dep}`;
+});
+
 const config = [
   {
     name: 'main',
@@ -49,12 +62,12 @@ const config = [
             to: './lib/styles/fonts',
           },
           {
-            from: './app/settings/*.yaml',
+            from: './app/settings/default.yaml',
             to: './app/settings/[name][ext]',
           },
           {
-            from: './app/keymaps/schema/*.yaml',
-            to: './app/keymaps/schema/[name][ext]',
+            from: './app/keymaps/default.yaml',
+            to: './app/keymaps/[name][ext]',
           },
           {
             from: './app/utils/clink',
@@ -62,10 +75,12 @@ const config = [
           },
         ],
       }),
+      process.platform !== 'darwin' &&
+        new IgnorePlugin({
+          resourceRegExp: /^fsevents$/,
+        }),
     ],
-    externals: {
-      'native-reg': 'commonjs2 native-reg',
-    },
+    externals,
   },
   {
     name: 'renderer',
@@ -123,14 +138,11 @@ const config = [
         h: ['preact', 'h'],
       }),
     ].filter(Boolean),
-    externals: {
-      'node-pty': 'commonjs2 node-pty',
-      'native-reg': 'commonjs2 native-reg',
-    },
     optimization: {
       minimize: !isDev,
       minimizer: [new TerserPlugin()],
     },
+    externals,
   },
   {
     name: 'cli',
@@ -147,11 +159,6 @@ const config = [
           test: /\.(js|ts)$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
-        },
-        {
-          test: /index.js/,
-          include: /node_modules\/rc/,
-          loader: 'shebang-loader',
         },
       ],
     },

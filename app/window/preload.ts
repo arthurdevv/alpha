@@ -1,19 +1,15 @@
 import EventEmitter from 'events';
 import { ipcRenderer } from 'electron';
 
-const ipc = new EventEmitter();
+const emitter = new EventEmitter();
 
-const GLOBAL = {
-  isMac: process.platform === 'darwin',
-
-  isWin: process.platform === 'win32',
-
+const ipc = {
   on(eventName: string, listener: (...args: any[]) => void) {
-    return ipc.on(eventName, listener);
+    return emitter.on(eventName, listener);
   },
 
   emit(eventName: string, ...args: any[]) {
-    return ipc.emit(eventName, ...args);
+    return emitter.emit(eventName, ...args);
   },
 
   send(channel: string, ...args: any[]) {
@@ -21,6 +17,6 @@ const GLOBAL = {
   },
 } as const;
 
-Object.keys(GLOBAL).forEach(key => {
-  window[key] = GLOBAL[key];
+Object.keys(ipc).forEach(key => {
+  window[key] = ipc[key];
 });

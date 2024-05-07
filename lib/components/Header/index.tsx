@@ -3,36 +3,36 @@ import React, { memo, useState } from 'preact/compat';
 
 import { getCurrentWindow } from '@electron/remote';
 import { execCommand } from 'app/keymaps';
-import useStore from 'lib/store';
+import { saveBounds } from 'app/window/bounds';
 
-import { Container, DragRegion, Actions, ActionItem } from './styles';
 import {
+  CloseIcon,
+  MaximizeIcon,
+  MinimizeIcon,
   PlusIcon,
   ProfilesIcon,
-  SettingsIcon,
-  MinimizeIcon,
-  MaximizeIcon,
   RestoreIcon,
-  CloseIcon,
-} from '../Icon';
+  SettingsIcon,
+} from 'lib/components/Icons';
+import { ActionItem, Actions, Container, DragRegion } from './styles';
 import TabGroup from './Tab';
 import Popover from './Popover';
 
 const Header: React.FC = () => {
-  const { context } = useStore();
-
   const [isMaximized, setMaximized] = useState<boolean>(false);
 
-  const handleWindow = (event: React.TargetedEvent<any>) => {
-    const { ariaLabel } = event.currentTarget;
+  const handleWindow = ({ currentTarget }) => {
+    const { ariaLabel } = currentTarget;
+
+    const isMaximizeOrRestore = ['Maximize', 'Restore'].includes(ariaLabel);
+
+    isMaximizeOrRestore
+      ? setMaximized(!isMaximized)
+      : execCommand('terminal:save').then(saveBounds);
 
     const currentWindow = getCurrentWindow();
 
     currentWindow[ariaLabel.toLowerCase()]();
-
-    if (ariaLabel === 'Maximize' || ariaLabel === 'Restore') {
-      setMaximized(!isMaximized);
-    }
   };
 
   return (
@@ -40,7 +40,6 @@ const Header: React.FC = () => {
       <TabGroup />
       <Actions>
         <ActionItem
-          className={Object.keys(context).length >= 1 && 'visited'}
           aria-label="New Terminal"
           onClick={() => execCommand('terminal:create')}
         >
@@ -49,7 +48,7 @@ const Header: React.FC = () => {
         </ActionItem>
         <ActionItem
           aria-label="Profiles"
-          onClick={() => execCommand('terminal:profiles')}
+          onClick={() => execCommand('terminal:profiles', true)}
         >
           <ProfilesIcon />
           <Popover label="Profiles" />

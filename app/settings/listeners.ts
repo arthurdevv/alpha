@@ -1,4 +1,5 @@
 import * as chokidar from 'chokidar';
+import { userPath, userKeymapsPath } from './constants';
 
 export const handlers: Record<string, Function[]> = {
   options: [],
@@ -14,13 +15,15 @@ export const getWatcher = (path: string): chokidar.FSWatcher =>
   chokidar.watch(path, watchOptions);
 
 function subscribe(key: string, callback: Function) {
-  callback();
-
   const handler = handlers[key];
 
   handler.push(callback);
 
-  return { watch };
+  callback();
+
+  const watcher = getWatcher(key === 'options' ? userPath : userKeymapsPath);
+
+  watch(watcher, key);
 }
 
 function watch(watcher: chokidar.FSWatcher, key: string) {
@@ -33,10 +36,6 @@ function watch(watcher: chokidar.FSWatcher, key: string) {
   };
 
   watcher.on('change', listener);
-
-  return () => {
-    watcher.removeListener('change', listener);
-  };
 }
 
-export default { subscribe, watch };
+export default { subscribe };

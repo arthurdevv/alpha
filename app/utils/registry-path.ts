@@ -2,7 +2,7 @@ import * as Registry from 'native-reg';
 
 const { HKCU, HKLM, Access } = Registry;
 
-function getRegistryPath(subKey: string, valueName: string) {
+function getRegistryPath(subKey: string, valueName: string): string {
   const extsKey =
     Registry.openKey(HKLM, 'Software', Access.READ) ||
     Registry.openKey(HKCU, 'Software', Access.READ);

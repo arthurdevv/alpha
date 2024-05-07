@@ -1,15 +1,13 @@
-import { h } from 'preact';
-import { memo } from 'preact/compat';
-import { useEffect } from 'preact/hooks';
+import { Fragment, h } from 'preact';
+import { memo, useEffect } from 'preact/compat';
 
 import useStore from 'lib/store';
 import invokeEvents from 'lib/store/events';
 import { Content } from 'lib/styles/global';
 
-import Menu from './Menu';
+import Modal from './Modal';
 import Header from './Header';
 import Terminal from './Terminal';
-import Watermark from './Watermark';
 
 const Alpha: React.FC = () => {
   const store = useStore();
@@ -17,14 +15,15 @@ const Alpha: React.FC = () => {
   useEffect(() => invokeEvents(store), []);
 
   return (
-    <Content>
-      <Header />
+    <Fragment>
       <Content>
-        <Terminal />
-        <Watermark />
+        <Header />
+        <Content>
+          <Terminal />
+        </Content>
       </Content>
-      <Menu />
-    </Content>
+      <Modal />
+    </Fragment>
   );
 };
 

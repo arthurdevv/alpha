@@ -1,12 +1,13 @@
-import { FitAddon } from 'xterm-addon-fit';
-import { SearchAddon } from 'xterm-addon-search';
-import { WebLinksAddon } from 'xterm-addon-web-links';
-import { Unicode11Addon } from 'xterm-addon-unicode11';
-import { LigaturesAddon } from 'xterm-addon-ligatures';
-import { WebglAddon } from 'xterm-addon-webgl';
-import { CanvasAddon } from 'xterm-addon-canvas';
+import { FitAddon } from '@xterm/addon-fit';
+import { SearchAddon } from '@xterm/addon-search';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { LigaturesAddon } from '@xterm/addon-ligatures';
+import { WebglAddon } from '@xterm/addon-webgl';
+import { CanvasAddon } from '@xterm/addon-canvas';
 import { shell } from '@electron/remote';
 import { decorations } from 'lib/styles/theme';
+import storage from 'app/utils/local-storage';
 
 const addons = {
   FitAddon: new FitAddon(),
@@ -20,18 +21,12 @@ const addons = {
   },
 } as const;
 
-export function findResult(
-  action: 'next' | 'previous',
-  term: string,
-  controls: ISearchControls,
-) {
+export function findResult(method: string, result: string) {
   const { SearchAddon } = addons;
 
-  if (action === 'next') {
-    SearchAddon.findNext(term, { decorations, ...controls });
-  } else {
-    SearchAddon.findPrevious(term, { decorations, ...controls });
-  }
+  const controls = storage.parseItem('controls');
+
+  SearchAddon[method](result, { decorations, ...controls });
 }
 
 export function clearResult() {
@@ -39,5 +34,15 @@ export function clearResult() {
 
   SearchAddon.clearDecorations();
 }
+
+export const onChangeResult = (
+  stateUpdater: React.SetStateAction<number[]>,
+) => {
+  const { SearchAddon } = addons;
+
+  return SearchAddon.onDidChangeResults(({ resultIndex, resultCount }) =>
+    stateUpdater([resultIndex + 1, resultCount]),
+  );
+};
 
 export default addons;

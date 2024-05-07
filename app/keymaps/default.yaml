@@ -1,0 +1,20 @@
+terminal:create:
+  - ctrl+shift+t
+terminal:clear:
+  - ctrl+shift+k
+terminal:close:
+  - ctrl+shift+w
+terminal:search:
+  - ctrl+shift+f
+terminal:settings:
+  - ctrl+,
+terminal:commands:
+  - ctrl+shift+p
+tab:next:
+  - ctrl+tab
+tab:previous:
+  - ctrl+shift+tab
+window:create:
+  - ctrl+shift+n
+window:devtools:
+  - ctrl+shift+i

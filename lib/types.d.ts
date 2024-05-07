@@ -1,4 +1,4 @@
-import { ITerminalOptions } from 'xterm';
+import { ITerminalOptions } from '@xterm/xterm';
 
 import type actions from './store/actions';
 
@@ -6,9 +6,10 @@ declare global {
   type AlphaState = {
     context: Record<string, ITerminal>;
     current: string | undefined;
-    menu: string | undefined;
+    modal: string | undefined;
     cols: number | undefined;
     rows: number | undefined;
+    profile: IProfile | undefined;
     options: ITerminalOptions & {
       fontLigatures?: boolean;
     };
@@ -23,7 +24,7 @@ declare global {
       property: [I, K?],
       value: any,
     ): AlphaStore;
-    getState(): AlphaStore;
+    getStore(): AlphaStore;
   } & ReturnType<typeof actions>;
 
   type AlphaSet = (
@@ -37,6 +38,7 @@ declare global {
   type AlphaStore = AlphaState & AlphaActions;
 
   type ITerminal = {
+    name?: string;
     title: string;
     shell: string;
     isDirty: boolean;
@@ -59,16 +61,10 @@ declare global {
     options: ITerminalOptions;
   }
 
-  interface MenuProps {
-    menu: AlphaStore['menu'];
-    setMenu: AlphaStore['setMenu'];
+  interface ModalProps {
+    modal: string | undefined;
+    handleModal: (_?: any, modal?: string | undefined) => Promise<boolean>;
     isVisible: boolean;
-  }
-
-  interface ProfileProps {
-    title: string;
-    shell: string;
-    onSelect: () => void;
   }
 
   interface ViewportProps {
@@ -81,28 +77,26 @@ declare global {
     style?: React.CSSProperties;
   }
 
-  interface SettingsProps {
-    isCurrent: boolean;
-  }
-
   interface SearchProps {
     isVisible: boolean;
     onClose: (event: React.TargetedEvent<HTMLElement>) => void;
   }
 
-  type MenuCommands = {
-    [label: string]: {
-      keys: string[];
-      exec: () => Promise<boolean>;
-    };
-  };
+  interface EnviromentProps {
+    profile: IProfile;
+    setProfile: (profile: IProfile) => void;
+  }
 
-  type Section =
-    | 'Application'
-    | 'Appearance'
-    | 'Keymaps'
-    | 'Terminal'
-    | 'Command Line';
+  interface SectionProps {
+    section: Section;
+    options: JSX.Element[];
+  }
+
+  type IMenuCommand = {
+    name: string;
+    keys: string[];
+    action: () => Promise<boolean>;
+  };
 
   type ISearchControls = {
     up?: boolean;
@@ -111,4 +105,12 @@ declare global {
     wholeWord?: boolean;
     caseSensitive?: boolean;
   };
+
+  type Section =
+    | 'Application'
+    | 'Appearance'
+    | 'Terminal'
+    | 'Profiles'
+    | 'Keymaps'
+    | 'Window';
 }

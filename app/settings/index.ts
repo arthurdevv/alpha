@@ -1,6 +1,6 @@
 import yaml from 'js-yaml';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { userPath, defaultPath, isWin } from './constants';
+import { userPath, defaultPath } from './constants';
 
 function loadSettings(initial?: boolean): IRawSettings {
   let settings = <IRawSettings>{};
@@ -8,9 +8,7 @@ function loadSettings(initial?: boolean): IRawSettings {
   try {
     const content = readFileSync(initial ? defaultPath : userPath, 'utf-8');
 
-    settings = yaml.load(content, {
-      schema: yaml.DEFAULT_SCHEMA,
-    }) as typeof settings;
+    settings = yaml.load(content) as typeof settings;
   } catch (error) {
     console.log(error);
   }
@@ -20,12 +18,7 @@ function loadSettings(initial?: boolean): IRawSettings {
 
 function writeSettings(settings: IRawSettings): void {
   try {
-    const content = yaml
-      .dump(settings, {
-        indent: 2,
-        schema: yaml.DEFAULT_SCHEMA,
-      })
-      .replace(/\r\n/g, isWin ? '\r\n' : '\n');
+    const content = yaml.dump(settings, { indent: 2 });
 
     writeFileSync(userPath, content, 'utf-8');
   } catch (error) {
@@ -38,29 +31,39 @@ const getSettings = (initial?: boolean): ISettings => {
 
   const settings = <ISettings>{};
 
-  Object.keys(content).forEach(key => {
-    const context = content[key];
-
-    Object.keys(context).forEach(subkey => {
-      settings[subkey] = context[subkey];
-    });
+  Object.entries(content).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      settings[key] = value;
+    } else {
+      Object.keys(value).forEach(subkey => {
+        settings[subkey] = value[subkey];
+      });
+    }
   });
 
   return settings;
 };
 
-const setSettings = (key: keyof ISettings, value: any): void => {
+const setSettings = (
+  key: keyof ISettings,
+  value: any,
+  callback?: Function,
+): void => {
   const settings = loadSettings();
 
-  Object.keys(settings).forEach(context => {
-    const schema = settings[context];
-
-    if (key in schema) {
-      settings[context][key] = value;
-    }
-  });
+  if (key in settings) {
+    settings[key] = value;
+  } else {
+    Object.entries(settings).forEach(([context, schema]) => {
+      if (key in schema) {
+        settings[context][key] = value;
+      }
+    });
+  }
 
   writeSettings(settings);
+
+  callback && callback();
 };
 
 const hasSettingsFile = existsSync(userPath);

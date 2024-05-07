@@ -1,70 +1,124 @@
-import { join, dirname } from 'path';
 import { existsSync } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import { app } from '@electron/remote';
-import { appPath } from 'app/settings/constants';
+import { getSettings } from 'app/settings';
+import { appExec, appPath } from 'app/settings/constants';
 import getRegistryPath from 'app/utils/registry-path';
 
-const profiles: IProfile[] = [
+const systemProfiles = [
   {
-    title: 'Command Prompt',
-    shell: join('C:\\Windows', 'system32', 'cmd.exe'),
-    args: [],
+    id: '0',
+    name: 'Command Prompt',
+    group: 'System',
+    options: {
+      shell: 'C:\\Windows\\system32\\cmd.exe',
+      args: [],
+    },
   },
   {
-    title: 'Clink',
-    shell: join('C:\\Windows', 'system32', 'cmd.exe'),
-    args: [
-      '/k',
-      app.isPackaged
-        ? join(
-            dirname(app.getPath('exe')),
-            'resources',
-            'clink',
-            `clink_${process.arch}.exe`,
-          )
-        : join(appPath, 'app\\utils\\clink', `clink_${process.arch}.exe`),
-      'inject',
-    ],
+    id: '1',
+    name: 'Clink',
+    group: 'System',
+    options: {
+      shell: 'C:\\Windows\\system32\\cmd.exe',
+      args: [
+        '/k',
+        app.isPackaged
+          ? `${appExec}\\resources\\clink\\clink_${process.arch}.exe`
+          : `${appPath}\\app\\utils\\clink\\clink_${process.arch}.exe`,
+        'inject',
+      ],
+    },
   },
   {
-    title: 'Cygwin',
-    shell: join(getRegistryPath('Cygwin\\setup', 'rootdir'), 'bin', 'bash.exe'),
-    args: ['--login', '-i'],
+    id: '2',
+    name: 'Cygwin',
+    group: 'System',
+    options: {
+      shell: `${getRegistryPath('Cygwin\\setup', 'rootdir')}\\bin\\bash.exe`,
+      args: ['--login', '-i'],
+    },
   },
   {
-    title: 'Git Bash',
-    shell: join(
-      getRegistryPath('GitForWindows', 'InstallPath'),
-      'bin',
-      'bash.exe',
-    ),
-    args: ['--login', '-i'],
+    id: '3',
+    name: 'Git Bash',
+    group: 'System',
+    options: {
+      shell: `${getRegistryPath(
+        'GitForWindows',
+        'InstallPath',
+      )}\\bin\\bash.exe`,
+      args: ['--login', '-i'],
+    },
   },
   {
-    title: `MSYS2`,
-    shell: join('C:\\Windows', '..', 'msys64', 'msys2_shell.cmd'),
-    args: ['-defterm', '-here', '-no-start'],
+    id: '4',
+    name: `MSYS2`,
+    group: 'System',
+    options: {
+      shell: `C:\\msys64\\msys2_shell.cmd`,
+      args: ['-defterm', '-here', '-no-start'],
+    },
   },
   {
-    title: 'PowerShell',
-    shell: join(
-      'C:\\Windows',
-      'system32\\WindowsPowerShell\\v1.0',
-      'powershell.exe',
-    ),
-    args: [],
+    id: '5',
+    name: 'PowerShell',
+    group: 'System',
+    options: {
+      shell: 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe',
+      args: [],
+    },
   },
   {
-    title: 'WSL',
-    shell: join('C:\\Windows', 'system32', 'wsl.exe'),
-    args: [],
+    id: '6',
+    name: 'WSL',
+    group: 'System',
+    options: {
+      shell: 'C:\\Windows\\system32\\wsl.exe',
+      args: [],
+    },
   },
-].filter(profile => existsSync(profile.shell));
+].filter(({ options }) => existsSync(options.shell)) as unknown as IProfile[];
 
-export const getShellArgs = (shell: string): string[] =>
-  profiles.filter(
-    profile =>
-      profile[Object.keys(profile).find(key => profile[key].includes(shell))!],
-  )[0].args;
+const createProfile = (): IProfile => ({
+  id: uuidv4(),
+  name: '',
+  group: 'Ungrouped',
+  title: false,
+  options: {
+    shell: '',
+    cwd: undefined,
+    env: {},
+    args: [],
+  },
+});
 
-export default profiles;
+const getGroups = (
+  array?: boolean,
+): IProfile[] | Record<string, IProfile[]> => {
+  const groups: Record<string, IProfile[]> = {};
+
+  let { profiles } = getSettings();
+
+  profiles = profiles.concat(systemProfiles);
+
+  profiles.forEach(profile => {
+    let { group } = profile;
+
+    groups[group] = group in groups ? [...groups[group], profile] : [profile];
+  });
+
+  return array ? profiles : groups;
+};
+
+const getProfileByProp = (key: keyof IProfile, value: any): IProfile => {
+  const groups = getGroups(true) as IProfile[];
+
+  const profile = groups
+    .concat(systemProfiles)
+    .filter(profile => profile[key] === value)[0];
+
+  return profile;
+};
+
+export { systemProfiles, createProfile, getGroups, getProfileByProp };

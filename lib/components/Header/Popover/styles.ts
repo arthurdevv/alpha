@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   position: absolute;
@@ -7,12 +7,12 @@ export const Container = styled.div`
   justify-content: center;
 `;
 
-export const Content = styled.span`
+export const Content = styled.span<{ $label: string }>`
   position: fixed;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
   top: calc(2.275rem + 6px);
-  z-index: 1000;
+  z-index: 100;
   opacity: 0;
   line-height: 1rem;
   font-size: 0.75rem;
@@ -24,7 +24,26 @@ export const Content = styled.span`
   border: 1px solid ${({ theme }) => theme.border};
   border-radius: 3px;
   box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
-  transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
+  transition: opacity 0.2s ease 0s;
+
+  ${({ $label }) =>
+    $label === 'Close'
+      ? css`
+          right: 0.5rem;
+        `
+      : $label === 'New Terminal'
+        ? css`
+            padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+            left: 0.5rem;
+
+            &.auto {
+              left: auto !important;
+            }
+          `
+        : $label === 'Settings' &&
+          css`
+            padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+          `}
 `;
 
 export const Keys = styled.div`
@@ -54,14 +73,14 @@ export const Arrow = styled.span`
   width: 0;
   height: 0;
   opacity: 0;
-  z-index: 9999;
+  z-index: 200;
   top: calc(2.275rem - 5px);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 6px solid transparent;
   border-bottom-color: ${({ theme }) => theme.border};
-  transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
+  transition: opacity 0.2s ease 0s;
   -webkit-mask: none !important;
 
   &::before {

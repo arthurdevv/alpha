@@ -9,7 +9,7 @@ const commands: Record<string, Function> = {};
 
 function assignCommand(command: string) {
   commands[command] = (...args: any[]) => {
-    if (command.includes('window')) {
+    if (command.includes('app') || command.includes('window')) {
       window.send(command, ...args);
     } else {
       window.emit(command, ...args);
@@ -56,9 +56,7 @@ const getKeymaps = (initial?: boolean): Record<string, string[]> => {
       'utf-8',
     );
 
-    keymaps = yaml.load(content, {
-      schema: yaml.DEFAULT_SCHEMA,
-    }) as typeof keymaps;
+    keymaps = yaml.load(content) as typeof keymaps;
   } catch (error) {
     console.error(error);
   }
@@ -76,12 +74,7 @@ const getKeymaps = (initial?: boolean): Record<string, string[]> => {
 
 function writeKeymaps(keymaps: Record<string, string[]>) {
   try {
-    const content = yaml
-      .dump(keymaps, {
-        indent: 2,
-        schema: yaml.DEFAULT_SCHEMA,
-      })
-      .replace(/\r\n/g, isWin ? '\r\n' : '\n');
+    const content = yaml.dump(keymaps, { indent: 2 });
 
     writeFileSync(userKeymapsPath, content, 'utf-8');
   } catch (error) {

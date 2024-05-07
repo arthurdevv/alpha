@@ -1,21 +1,21 @@
-import { h } from 'preact';
-import { memo } from 'preact/compat';
-import { useRef, useEffect, useCallback } from 'preact/hooks';
+import { Fragment, h } from 'preact';
+import { memo, useEffect, useRef } from 'preact/compat';
 
 import { clipboard } from '@electron/remote';
 import Terminal, { terms } from 'app/common/terminal';
 import useStore from 'lib/store';
 
-import { Group, Container, Content } from './styles';
+import { Container, Content, Group } from './styles';
 import Viewport from './Viewport';
-import Settings from '../Settings';
+import Settings from './Settings';
+import Watermark from './Watermark';
 
 const Term: React.FC<TermProps> = (props: TermProps) => {
   const terminal = new Terminal(props);
 
   const parent = useRef<HTMLDivElement>();
 
-  const onContextMenu = useCallback(() => {
+  const onContextMenu = () => {
     const term = terms[props.id];
 
     if (term) {
@@ -29,7 +29,7 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
         document.execCommand('paste');
       }
     }
-  }, []);
+  };
 
   useEffect(() => {
     const { current } = parent;
@@ -41,7 +41,7 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     terms[props.id] = terminal.term;
 
     return () => {
-      terms[props.id] = null;
+      delete terms[props.id];
     };
   }, []);
 
@@ -83,28 +83,31 @@ const TermGroup: React.FC = () => {
   } = useStore();
 
   return (
-    <Group role="group">
-      {Object.keys(context).map((id, index) => {
-        const { shell, isDirty } = context[id];
+    <Fragment>
+      <Group role="group">
+        {Object.keys(context).map((id, index) => {
+          const { name, shell, isDirty } = context[id];
 
-        const props: TermProps = {
-          id,
-          isDirty,
-          isCurrent: id === current,
-          onSelect: onSelect.bind(null, id),
-          onTitleChange: onTitleChange.bind(null, id),
-          onResize,
-          options,
-        };
+          const props: TermProps = {
+            id,
+            isDirty,
+            isCurrent: id === current,
+            onSelect: onSelect.bind(null, id),
+            onTitleChange: onTitleChange.bind(null, id, name),
+            onResize,
+            options,
+          };
 
-        return shell ? (
-          <Term {...props} key={index} />
-        ) : (
-          <Settings {...props} key={index} />
-        );
-      })}
-      <Viewport cols={cols} rows={rows} />
-    </Group>
+          return shell ? (
+            <Term {...props} key={index} />
+          ) : (
+            <Settings key={index} />
+          );
+        })}
+        <Viewport cols={cols} rows={rows} />
+      </Group>
+      <Watermark />
+    </Fragment>
   );
 };
 
