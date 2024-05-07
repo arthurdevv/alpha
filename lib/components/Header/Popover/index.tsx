@@ -1,21 +1,26 @@
 import { h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
+import useStore from 'lib/store';
 import handleKeys from './keys';
 
 import { Container, Content, Keys, KeyItem, Arrow } from './styles';
 
-const Popover: React.FC<PopoverProps> = ({ label, style }: PopoverProps) => {
+const Popover: React.FC<PopoverProps> = ({ label, style }) => {
   const [keys, setKeys] = useState<string[]>([]);
 
-  useEffect(() => {
-    handleKeys(label, setKeys);
-  }, []);
+  const { context } = useStore();
+
+  useEffect(() => handleKeys(label, setKeys), []);
 
   return (
     <Container>
       <Arrow />
-      <Content style={style}>
+      <Content
+        $label={label}
+        style={style}
+        className={Object.keys(context).length >= 1 && 'auto'}
+      >
         {label}
         <Keys aria-label={label} hidden={keys.length === 0}>
           {keys.map((key, index) => (

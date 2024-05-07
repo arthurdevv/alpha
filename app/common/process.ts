@@ -1,20 +1,21 @@
-import * as pty from 'node-pty';
 import { homedir } from 'os';
 import { existsSync } from 'fs';
 import { isAbsolute } from 'path';
-import { terms } from './terminal';
+import * as pty from 'node-pty';
 import { appDir } from 'app/settings/constants';
+import { terms } from './terminal';
 
-export const processes: Record<string, pty.IPty | null> = {};
+export const processes: Record<string, IProcessFork> = {};
 
 const defaultOptions: pty.IWindowsPtyForkOptions = {
   name: 'xterm-color',
   cols: 80,
   rows: 30,
   env: Object(process.env),
+  useConpty: true,
 };
 
-const getExistingCWD = (path: string) => {
+const getExistingCWD = (path: string | undefined) => {
   const cwd = process.cwd();
 
   if (path && isAbsolute(path) && existsSync(path)) {
@@ -28,35 +29,33 @@ const getExistingCWD = (path: string) => {
   return homedir();
 };
 
-function createProcess(
-  { shell, args }: IProcessParam,
-  customOptions?: pty.IWindowsPtyForkOptions,
-) {
-  const options = defaultOptions;
-
-  if (customOptions) {
-    Object.keys(customOptions).forEach(key => {
-      const value = customOptions[key];
-
-      options[key] = key === 'cwd' ? getExistingCWD(value) : value;
-    });
-  }
-
-  const process = pty.spawn(shell, args, options);
-
-  process.onData(data => {
-    const id = Object.keys(processes).find(id => processes[id] === process);
-
-    if (id) {
-      const term = terms[id];
-
-      if (term) {
-        term.write(data);
-      }
-    }
+function createProcess({ shell, args, cwd, env }: IProcess) {
+  const options = Object.assign(defaultOptions, {
+    cwd: getExistingCWD(cwd),
+    env: Object.assign(window.process.env, env),
   });
 
-  return { process, shell };
+  try {
+    const process = pty.spawn(shell, args || [], options);
+
+    process.onData(data => {
+      const id = Object.keys(processes).find(
+        id => processes[id].pty === process,
+      );
+
+      if (id) {
+        const term = terms[id];
+
+        if (term) {
+          term.write(data);
+        }
+      }
+    });
+
+    return { pty: process, shell, args };
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export default createProcess;

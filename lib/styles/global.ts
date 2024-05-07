@@ -1,5 +1,5 @@
 import styled, { createGlobalStyle } from 'styled-components';
-import 'xterm/css/xterm.css';
+import '@xterm/xterm/css/xterm.css';
 
 export const Content = styled.div`
   position: relative;
@@ -27,6 +27,7 @@ export default createGlobalStyle`
   body {
     overflow: hidden;
     user-select: none;
+    background-color: transparent;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -37,7 +38,17 @@ export default createGlobalStyle`
     display: flex;
     font: 400 16px 'Inter', sans-serif;
     color: ${({ theme }) => theme.foreground};
-    background: ${({ theme }) => theme.background};
+    background: ${({ theme }) => theme.acrylic};
+  }
+
+  input {
+    font-family: inherit;
+    font-weight: 400;
+    color: ${({ theme }) => theme.foreground};
+    border: none;
+    outline: none;
+    appearance: none;
+    background: transparent;
   }
 
   *::selection {
@@ -46,25 +57,7 @@ export default createGlobalStyle`
   }
 
   *::-webkit-scrollbar {
-    width: 0.25rem;
-    height: 0.25rem;
-  }
-
-  *::-webkit-scrollbar-corner {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.scrollbarThumb};
-    border-radius: 4px;
-
-    &:hover {
-      background: ${({ theme }) => theme.scrollbarHover};
-    }
-  }
-
-  *::-webkit-scrollbar-track {
-    background: transparent;
+    display: none
   }
 
   @font-face {

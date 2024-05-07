@@ -1,9 +1,15 @@
-import { ISearchDecorationOptions } from 'xterm-addon-search';
+import { ISearchDecorationOptions } from '@xterm/addon-search';
+import { getSettings } from 'app/settings';
+
+const { acrylic } = getSettings();
 
 export const theme = {
   foreground: 'rgba(230, 230, 230, 1.0)',
   background: 'rgba(15, 15, 15, 1.0)',
+  acrylic: acrylic ? 'rgba(0, 0, 0, 0.50)' : 'rgba(15, 15, 15, 1.0)',
+  transparent: acrylic ? 'rgba(0, 0, 0, 0.0)' : 'rgba(15, 15, 15, 1.0)',
   border: 'rgba(40, 40, 40, 1.0)',
+  overlay: 'rgba(15, 15, 15, 0.45)',
   divider: 'rgba(230, 230, 230, 0.08)',
   disabled: 'rgba(128, 128, 128, 1.0)',
   cursor: 'rgba(230, 230, 230, 1.0)',

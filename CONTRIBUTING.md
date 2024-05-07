@@ -13,6 +13,7 @@ First, install the necessary tools:
 - [Git](https://git-scm.com/downloads)
 - [pnpm](https://pnpm.io/installation)
 - [Node.js](https://nodejs.org/en/download/releases/) (16.x)
+- [rustup](https://rustup.rs/) (choose the minimal profile)
 
 > **Note: Consider installing the ``Tools for Native Modules`` during Node.js installation.**
 
@@ -42,15 +43,15 @@ pnpm run dev
 pnpm run rebuild-pty
 ```
 
-3. After finishing the application, you can package the binaries:
+3. After finishing the application, you can generate the executable:
 
 ```sh
 pnpm run package
 ```
 
-> **Note: It will generate the binaries in the `release` folder.**
+> **Note: It will generate the executable in the `release` folder.**
 
-4. To make sure that your binaries works, run:
+4. To make sure that your bundles works, run:
 
 ```sh
 npx playwright test

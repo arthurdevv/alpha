@@ -6,16 +6,26 @@ appearance:
   fontSize: 16
   fontFamily: Menlo, Consolas, Lucida Console, monospace
   fontWeight: 400
+  fontWeightBold: 600
   fontLigatures: true
+  drawBoldTextInBrightColors: true
   lineHeight: 1
   letterSpacing: 0
+  minimumContrastRatio: 1
   cursorStyle: block
   cursorBlink: true
 terminal:
+  defaultProfile: Command Prompt
   renderer: dom
   scrollback: 25000
+  scrollOnUserInput: true
   copyOnSelect: true
+  wordSeparator: ()[]{}< >/\|"'.,;
   openOnStart: false
-command-line:
-  cwd: null
-  useConpty: true
+  restoreOnStart: true
+window:
+  acrylic: false
+  opacity: 1
+  alwaysOnTop: false
+  autoHideOnBlur: true
+profiles: []

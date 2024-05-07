@@ -1,44 +1,51 @@
 import type { EventEmitter } from 'events';
-import { FontWeight, ITheme } from 'xterm';
-import { IPty } from 'node-pty';
+import type { IPty } from 'node-pty';
+import type { FontWeight, ITheme } from 'xterm';
 
 declare global {
-  var [isWin, isMac]: boolean[];
-
   interface Window {
-    on: EventEmitter['on'];
-
-    emit: EventEmitter['emit'];
-
-    send: Electron.IpcRenderer['send'];
+    on(eventName: string, listener: (...args: any[]) => void): EventEmitter;
+    emit(eventName: string, ...args: any[]): boolean;
+    send(channel: string, ...args: any[]): void;
   }
 
-  type SettingsTag =
-    | 'application'
-    | 'appearance'
-    | 'keymaps'
-    | 'terminal'
-    | 'command-line';
+  type IRawSettings = Record<Lowercase<Section>, ISettings>;
 
-  type IRawSettings = Record<SettingsTag, ISettings>;
+  type ISettings = IApplicationOptions &
+    ITermOptions &
+    ITerminalOptions &
+    IWindowOptions;
 
-  type ISettings = {
+  type IApplicationOptions = {
     language: string;
     autoUpdates: boolean;
     gpu: boolean;
-    renderer: 'dom' | 'webgl' | 'canvas';
-    copyOnSelect: boolean;
-    openOnStart: boolean;
-    shell: string;
-    cwd: string | undefined;
-    useConpty: boolean;
-  } & ITerminalOptions;
+  };
 
-  type ISettingsKey = {
+  type ITermOptions = {
+    defaultProfile: string;
+    renderer: 'dom' | 'webgl' | 'canvas';
+    scrollback: number;
+    scrollOnUserInput: boolean;
+    copyOnSelect: boolean;
+    wordSeparator: string;
+    openOnStart: boolean;
+    restoreOnStart: boolean;
+    profiles: IProfile[];
+  };
+
+  type IWindowOptions = {
+    acrylic: boolean;
+    opacity: number;
+    alwaysOnTop: boolean;
+    autoHideOnBlur: boolean;
+  };
+
+  type ISettingsOption = {
+    name: string;
     label: string;
-    type: 'input' | 'checkbox' | 'select' | 'button';
-    valueType: 'text' | 'number' | 'boolean' | 'void';
-    description: string;
+    type: 'string' | 'number' | 'boolean';
+    input: 'text' | 'checkbox' | 'select';
     options?: any[];
     range?: {
       min: number;
@@ -52,8 +59,11 @@ declare global {
     fontFamily: string;
     fontWeight: FontWeight;
     fontLigatures: boolean;
+    fontWeightBold: FontWeight;
+    drawBoldTextInBrightColors: boolean;
     lineHeight: number;
     letterSpacing: number;
+    minimumContrastRatio: number;
     cursorStyle: 'block' | 'underline' | 'bar';
     cursorBlink: boolean;
     scrollback: number;
@@ -62,19 +72,20 @@ declare global {
     allowTransparency?: boolean;
   };
 
-  type IProcessParam = {
+  type IProcess = {
     shell: string;
     args: string[];
+    cwd?: string;
+    env: NodeJS.ProcessEnv;
   };
 
-  type IProcessArgs = {
-    process: IPty | null;
-    shell: string | null;
-  };
+  type IProcessFork = { pty: IPty } & Omit<IProcess, 'env'>;
 
   type IProfile = {
-    title: string;
-    shell: string;
-    args: string[];
+    id: string;
+    name: string;
+    group: string;
+    title: boolean;
+    options: IProcess;
   };
 }

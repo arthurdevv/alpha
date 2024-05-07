@@ -6,7 +6,7 @@ export const Container = styled.div<{ $isVisible: boolean }>`
   padding: 0.25rem 0.5rem;
   right: 1rem;
   bottom: 1rem;
-  z-index: 100;
+  z-index: 10;
   opacity: 0;
   font-size: 0.75rem;
   cursor: default;

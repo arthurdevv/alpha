@@ -1,11 +1,11 @@
-import * as xterm from 'xterm';
+import * as xterm from '@xterm/xterm';
 import { clipboard } from '@electron/remote';
 import { getSettings } from 'app/settings';
 import { theme } from 'lib/styles/theme';
 import { processes } from './process';
 import addons from './addons';
 
-export const terms: Record<string, xterm.Terminal | null> = {};
+export const terms: Record<string, xterm.Terminal> = {};
 
 const defaultOptions: xterm.ITerminalOptions = {
   allowProposedApi: true,
@@ -29,14 +29,12 @@ class Terminal {
     this.term.onData(data => {
       const process = processes[props.id];
 
-      if (process) {
-        process.write(data);
-      }
+      process.pty.write(data);
     });
 
-    Object.keys(props).forEach(key => {
-      if (key in this.term && typeof props[key] === 'function') {
-        this.term[key](props[key]);
+    Object.entries(props).forEach(([key, value]) => {
+      if (key in this.term && typeof value === 'function') {
+        this.term[key](value);
       }
     });
 

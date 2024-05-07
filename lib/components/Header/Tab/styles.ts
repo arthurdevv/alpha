@@ -7,18 +7,21 @@ export const Group = styled.div`
   overflow: hidden;
 `;
 
-export const Container = styled.div<{ $isCurrent: boolean }>`
+export const Container = styled.div<{
+  $isCurrent: boolean;
+  $transition: boolean;
+}>`
   position: relative;
   width: 12.5rem;
   padding-right: 1rem;
-  z-index: 1000;
+  z-index: 100;
   cursor: pointer;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${({ theme }) => theme.disabled};
-  transition: all 0.2s ease 0s;
+  transition: color 0.2s ease 0s;
   animation: ${keyframes`
     0% {
       width: 0;
@@ -28,7 +31,7 @@ export const Container = styled.div<{ $isCurrent: boolean }>`
     100% {
       width: 12.5rem;
     }
-  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s forwards;
+  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
 
   &:hover {
     & span:first-of-type {
@@ -53,9 +56,21 @@ export const Container = styled.div<{ $isCurrent: boolean }>`
       cursor: default;
       color: ${({ theme }) => theme.foreground};
     `}
+
+  ${({ $transition }) =>
+    !$transition &&
+    css`
+      width: 0;
+      padding: 0;
+      opacity: 0;
+      transition:
+        color 0.2s ease 0s,
+        width 0.15s linear 0s,
+        opacity 0.2s linear 0s;
+    `}
 `;
 
-export const Label = styled.span`
+export const Title = styled.span`
   margin-left: 1rem;
   font-size: 0.813rem;
   overflow: hidden;
@@ -63,14 +78,14 @@ export const Label = styled.span`
   text-overflow: ellipsis;
 `;
 
-export const CloseButton = styled.div`
+export const Close = styled.div`
   position: absolute;
   width: 1.5rem;
   height: 1.5rem;
   right: 0.375rem;
+  z-index: 10;
   opacity: 0;
   flex: none;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,12 +104,7 @@ export const CloseButton = styled.div`
 
     & div span {
       opacity: 1;
-      transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.55s;
+      transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.6s;
     }
-  }
-
-  &[aria-label] div span:first-of-type {
-    left: auto !important;
-    right: auto !important;
   }
 `;

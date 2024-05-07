@@ -6,16 +6,17 @@ import methods from './methods';
 const initialState: AlphaState = {
   context: {},
   options: {},
-  menu: undefined,
+  profile: undefined,
+  current: undefined,
   cols: undefined,
   rows: undefined,
-  current: undefined,
+  modal: undefined,
 };
 
-const useStore = create<AlphaStore>((set, getState) => ({
+const useStore = create<AlphaStore>((set, getStore) => ({
   ...initialState,
   ...actions(set),
-  ...methods(set, getState),
+  ...methods(set, getStore),
 }));
 
 export default useStore;

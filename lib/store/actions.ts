@@ -2,16 +2,19 @@ import { v4 as uuidv4 } from 'uuid';
 import { processes } from 'app/common/process';
 
 export default (set: AlphaSet) => ({
-  createTab({ process, shell }: IProcessArgs, term = true) {
+  createTab(process: IProcessFork | null, title?: string | undefined) {
     set(state => {
-      const id = term ? uuidv4() : 'Settings';
+      const id = title !== 'Settings' ? uuidv4() : title;
 
-      processes[id] = process || null;
+      if (process) {
+        processes[id] = process;
+      }
 
       return state
-        .setIn([id], {
-          title: term ? 'Terminal' : id,
-          shell: shell ? shell.split('\\').pop() : null,
+        .setIn([id], <ITerminal>{
+          name: title,
+          title,
+          shell: process ? process.shell : null,
           isDirty: true,
         })
         .set('current', id);
@@ -26,19 +29,13 @@ export default (set: AlphaSet) => ({
     set(() => ({ cols, rows }));
   },
 
-  onTitleChange(id: string, title: string) {
-    set(state => state.setIn([id, 'title'], title.trim()));
+  onTitleChange(id: string, name: string | undefined, title: string) {
+    set(state => (name ? state : state.setIn([id, 'title'], title.trim())));
   },
 
   onClose(id: string) {
     set(state => {
       let { context, current } = state;
-
-      const process = processes[id];
-
-      if (process) {
-        process.kill();
-      }
 
       const tabs = Object.keys(context);
 
@@ -59,8 +56,6 @@ export default (set: AlphaSet) => ({
           state.set('current', current);
         }, 10);
       }
-
-      processes[id] = null;
 
       delete context[id];
 
@@ -110,7 +105,26 @@ export default (set: AlphaSet) => ({
     set(() => ({ options }));
   },
 
-  setMenu(menu: string | undefined) {
-    set(() => ({ menu }));
+  setModal(modal: string | undefined) {
+    set(() => ({ modal }));
+  },
+
+  setProfile(profile: IProfile | undefined) {
+    set(() => ({ profile }));
+  },
+
+  updateProfile(key: string, value: any) {
+    set(state => {
+      const { profile } = state;
+
+      if (profile) {
+        const { title, options } = profile;
+
+        (key in options ? profile.options : profile)[key] =
+          key === 'title' ? !title : value;
+      }
+
+      return state.set('profile', profile);
+    });
   },
 });

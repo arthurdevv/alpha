@@ -1,19 +1,21 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { initialize, enable } from '@electron/remote/main';
 import { resolve } from 'path';
-import { getSettings } from 'app/settings';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { enable, initialize } from '@electron/remote/main';
+import { applyEffect, setup as setupEffect } from '@pyke/vibe';
 import installCLI from 'cli/install';
+import { getSettings } from 'app/settings';
+import { getBounds } from './bounds';
 import checkForUpdates from './updater';
 
 initialize();
 
-const { gpu, autoUpdates } = getSettings();
-
 let mainWindow: Electron.BrowserWindow | null;
 
-const isDev = process.env.NODE_ENV === 'development';
+const { gpu, autoUpdates, acrylic } = getSettings();
 
 function createWindow(): void {
+  const bounds = getBounds();
+
   mainWindow = new BrowserWindow({
     width: 1050,
     height: 560,
@@ -23,17 +25,21 @@ function createWindow(): void {
     title: 'Alpha',
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
+    backgroundColor: '#00000000',
     webPreferences: {
       preload: resolve(__dirname, 'app/window', 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
+    ...bounds,
   });
 
   enable(mainWindow.webContents);
 
   mainWindow.loadURL(
-    isDev ? 'http://localhost:4000' : `file://${__dirname}/index.html`,
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:4000'
+      : `file://${__dirname}/index.html`,
   );
 
   mainWindow.on('ready-to-show', () => {
@@ -50,6 +56,20 @@ function createWindow(): void {
     mainWindow = null;
   });
 
+  mainWindow.on('blur', () => {
+    if (mainWindow) {
+      const { autoHideOnBlur } = getSettings();
+
+      const unfocused = !mainWindow.isFocused();
+
+      if (unfocused) {
+        mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
+      }
+    }
+  });
+
+  ipcMain.on('window:create', createWindow);
+
   ipcMain.on('window:devtools', () => {
     if (mainWindow) {
       const { webContents } = mainWindow;
@@ -62,8 +82,38 @@ function createWindow(): void {
     }
   });
 
+  ipcMain.on('window:set-title', (_, title) => {
+    if (mainWindow) {
+      mainWindow.setTitle(title);
+    }
+  });
+
+  ipcMain.on('window:opacity', () => {
+    if (mainWindow) {
+      const { opacity } = getSettings();
+
+      mainWindow.setOpacity(opacity);
+    }
+  });
+
+  ipcMain.on('window:always-on-top', () => {
+    if (mainWindow) {
+      const { alwaysOnTop } = getSettings();
+
+      mainWindow.setAlwaysOnTop(alwaysOnTop);
+    }
+  });
+
   if (autoUpdates) checkForUpdates(mainWindow);
+
+  if (acrylic) {
+    setupEffect(app);
+
+    applyEffect(mainWindow, 'unified-acrylic');
+  }
 }
+
+Menu.setApplicationMenu(null);
 
 if (!gpu) {
   app.disableHardwareAcceleration();

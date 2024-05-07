@@ -1,49 +1,47 @@
-import createProcess from 'app/common/process';
+import { resolve } from 'path';
+import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
+import createProcess, { processes } from 'app/common/process';
 import { terms } from 'app/common/terminal';
 import { getSettings } from 'app/settings';
-import { getShellArgs } from 'app/common/profiles';
-import { mousetrap, getKeymaps, execCommand } from 'app/keymaps';
-import { userPath, userKeymapsPath, appDir } from 'app/settings/constants';
-import listeners, { getWatcher } from 'app/settings/listeners';
-import defaultShell from 'app/utils/default-shell';
+import { getProfileByProp } from 'app/common/profiles';
+import { execCommand, getKeymaps, mousetrap } from 'app/keymaps';
+import { appDir } from 'app/settings/constants';
+import listeners from 'app/settings/listeners';
+import storage from 'app/utils/local-storage';
 
-export default ({ getState, setMenu }: AlphaStore) => {
-  const store = getState();
+export default ({ getStore, setModal }: AlphaStore) => {
+  const store = getStore();
 
-  window.on('terminal:create', (profile: IProfile) => {
-    const { shell, cwd, useConpty } = getSettings();
+  window.on('terminal:create', (profile?: IProfile) => {
+    const { defaultProfile } = getSettings();
 
-    const process = createProcess(
-      profile || {
-        shell: shell || defaultShell,
-        args: getShellArgs(shell),
-      },
-      {
-        cwd,
-        useConpty,
-      },
-    );
+    const { name, title, options } =
+      profile || getProfileByProp('name', defaultProfile);
 
-    store.createTab(process);
+    const process = createProcess(options);
+
+    if (process) store.createTab(process, title ? name : undefined);
   });
 
   window.on('terminal:close', () => {
-    const { current } = getState();
+    const { current } = getStore();
 
     if (current) {
+      const process = processes[current];
+
+      process.pty.kill();
+
       store.onClose(current);
     }
   });
 
   window.on('terminal:focus', () => {
-    const { current } = getState();
+    const { current } = getStore();
 
     if (current) {
       const term = terms[current];
 
-      if (term) {
-        term.focus();
-      }
+      if (term) term.focus();
     }
   });
 
@@ -52,37 +50,49 @@ export default ({ getState, setMenu }: AlphaStore) => {
   });
 
   window.on('terminal:settings', () => {
-    store.createTab(
-      {
-        process: null,
-        shell: null,
-      },
-      false,
-    );
+    store.createTab(null, 'Settings');
+
+    setModal(undefined);
   });
 
   window.on('terminal:search', () => {
-    const { context } = getState();
+    const { context, current } = getStore();
 
-    if (Object.keys(context).length >= 1) {
-      setMenu('Search');
+    if (Object.keys(context).length >= 1 && current !== 'Settings') {
+      setModal('Search');
     }
+  });
+
+  window.on('terminal:debug', () => {
+    setModal('Debug');
   });
 
   window.on('terminal:commands', () => {
-    setMenu('Commands');
+    setModal('Commands');
   });
 
-  window.on('terminal:profiles', () => {
-    const { menu } = getState();
+  window.on('terminal:profiles', (click?: boolean) => {
+    const { modal } = getStore();
 
-    if (menu !== 'Profiles') {
-      setTimeout(() => {
-        setMenu('Profiles');
-      }, 100);
-    } else {
-      setMenu('Profiles');
+    if (click) {
+      return setModal('Profiles');
     }
+
+    if (modal !== 'Profiles') {
+      setTimeout(() => setModal('Profiles'), 100);
+    }
+  });
+
+  window.on('terminal:save', () => {
+    Object.entries(processes).forEach(([id, { pty }]) => {
+      const cwd = getWorkingDirectoryFromPID(pty.pid);
+
+      if (cwd) {
+        processes[id].cwd = resolve(cwd);
+      }
+    });
+
+    storage.updateItem('recovery', processes);
   });
 
   window.on('tab:next', () => {
@@ -97,35 +107,45 @@ export default ({ getState, setMenu }: AlphaStore) => {
     store.moveTo(0, index);
   });
 
-  listeners
-    .subscribe('options', () => {
-      store.setOptions(getSettings());
-    })
-    .watch(getWatcher(userPath), 'options');
+  listeners.subscribe('options', () => {
+    store.setOptions(getSettings());
 
-  listeners
-    .subscribe('keymaps', () => {
-      const keymaps = getKeymaps();
+    ['opacity', 'always-on-top'].forEach(event => {
+      window.send(`window:${event}`);
+    });
+  });
 
-      mousetrap.reset().stopCallback = () => false;
+  listeners.subscribe('keymaps', () => {
+    const keymaps = getKeymaps();
 
-      Object.keys(keymaps).forEach(command => {
-        const keys = keymaps[command][0];
+    mousetrap.reset().stopCallback = () => false;
 
-        mousetrap.bind(
-          keys,
-          event => {
-            event.preventDefault();
+    Object.keys(keymaps).forEach(command => {
+      const keys = keymaps[command][0];
 
-            execCommand(command);
-          },
-          'keydown',
-        );
-      });
-    })
-    .watch(getWatcher(userKeymapsPath), 'keymaps');
+      mousetrap.bind(
+        keys,
+        event => {
+          event.preventDefault();
 
-  const { openOnStart } = getSettings();
+          execCommand(command);
+        },
+        'keydown',
+      );
+    });
+  });
+
+  const { openOnStart, restoreOnStart } = getSettings();
+
+  if (restoreOnStart) {
+    const recovery = storage.parseItem('recovery');
+
+    Object.entries(recovery).forEach(([, options]) => {
+      const process = createProcess(options as IProcess);
+
+      if (process) store.createTab(process);
+    });
+  }
 
   if (openOnStart || process.env.ALPHA_CLI || process.cwd() !== appDir) {
     setTimeout(() => execCommand('terminal:create'), 3700);

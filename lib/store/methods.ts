@@ -1,4 +1,4 @@
-export default (set: AlphaSet, getState: () => AlphaStore) => ({
+export default (set: AlphaSet, getStore: () => AlphaStore) => ({
   set<K extends keyof AlphaState>(
     property: K,
     value: AlphaState[K],
@@ -13,16 +13,14 @@ export default (set: AlphaSet, getState: () => AlphaStore) => ({
       return state;
     });
 
-    return getState();
+    return getStore();
   },
 
   setIn<I extends string, K extends keyof ITerminal>(
     props: [I, K?],
     value: any,
   ): AlphaStore {
-    const id = props[0];
-
-    const key = props[1];
+    const [id, key] = props;
 
     set(state => {
       const { context } = state;
@@ -36,8 +34,8 @@ export default (set: AlphaSet, getState: () => AlphaStore) => ({
       return { context };
     });
 
-    return getState();
+    return getStore();
   },
 
-  getState,
+  getStore,
 });
