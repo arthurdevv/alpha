@@ -1,11 +1,12 @@
 import styled, { keyframes } from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.header`
   width: 100%;
   height: 2.375rem;
   z-index: 100;
   display: flex;
   opacity: 0;
+  pointer-events: none;
   animation: ${keyframes`
     0% {
       opacity: 0;
@@ -13,6 +14,7 @@ export const Container = styled.div`
 
     100% {
       opacity: 1;
+      pointer-events: all;
     }
   `} 1s ease 3s forwards;
 `;
@@ -43,13 +45,13 @@ export const ActionItem = styled.div`
   justify-content: center;
 
   & svg {
-    color: ${({ theme }) => theme.disabled};
+    color: ${props => props.theme.disabled};
     transition: color 0.2s ease 0s;
   }
 
   &:hover {
     & svg {
-      color: ${({ theme }) => theme.foreground};
+      color: ${props => props.theme.foreground};
     }
 
     & div span {

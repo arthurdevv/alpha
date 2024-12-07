@@ -1,36 +1,30 @@
 import * as xterm from '@xterm/xterm';
 import { clipboard } from '@electron/remote';
 import { getSettings } from 'app/settings';
+import { execCommand } from 'app/keymaps/commands';
+import Addons from 'app/common/addons';
 import { theme } from 'lib/styles/theme';
-import { processes } from './process';
-import addons from './addons';
 
-export const terms: Record<string, xterm.Terminal> = {};
+export const terms: Record<string, Terminal | null> = {};
 
 const defaultOptions: xterm.ITerminalOptions = {
+  overviewRulerWidth: 20,
   allowProposedApi: true,
   allowTransparency: true,
   theme,
 };
 
-const customKeys = {
-  tab: ['Tab', '3', '4', '5', '6', '7', '8'],
-  window: ['Alt', 'F4', 'F11'],
-};
-
 class Terminal {
   term: xterm.Terminal;
 
-  constructor(private props: TermProps) {
+  addons: Addons;
+
+  constructor(props: TermProps) {
     const options = Object.assign(props.options, defaultOptions);
 
     this.term = new xterm.Terminal(options);
 
-    this.term.onData(data => {
-      const process = processes[props.id];
-
-      process.pty.write(data);
-    });
+    this.addons = new Addons(props.id, options);
 
     Object.entries(props).forEach(([key, value]) => {
       if (key in this.term && typeof value === 'function') {
@@ -38,53 +32,89 @@ class Terminal {
       }
     });
 
-    this.term.attachCustomKeyEventHandler(({ key, ctrlKey }) => {
-      const { tab, window } = customKeys;
+    this.term.attachCustomKeyEventHandler(({ key, ctrlKey, altKey }) => {
+      const [tab, pane, window] = [
+        ['Tab', '3', '4', '5', '6', '7', '8', 'w', 'W'],
+        ['Shift', 'ArrowLeft', 'ArrowRight', 'Enter', 'b', 'B'],
+        ['Alt', 'F4', 'F11'],
+      ];
 
-      return !((ctrlKey && tab.includes(key)) || window.includes(key));
+      return !(
+        (ctrlKey && tab.includes(key)) ||
+        (ctrlKey && altKey && pane.includes(key)) ||
+        window.includes(key)
+      );
     });
 
     this.term.onSelectionChange(() => {
-      if (this.props.options['copyOnSelect']) {
-        const selection = this.term.getSelection();
+      const { copyOnSelect } = getSettings();
 
-        if (selection) {
-          clipboard.writeText(selection, 'selection');
-        }
-      }
+      if (copyOnSelect) this.copy();
     });
+
+    terms[props.id] = this;
   }
 
   open(parent: HTMLElement): void {
     this.term.open(parent);
 
-    Object.keys(addons).forEach(key => {
-      const value = addons[key];
-
-      if (key === 'options') {
-        const { renderer, fontLigatures } = getSettings();
-
-        if (renderer !== 'dom') {
-          this.term.loadAddon(value[renderer]);
-        }
-
-        if (fontLigatures) {
-          this.term.loadAddon(value['fontLigatures']);
-        }
-      } else {
-        this.term.loadAddon(value);
-      }
+    Object.keys(this.addons).forEach(key => {
+      this.term.loadAddon(this.addons[key]);
     });
 
-    const observer = new ResizeObserver(() => {
-      addons.FitAddon.fit();
+    this.term.unicode.activeVersion = '11';
+  }
 
-      const { cols, rows } = this.term;
+  write(data: string): void {
+    this.term.write(data);
+  }
 
-      this.props.onResize(cols, rows);
-    });
+  focus(): void {
+    this.term.focus();
+  }
 
-    observer.observe(parent, { box: 'border-box' });
+  clear(): void {
+    this.term.clear();
+  }
+
+  fit(): void {
+    this.addons.fit();
+  }
+
+  copy(): void {
+    const selection = this.term.getSelection();
+
+    const { trimSelection } = getSettings();
+
+    clipboard.writeText(trimSelection ? selection.trim() : selection);
+  }
+
+  paste(): void {
+    const text = clipboard.readText();
+
+    if (/\n/.test(text)) {
+      execCommand('app:modal', 'Warning');
+    } else {
+      this.term.paste(text);
+    }
+  }
+
+  selectAll(): void {
+    this.term.selectAll();
+  }
+
+  hasSelection(): boolean {
+    return this.term.hasSelection();
+  }
+
+  handleClipboard(): void {
+    const hasSelection = this.hasSelection();
+
+    hasSelection ? this.copy() : this.paste();
+  }
+
+  setOptions(options: Partial<ISettings>): void {
+    this.term.options = options;
   }
 }
 

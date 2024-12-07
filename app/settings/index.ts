@@ -1,12 +1,16 @@
 import yaml from 'js-yaml';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { userPath, defaultPath } from './constants';
+import { isEqual } from 'lodash';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { settingsPath, userSettingsPath } from './constants';
 
 function loadSettings(initial?: boolean): IRawSettings {
   let settings = <IRawSettings>{};
 
   try {
-    const content = readFileSync(initial ? defaultPath : userPath, 'utf-8');
+    const content = readFileSync(
+      initial ? settingsPath : userSettingsPath,
+      'utf-8',
+    );
 
     settings = yaml.load(content) as typeof settings;
   } catch (error) {
@@ -20,13 +24,13 @@ function writeSettings(settings: IRawSettings): void {
   try {
     const content = yaml.dump(settings, { indent: 2 });
 
-    writeFileSync(userPath, content, 'utf-8');
+    writeFileSync(userSettingsPath, content, 'utf-8');
   } catch (error) {
     console.log(error);
   }
 }
 
-const getSettings = (initial?: boolean): ISettings => {
+function getSettings(initial?: boolean): ISettings {
   const content = loadSettings(initial);
 
   const settings = <ISettings>{};
@@ -42,13 +46,9 @@ const getSettings = (initial?: boolean): ISettings => {
   });
 
   return settings;
-};
+}
 
-const setSettings = (
-  key: keyof ISettings,
-  value: any,
-  callback?: Function,
-): void => {
+function setSettings(key: keyof ISettings, value: any, callback?: Function) {
   const settings = loadSettings();
 
   if (key in settings) {
@@ -64,14 +64,35 @@ const setSettings = (
   writeSettings(settings);
 
   callback && callback();
-};
+}
 
-const hasSettingsFile = existsSync(userPath);
+function mergeSettings(current: IRawSettings, initial: IRawSettings) {
+  const result = <IRawSettings>{ ...current };
 
-if (!hasSettingsFile) {
-  const initialSettings = loadSettings(true);
+  Object.keys(initial).forEach(key => {
+    const hasProperty = Object.prototype.hasOwnProperty.call(current, key);
 
-  writeSettings(initialSettings);
+    if (!hasProperty || current[key] === undefined) {
+      result[key] = initial[key];
+    } else if (
+      typeof current[key] === 'object' &&
+      !Array.isArray(current[key])
+    ) {
+      result[key] = mergeSettings(current[key], initial[key]);
+    }
+  });
+
+  return result;
+}
+
+if (!existsSync(userSettingsPath)) {
+  writeSettings(loadSettings(true));
+} else {
+  const [initial, current] = [loadSettings(true), loadSettings()];
+
+  const mergedSettings = mergeSettings(current, initial);
+
+  if (!isEqual(current, mergedSettings)) writeSettings(mergedSettings);
 }
 
 export { getSettings, setSettings };

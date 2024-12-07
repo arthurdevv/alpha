@@ -20,7 +20,14 @@
       "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
       "react-dom": ["./node_modules/preact/compat/"]
     },
-    "typeRoots": ["node_modules/@types", "app/*.d.ts", "lib/*.d.ts"]
+    "typeRoots": ["node_modules/@types", "typings/*.d.ts"]
   },
-  "include": ["app/**/*", "lib/**/*", "cli/**/*", "test/**/*"]
+  "include": [
+    "app/**/*",
+    "lib/**/*",
+    "cli/**/*",
+    "test/**/*",
+    "shared/**/*",
+    "typings/**/*"
+  ]
 }

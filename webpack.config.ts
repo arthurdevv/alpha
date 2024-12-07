@@ -6,18 +6,26 @@ import { DefinePlugin, IgnorePlugin, ProvidePlugin } from 'webpack';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const externals = {};
+const alias = {
+  app: path.resolve(__dirname, 'app/'),
+  lib: path.resolve(__dirname, 'lib/'),
+  cli: path.resolve(__dirname, 'cli/'),
+  shared: path.resolve(__dirname, 'shared/'),
+};
 
 const deps = [
   'node-pty',
   'native-reg',
   'native-process-working-directory',
-  '@pyke/vibe'
+  'glasstron'
 ];
+
+const externals = {};
 
 deps.forEach(dep => {
   externals[dep] = `commonjs ${dep}`;
 });
+
 
 const config = [
   {
@@ -27,10 +35,7 @@ const config = [
     mode: process.env.NODE_ENV,
     entry: path.resolve(__dirname, 'app/window', 'index.ts'),
     resolve: {
-      alias: {
-        app: path.resolve(__dirname, 'app/'),
-        cli: path.resolve(__dirname, 'cli/'),
-      },
+      alias,
       extensions: ['.ts', '.tsx', '.js', '.json'],
     },
     module: {
@@ -90,8 +95,7 @@ const config = [
     entry: path.resolve(__dirname, 'lib', 'index.tsx'),
     resolve: {
       alias: {
-        app: path.resolve(__dirname, 'app/'),
-        lib: path.resolve(__dirname, 'lib/'),
+        ...alias,
         react: 'preact/compat',
         'react-dom/test-utils': 'preact/test-utils',
         'react-dom': 'preact/compat',
@@ -132,7 +136,7 @@ const config = [
           resourceRegExp: /^fsevents$/,
         }),
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'app', 'index.html'),
+        template: path.resolve(__dirname, 'app/window', 'index.html'),
       }),
       new ProvidePlugin({
         h: ['preact', 'h'],

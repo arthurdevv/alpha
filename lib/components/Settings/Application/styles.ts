@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
+  margin-top: 3.125rem;
   margin-bottom: 2rem;
   flex: 0 0 auto;
   display: flex;
@@ -20,8 +21,7 @@ export const Logo = styled.div`
     position: relative;
     width: 3rem;
     height: 3rem;
-    z-index: 10;
-    background: ${({ theme }) => theme.background};
+    background: ${props => props.theme.transparent};
   }
 `;
 
@@ -37,7 +37,13 @@ export const Version = styled.div`
   right: -2.5rem;
   bottom: 1.5rem;
   font-size: 0.8125rem;
-  color: ${({ theme }) => theme.disabled};
+  cursor: pointer;
+  color: ${props => props.theme.disabled};
+  transition: color 0.2s ease 0s;
+
+  &:hover {
+    color: ${props => props.theme.foreground};
+  }
 `;
 
 export const CheckForUpdates = styled.div`

@@ -15,17 +15,22 @@ appearance:
   cursorStyle: block
   cursorBlink: true
 terminal:
-  defaultProfile: Command Prompt
-  renderer: dom
+  defaultProfile: cmd
+  renderer: default
   scrollback: 25000
   scrollOnUserInput: true
+  focusOnHover: false
+  rightClick: contextmenu
+  linkHandlerKey: ctrl
+  preserveCWD: true
   copyOnSelect: true
-  wordSeparator: ()[]{}< >/\|"'.,;
+  trimSelection: true
+  wordSeparators: ()[]{}< >/\|"'.,;
   openOnStart: false
   restoreOnStart: true
 window:
   acrylic: false
   opacity: 1
   alwaysOnTop: false
-  autoHideOnBlur: true
+  autoHideOnBlur: false
 profiles: []

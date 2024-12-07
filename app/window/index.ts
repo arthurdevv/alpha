@@ -1,22 +1,18 @@
-import { resolve } from 'path';
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import { enable, initialize } from '@electron/remote/main';
-import { applyEffect, setup as setupEffect } from '@pyke/vibe';
-import installCLI from 'cli/install';
+import * as glasstron from 'glasstron';
 import { getSettings } from 'app/settings';
-import { getBounds } from './bounds';
-import checkForUpdates from './updater';
+import checkForUpdates from 'app/updater';
+import invokeEvents from 'app/events';
+import installCLI from 'cli/install';
+import { getBounds, saveBounds } from './bounds';
 
 initialize();
 
-let mainWindow: Electron.BrowserWindow | null;
-
 const { gpu, autoUpdates, acrylic } = getSettings();
 
-function createWindow(): void {
-  const bounds = getBounds();
-
-  mainWindow = new BrowserWindow({
+export function createWindow(): void {
+  const mainWindow = new glasstron.BrowserWindow({
     width: 1050,
     height: 560,
     minWidth: 400,
@@ -26,12 +22,12 @@ function createWindow(): void {
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     backgroundColor: '#00000000',
+    blurType: 'acrylic',
     webPreferences: {
-      preload: resolve(__dirname, 'app/window', 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
     },
-    ...bounds,
+    ...getBounds(),
   });
 
   enable(mainWindow.webContents);
@@ -43,74 +39,28 @@ function createWindow(): void {
   );
 
   mainWindow.on('ready-to-show', () => {
-    if (mainWindow) {
-      mainWindow.show();
-    }
+    mainWindow.show();
   });
 
-  mainWindow.on('closed', () => {
-    if (mainWindow) {
-      mainWindow.destroy();
-    }
+  mainWindow.on('close', () => {
+    saveBounds(mainWindow.getBounds());
 
-    mainWindow = null;
+    mainWindow.close();
   });
 
   mainWindow.on('blur', () => {
-    if (mainWindow) {
-      const { autoHideOnBlur } = getSettings();
+    const { alwaysOnTop, autoHideOnBlur } = getSettings();
 
-      const unfocused = !mainWindow.isFocused();
-
-      if (unfocused) {
-        mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
-      }
+    if (!alwaysOnTop && !mainWindow.isFocused()) {
+      mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
     }
   });
 
-  ipcMain.on('window:create', createWindow);
-
-  ipcMain.on('window:devtools', () => {
-    if (mainWindow) {
-      const { webContents } = mainWindow;
-
-      if (webContents.isDevToolsOpened()) {
-        webContents.closeDevTools();
-      } else {
-        webContents.openDevTools();
-      }
-    }
-  });
-
-  ipcMain.on('window:set-title', (_, title) => {
-    if (mainWindow) {
-      mainWindow.setTitle(title);
-    }
-  });
-
-  ipcMain.on('window:opacity', () => {
-    if (mainWindow) {
-      const { opacity } = getSettings();
-
-      mainWindow.setOpacity(opacity);
-    }
-  });
-
-  ipcMain.on('window:always-on-top', () => {
-    if (mainWindow) {
-      const { alwaysOnTop } = getSettings();
-
-      mainWindow.setAlwaysOnTop(alwaysOnTop);
-    }
-  });
+  if (acrylic) mainWindow.setBlur(acrylic);
 
   if (autoUpdates) checkForUpdates(mainWindow);
 
-  if (acrylic) {
-    setupEffect(app);
-
-    applyEffect(mainWindow, 'unified-acrylic');
-  }
+  invokeEvents(mainWindow);
 }
 
 Menu.setApplicationMenu(null);
@@ -128,7 +78,7 @@ app.whenReady().then(() => {
     }
   });
 
-  installCLI();
+  if (app.isPackaged) installCLI();
 });
 
 app.on('window-all-closed', () => {
@@ -137,6 +87,4 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.allowRendererProcessReuse = false;
-
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+app.commandLine.appendSwitch('disable-features', 'WidgetLayering');

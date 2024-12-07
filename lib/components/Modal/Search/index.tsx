@@ -1,41 +1,56 @@
 import { h } from 'preact';
 import { memo, useEffect, useRef, useState } from 'preact/compat';
 
-import { findResult, clearResult, onChangeResult } from 'app/common/addons';
+import { clearResult, findResult, onChangeResults } from 'app/common/addons';
 import storage from 'app/utils/local-storage';
 
-import { SearchInput } from '../styles';
 import {
-  Container,
-  Content,
-  Count,
-  Controls,
-  Control,
-  Label,
-  Arrow,
-} from './styles';
-import {
-  ArrowUpIcon,
   ArrowDownIcon,
+  ArrowUpIcon,
   CaseSensitivyIcon,
+  CloseMenuIcon,
   RegexIcon,
   WholeWordIcon,
-  CloseMenuIcon,
 } from 'lib/components/Icons';
+import {
+  Arrow,
+  Container,
+  Content,
+  Control,
+  Controls,
+  Count,
+  Label,
+} from './styles';
+import { SearchInput } from '../styles';
 
-const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
-  const [result, setResult] = useState<any>();
+const schema = {
+  caseSensitive: {
+    label: 'Case Sensitive',
+    icon: <CaseSensitivyIcon />,
+  },
+  wholeWord: {
+    label: 'Whole Word',
+    icon: <WholeWordIcon />,
+  },
+  regex: {
+    label: 'Regular Expression',
+    icon: <RegexIcon />,
+  },
+};
+
+const Search: React.FC<SearchProps> = (props: SearchProps) => {
+  const [result, setResult] = useState<string>('');
 
   const [count, setCount] = useState<number[]>([0, 0]);
 
-  const input = useRef<HTMLInputElement>();
+  const input = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = ({ currentTarget }) => {
     const { value } = currentTarget;
 
     setResult(value);
 
-    findResult('findNext', value);
+    findResult(global.id!, value, 'findNext');
   };
 
   const handleControl = ({ currentTarget }) => {
@@ -49,6 +64,8 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
   };
 
   const handleFocus = ({ currentTarget }, focused: boolean) => {
+    if (!props.isVisible) return;
+
     const { classList } = currentTarget;
 
     classList[focused ? 'add' : 'remove']('focused');
@@ -59,45 +76,30 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
   };
 
   useEffect(() => {
-    const { dispose } = onChangeResult(setCount);
+    const { dispose } = onChangeResults(global.id!, setCount);
 
     storage.createItem('controls');
 
     const { current } = input;
 
     if (current) {
-      current.focus();
+      setTimeout(() => current.focus(), 100);
     }
 
     return () => {
-      clearResult();
+      clearResult(global.id!);
 
       dispose();
     };
-  }, [isVisible]);
-
-  const schema = {
-    caseSensitive: {
-      label: 'Case Sensitive',
-      icon: <CaseSensitivyIcon />,
-    },
-    regex: {
-      label: 'Regular Expression',
-      icon: <RegexIcon />,
-    },
-    wholeWord: {
-      label: 'Whole Word',
-      icon: <WholeWordIcon />,
-    },
-  };
+  }, [props.isVisible]);
 
   return (
     <Container
       className="focused"
-      $isVisible={isVisible}
-      onClick={(event: any) => handleFocus(event, true)}
-      onMouseEnter={(event: any) => handleFocus(event, true)}
-      onMouseLeave={(event: any) => handleFocus(event, false)}
+      $isVisible={props.isVisible}
+      onClick={(event: MouseEvent) => handleFocus(event, true)}
+      onMouseEnter={(event: MouseEvent) => handleFocus(event, true)}
+      onMouseLeave={(event: MouseEvent) => handleFocus(event, false)}
     >
       <Content>
         <SearchInput placeholder="Search" onChange={handleSearch} ref={input} />
@@ -105,7 +107,7 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
           <Count>{count.join('/')}</Count>
           <Control
             aria-label="up"
-            onClick={() => findResult('findPrevious', result)}
+            onClick={() => findResult(global.id!, result, 'findPrevious')}
           >
             <ArrowUpIcon />
             <Label>
@@ -115,7 +117,7 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
           </Control>
           <Control
             aria-label="down"
-            onClick={() => findResult('findNext', result)}
+            onClick={() => findResult(global.id!, result, 'findNext')}
           >
             <ArrowDownIcon />
             <Label>
@@ -132,7 +134,7 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
               <Control
                 key={index}
                 aria-label={control}
-                className={controls[control] && 'actived'}
+                className={controls[control] ? 'actived' : undefined}
                 onClick={handleControl}
               >
                 {icon}
@@ -143,7 +145,7 @@ const Search: React.FC<SearchProps> = ({ isVisible, onClose }) => {
               </Control>
             );
           })}
-          <Control onClick={onClose}>
+          <Control onClick={props.handleModal}>
             <CloseMenuIcon />
           </Control>
         </Controls>

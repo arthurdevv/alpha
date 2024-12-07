@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/77799470/232949538-fb2dcd34-e051-4516-8c74-96fecbb7d6b6.png" alt="Alpha">
+  <img src="https://github.com/user-attachments/assets/e2958989-0579-404b-a707-1c5281936c1d" alt="Alpha">
 </p>
 
 <p align="center">
-  A rapid and elegant open-source terminal built with web technologies
+  A rapid and modern open-source terminal built with web technologies
 </p>
 
 <div align="center">
@@ -30,11 +30,14 @@ Alpha will **automatically** update when a new release is available.
 
 ## Features
 
-- Shell profiles
+- Custom profiles
 - Font ligatures
 - Unicode support
+- Split panes
+- Session recovery
+- Acrylic background
 - Clink integration for Windows
-- Supports CMD, PowerShell, Git-Bash, WSL, Cygwin
+- Supports CMD, PowerShell, Git-Bash, WSL, and Cygwin
 
 ## Contributing
 

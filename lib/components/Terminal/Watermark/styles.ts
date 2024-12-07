@@ -1,18 +1,28 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
-export const Container = styled.div`
-  position: absolute;
+export const Container = styled.div<{ $hidden: boolean }>`
+  position: fixed;
   width: 100%;
   height: 100%;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  transition: opacity 0.2s ease 0s;
+  transition: opacity 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
+
+  ${props =>
+    props.$hidden &&
+    css`
+      opacity: 0;
+      pointer-events: none;
+      transition: none;
+    `}
 `;
 
 export const Logo = styled.div`
   position: relative;
+  height: max-content;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,9 +32,8 @@ export const Logo = styled.div`
     width: 3rem;
     height: 3rem;
     z-index: 1;
-    background: ${({ theme }) => theme.transparent};
+    background: ${props => props.theme.transparent};
     transform: translateX(180%);
-
     animation: ${keyframes`
       0% {
         transform: translateX(180%);
@@ -53,9 +62,8 @@ export const LogoName = styled.div`
   position: relative;
   font-size: 4.0625rem;
   font-weight: 700;
-  line-height: 1.6;
+  line-height: 1;
   opacity: 0;
-
   animation: ${keyframes`
       0% {
         transform: translateX(-3.3rem);
@@ -69,10 +77,13 @@ export const LogoName = styled.div`
     `} 1s ease 2.85s forwards;
 `;
 
-export const Shortcuts = styled.div`
-  display: block;
+export const Wrapper = styled.div`
+  position: absolute;
+  top: calc(50% + 3.5rem);
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
   opacity: 0;
-
   animation: ${keyframes`
       0% {
         transform: translateY(2rem);
@@ -86,34 +97,28 @@ export const Shortcuts = styled.div`
     `} 1s ease 2.85s forwards;
 `;
 
-export const ShortcutItem = styled.div`
-  margin: 1rem 0;
+export const Keys = styled.div`
+  margin: 0 0.5rem;
+  gap: 0.25rem;
   display: flex;
-  white-space: normal;
   align-items: center;
-  justify-content: flex-end;
 `;
 
-export const ShortcutLabel = styled.div`
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  text-align: right;
-  display: flex;
+export const KeyItem = styled.div`
+  height: 1.25rem;
+  min-width: 1.25rem;
+  padding: 0 0.25rem;
+  font-size: 0.688rem;
+  display: inline-flex;
   align-items: center;
-  vertical-align: middle;
-`;
-
-export const ShortcutKeys = styled.span`
-  margin: 0 0.375rem;
-  padding: 0.25rem 0.375rem;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.border};
+  justify-content: center;
+  text-transform: uppercase;
+  color: ${props => props.theme.popoverForeground};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
 `;
 
-export const Footer = styled.footer<{ $isVisible: boolean }>`
+export const Footer = styled.footer<{ $isVisible?: boolean }>`
   position: absolute;
   width: 100%;
   padding: 1.25rem 1.5625rem;
@@ -128,13 +133,9 @@ export const Version = styled.div`
   font-size: 0.8125rem;
   opacity: 0;
   cursor: pointer;
-  color: ${({ theme }) => theme.disabled};
+  pointer-events: none;
+  color: ${props => props.theme.disabled};
   transition: color 0.2s ease 0s;
-
-  &:hover {
-    color: ${({ theme }) => theme.foreground};
-  }
-
   animation: ${keyframes`
     0% {
       opacity: 0;
@@ -142,6 +143,11 @@ export const Version = styled.div`
 
     100% {
       opacity: 1;
+      pointer-events: all;
     }
   `} 1s ease 2.3s forwards;
+
+  &:hover {
+    color: ${props => props.theme.foreground};
+  }
 `;

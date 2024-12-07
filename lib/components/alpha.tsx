@@ -2,12 +2,13 @@ import { Fragment, h } from 'preact';
 import { memo, useEffect } from 'preact/compat';
 
 import useStore from 'lib/store';
-import invokeEvents from 'lib/store/events';
+import invokeEvents from 'lib/events';
 import { Content } from 'lib/styles/global';
 
 import Modal from './Modal';
 import Header from './Header';
 import Terminal from './Terminal';
+import Watermark from './Terminal/Watermark';
 
 const Alpha: React.FC = () => {
   const store = useStore();
@@ -19,6 +20,7 @@ const Alpha: React.FC = () => {
       <Content>
         <Header />
         <Content>
+          <Watermark />
           <Terminal />
         </Content>
       </Content>

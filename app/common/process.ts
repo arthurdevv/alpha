@@ -1,61 +1,80 @@
-import { homedir } from 'os';
-import { existsSync } from 'fs';
-import { isAbsolute } from 'path';
 import * as pty from 'node-pty';
+import { existsSync } from 'fs';
+import { isAbsolute, resolve } from 'path';
 import { appDir } from 'app/settings/constants';
-import { terms } from './terminal';
 
-export const processes: Record<string, IProcessFork> = {};
+export const processes: Record<string, Process> = {};
 
-const defaultOptions: pty.IWindowsPtyForkOptions = {
-  name: 'xterm-color',
-  cols: 80,
-  rows: 30,
-  env: Object(process.env),
-  useConpty: true,
-};
-
-const getExistingCWD = (path: string | undefined) => {
+function resolveCWD(path: string | null | undefined): string {
   const cwd = process.cwd();
 
-  if (path && isAbsolute(path) && existsSync(path)) {
-    return path;
+  if (path && isAbsolute(path)) {
+    if (existsSync(path)) return resolve(path);
+
+    console.error('[ERROR] The specified path does not exist:', path);
   }
 
   if (process.env.ALPHA_CLI || cwd !== appDir) {
     return cwd;
   }
 
-  return homedir();
-};
+  return process.env.USERPROFILE!;
+}
 
-function createProcess({ shell, args, cwd, env }: IProcess) {
-  const options = Object.assign(defaultOptions, {
-    cwd: getExistingCWD(cwd),
-    env: Object.assign(window.process.env, env),
-  });
+class Process {
+  process!: pty.IPty;
 
-  try {
-    const process = pty.spawn(shell, args || [], options);
+  options: IProcessOptions;
 
-    process.onData(data => {
-      const id = Object.keys(processes).find(
-        id => processes[id].pty === process,
-      );
+  constructor(
+    private ipc: IPC,
+    private id: string,
+    public profile: IProfile,
+    options: IProcessOptions,
+  ) {
+    this.options = options;
 
-      if (id) {
-        const term = terms[id];
+    this.spawn(options);
+  }
 
-        if (term) {
-          term.write(data);
-        }
-      }
+  spawn({ shell, args, env, cwd }: IProcessOptions): void {
+    const defaultOptions: pty.IWindowsPtyForkOptions = {
+      name: 'xterm-color',
+      cols: 80,
+      rows: 30,
+      useConpty: true,
+      cwd: resolveCWD(cwd),
+      env: Object.assign(process.env, env),
+    };
+
+    this.process = pty.spawn(shell, args, defaultOptions);
+
+    this.process.onData(data => {
+      this.ipc.send('terminal:write', { id: this.id, data });
     });
+  }
 
-    return { pty: process, shell, args };
-  } catch (error) {
-    console.error(error);
+  write(data: string): void {
+    this.process.write(data);
+  }
+
+  resize({ cols, rows }: IViewport): void {
+    this.process.resize(cols, rows);
+  }
+
+  clear(): void {
+    this.process.clear();
+  }
+
+  kill(): void {
+    try {
+      process.kill(this.process.pid);
+    } catch (error) {
+      console.log(error);
+    }
+
+    delete processes[this.id];
   }
 }
 
-export default createProcess;
+export default Process;
