@@ -20,7 +20,7 @@ export const Container = styled.div<{
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
   transition: color 0.2s ease 0s;
   animation: ${keyframes`
     0% {
@@ -50,15 +50,15 @@ export const Container = styled.div<{
     }
   }
 
-  ${({ $isCurrent }) =>
-    $isCurrent &&
+  ${props =>
+    props.$isCurrent &&
     css`
       cursor: default;
-      color: ${({ theme }) => theme.foreground};
+      color: ${props => props.theme.foreground};
     `}
 
-  ${({ $transition }) =>
-    !$transition &&
+  ${props =>
+    !props.$transition &&
     css`
       width: 0;
       padding: 0;
@@ -89,7 +89,7 @@ export const Close = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.foreground};
+  color: ${props => props.theme.foreground};
   border-radius: 3px;
   transition: all 0.2s ease 0s;
 

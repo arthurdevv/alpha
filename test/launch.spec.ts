@@ -1,4 +1,4 @@
-import { test, _electron as electron } from '@playwright/test';
+import { _electron as electron, test } from '@playwright/test';
 import { join } from 'path';
 
 const getExecutablePath = (): string => {

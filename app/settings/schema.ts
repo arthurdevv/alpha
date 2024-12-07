@@ -1,11 +1,7 @@
-import { getGroups } from 'app/common/profiles';
-
-type ISettingsSchema = Record<
+const schema: Record<
   Section,
   Record<string, Record<string, ISettingsOption>>
->;
-
-const schema: ISettingsSchema = {
+> = {
   Application: {
     Default: {
       language: {
@@ -14,17 +10,18 @@ const schema: ISettingsSchema = {
         type: 'string',
         input: 'select',
         options: ['English (US)'],
+        values: ['en-US'],
       },
       autoUpdates: {
-        name: 'Automatic Updates',
+        name: 'Automatic updates',
         label:
           'Whether to automatically install an update when it is available.',
         type: 'boolean',
         input: 'checkbox',
       },
       gpu: {
-        name: 'GPU Acceleration',
-        label: 'Whether the application will use the GPU to do its rendering.',
+        name: 'GPU acceleration',
+        label: 'Whether the application should use the GPU for its rendering.',
         type: 'boolean',
         input: 'checkbox',
       },
@@ -33,27 +30,27 @@ const schema: ISettingsSchema = {
   Appearance: {
     Text: {
       fontSize: {
-        name: 'Font Size',
+        name: 'Font size',
         label: 'Controls the font size in pixels.',
         type: 'number',
         input: 'text',
-        range: { min: 1, max: 99, step: 1 },
+        range: { min: '1', max: '99', step: '1' },
       },
       fontFamily: {
-        name: 'Font Family',
+        name: 'Font family',
         label: 'Controls the font family.',
         type: 'string',
         input: 'text',
       },
       fontWeight: {
-        name: 'Font Weight',
+        name: 'Font weight',
         label: 'Controls the font weight.',
         type: 'number',
         input: 'select',
         options: [100, 200, 300, 400, 500, 600, 700, 800, 900],
       },
       fontWeightBold: {
-        name: 'Bold Font Weight',
+        name: 'Bold font weight',
         label: 'Controls the font weight used to render bold text.',
         type: 'number',
         input: 'select',
@@ -66,43 +63,44 @@ const schema: ISettingsSchema = {
         input: 'checkbox',
       },
       fontLigatures: {
-        name: 'Font Ligatures',
+        name: 'Font ligatures',
         label: 'Controls whether to use font ligatures.',
         type: 'boolean',
         input: 'checkbox',
       },
       lineHeight: {
-        name: 'Line Height',
+        name: 'Line height',
         label: 'Controls the line height.',
         input: 'text',
         type: 'number',
-        range: { min: 1, max: 99, step: 0.1 },
+        range: { min: '0', max: '99', step: '0.1' },
       },
       letterSpacing: {
-        name: 'Letter Spacing',
+        name: 'Letter spacing',
         label: 'Controls the spacing in whole pixels between characters.',
         type: 'number',
         input: 'text',
-        range: { min: 0, max: 99, step: 0.1 },
+        range: { min: '-99', max: '99', step: '0.1' },
       },
       minimumContrastRatio: {
-        name: 'Contrast Ratio',
+        name: 'Minimum contrast ratio',
         label: 'Controls the minimum contrast ratio for text in the terminal.',
         type: 'number',
         input: 'text',
-        range: { min: 1, max: 21, step: 1 },
+        range: { min: '1', max: '21', step: '1' },
       },
     },
     Cursor: {
       cursorStyle: {
-        name: 'Cursor Style',
+        name: 'Cursor style',
         label: 'Controls the style of cursor.',
         type: 'string',
         input: 'select',
-        options: ['bar', 'block', 'underline'],
+        options: ['|', '█', '__'],
+        values: ['bar', 'block', 'underline'],
       },
       cursorBlink: {
-        name: 'Cursor Blinking',
+        name: 'Cursor blinking',
         label: 'Controls whether the cursor blinks.',
         type: 'boolean',
         input: 'checkbox',
@@ -113,17 +111,18 @@ const schema: ISettingsSchema = {
     Rendering: {
       renderer: {
         name: 'Renderer',
-        label: 'Controls the terminal based-renderer.',
+        label: 'Controls the terminal-based rendering.',
         type: 'string',
         input: 'select',
-        options: ['dom', 'webgl', 'canvas'],
+        options: ['Default', 'WebGL', 'Canvas'],
+        values: ['default', 'webgl', 'canvas'],
       },
       scrollback: {
         name: 'Scrollback',
         label: 'Controls the amount of rows beyond the initial viewport.',
         type: 'number',
         input: 'text',
-        range: { min: 1, max: 50000, step: 1 },
+        range: { min: '0', max: '50000', step: '1' },
       },
     },
     Interaction: {
@@ -133,17 +132,59 @@ const schema: ISettingsSchema = {
         type: 'boolean',
         input: 'checkbox',
       },
+      rightClick: {
+        name: 'Right click',
+        label: 'Controls the terminal action triggered by right click.',
+        type: 'string',
+        input: 'select',
+        options: [
+          'Disabled',
+          'Context menu',
+          'Paste text from clipboard, otherwise copy selection',
+        ],
+        values: [false, 'contextmenu', 'clipboard'],
+      },
+      linkHandlerKey: {
+        name: 'Link modifier',
+        label: 'Controls the key modifier required to activate links.',
+        type: 'string',
+        input: 'select',
+        options: ['None', 'Ctrl', 'Shift', 'Alt', 'Meta'],
+        values: [false, 'ctrl', 'shift', 'alt', 'meta'],
+      },
+    },
+    Selection: {
       copyOnSelect: {
         name: 'Copy on select',
         label: 'Whether to copy the text when it is selected.',
         type: 'boolean',
         input: 'checkbox',
       },
-      wordSeparator: {
+      trimSelection: {
+        name: 'Trim whitespaces',
+        label: 'Whether to remove trailing whitespaces from copied selection.',
+        type: 'boolean',
+        input: 'checkbox',
+      },
+      wordSeparators: {
         name: 'Word separators',
         label: 'Controls the separator symbols for double-click selection.',
         type: 'string',
         input: 'text',
+      },
+    },
+    Panes: {
+      focusOnHover: {
+        name: 'Focus on hover',
+        label: 'Whether to automatically focus the pane when hovered.',
+        type: 'boolean',
+        input: 'checkbox',
+      },
+      preserveCWD: {
+        name: 'Preserve working directory',
+        label: 'Whether to preserve current directory when creating splits.',
+        type: 'boolean',
+        input: 'checkbox',
       },
     },
     Startup: {
@@ -154,8 +195,8 @@ const schema: ISettingsSchema = {
         input: 'checkbox',
       },
       restoreOnStart: {
-        name: 'Restore latest session on start',
-        label: 'Whether to restore the previous terminal tabs.',
+        name: 'Restore previous session on start',
+        label: 'Whether to restore the closed terminal tabs.',
         type: 'boolean',
         input: 'checkbox',
       },
@@ -164,11 +205,10 @@ const schema: ISettingsSchema = {
   Profiles: {
     Default: {
       defaultProfile: {
-        name: 'Default Profile',
-        label: 'Controls the default profile to set for new terminal.',
+        name: 'Default profile',
+        label: 'Controls the default profile for new terminals.',
         type: 'string',
         input: 'select',
-        options: (getGroups(true) as IProfile[]).map(({ name }) => name),
       },
     },
   },
@@ -182,26 +222,27 @@ const schema: ISettingsSchema = {
         label: 'Whether to enable window translucent background.',
         type: 'boolean',
         input: 'checkbox',
+        badges: ['Restart Required'],
       },
       opacity: {
         name: 'Opacity',
         label: 'Controls the opacity of the window.',
         type: 'number',
         input: 'text',
-        range: { min: 0.4, max: 1, step: 0.01 },
+        range: { min: '0.5', max: '1', step: '0.01' },
       },
     },
     Behavior: {
       alwaysOnTop: {
         name: 'Always on top',
-        label: 'Whether the window should always stay on top of other windows.',
+        label: 'Whether the window should stay on top of other windows.',
         type: 'boolean',
         input: 'checkbox',
       },
       autoHideOnBlur: {
         name: 'Automatically hide window',
         label:
-          'Whether to automatically hide terminal when switch to another window.',
+          'Whether to automatically hide window when switch to another window.',
         type: 'boolean',
         input: 'checkbox',
       },

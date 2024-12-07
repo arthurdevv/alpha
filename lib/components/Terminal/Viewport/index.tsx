@@ -1,30 +1,41 @@
 import { h } from 'preact';
-import { memo, useState, useEffect } from 'preact/compat';
+import { memo, useEffect, useState } from 'preact/compat';
+
+import { somePropertyIsTrue } from 'lib/utils';
 
 import { Container } from './styles';
 
 const Viewport: React.FC<ViewportProps> = (props: ViewportProps) => {
-  const [isVisible, setVisible] = useState(false);
+  const [isVisible, setVisible] = useState<boolean>(false);
+
+  const [shifted, setShifted] = useState<boolean>(false);
+
+  const {
+    viewport: { cols, rows },
+    processes,
+  } = props;
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    setShifted(somePropertyIsTrue(processes, 'isExpanded'));
 
-    if (props.cols || props.rows) {
+    let timeout: NodeJS.Timeout;
+
+    if (cols || rows) {
       setVisible(true);
 
-      interval = setTimeout(() => {
+      timeout = setTimeout(() => {
         setVisible(false);
-      }, 2000);
+      }, 1500);
     }
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout);
     };
-  }, [props]);
+  }, [cols, rows]);
 
   return (
-    <Container $isVisible={isVisible}>
-      {props.cols}x{props.rows}
+    <Container $isVisible={isVisible} $shifted={shifted}>
+      {cols}x{rows}
     </Container>
   );
 };

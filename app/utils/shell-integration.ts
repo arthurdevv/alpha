@@ -6,6 +6,7 @@ const { HKCU, Access } = Registry;
 const exePath = app.getPath('exe');
 
 const keys = [
+  'Software\\Classes\\Drive\\shell\\Alpha',
   'Software\\Classes\\Directory\\shell\\Alpha',
   'Software\\Classes\\Directory\\Background\\shell\\Alpha',
 ];

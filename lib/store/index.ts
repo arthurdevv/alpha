@@ -5,18 +5,33 @@ import methods from './methods';
 
 const initialState: AlphaState = {
   context: {},
+  processes: {},
+  current: {
+    origin: null,
+    focused: '',
+    instances: {},
+  },
   options: {},
-  profile: undefined,
-  current: undefined,
-  cols: undefined,
-  rows: undefined,
-  modal: undefined,
+  viewport: {},
+  modal: null,
+  profile: null,
 };
 
-const useStore = create<AlphaStore>((set, getStore) => ({
-  ...initialState,
-  ...actions(set),
-  ...methods(set, getStore),
-}));
+const useStore = create<AlphaStore>((set, getStore) => {
+  const partial = <AlphaStore>{ ...initialState, getStore };
+
+  const properties = Object.assign(actions(set), methods);
+
+  Object.entries(properties).forEach(([key, value]) => {
+    Object.defineProperty(partial, key, {
+      configurable: false,
+      writable: false,
+      enumerable: true,
+      value,
+    });
+  });
+
+  return partial;
+});
 
 export default useStore;

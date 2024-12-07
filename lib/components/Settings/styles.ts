@@ -1,13 +1,13 @@
 import styled, { css } from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.div<{ $origin: string | null }>`
   position: absolute;
   width: 100%;
   height: 100%;
   flex: 1 0 0;
-  display: flex;
+  z-index: 1;
+  display: ${({ $origin }) => ($origin === 'Settings' ? 'flex' : 'none')};
   overflow: hidden;
-  background: ${({ theme }) => theme.background};
 `;
 
 export const Navigation = styled.nav`
@@ -20,52 +20,71 @@ export const Navigation = styled.nav`
 
 export const NavigationItem = styled.div`
   padding: 0.5rem 1rem;
-  font-size: 13px;
+  font-size: 0.8125rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
   transition: 0.2s ease 0s;
 
   &:hover,
   &.selected {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
-export const Section = styled.section<{ $section: Section }>`
+export const Section = styled.section<{
+  $transition: boolean;
+  $section?: string;
+}>`
+  position: relative;
   width: 100%;
   height: calc(100vh - 2.5rem);
   padding: 1.5rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  justify-content: ${({ $section }) =>
+    $section === 'Application' ? 'space-evenly' : 'normal'};
+  transition: opacity 0.1s linear 0s;
 
-  ${({ $section }) =>
-    $section === 'Application' &&
-    css`
-      justify-content: center;
-    `}
+  ${({ $transition }) =>
+    $transition
+      ? css`
+          opacity: 1;
+        `
+      : css`
+          opacity: 0;
+        `}
 
   &::-webkit-scrollbar {
     display: none;
   }
 `;
 
+export const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  &:first-of-type > :first-child {
+    margin: 0 0 1rem 0;
+  }
+`;
+
 export const Title = styled.span`
-  margin-bottom: 1rem;
-  font-size: 1rem;
+  margin: 2rem 0 1rem 0;
+  font-size: 1.125rem;
 `;
 
 export const Separator = styled.hr`
   height: 1px;
-  margin: 0.875rem 0px;
+  margin: 0.75rem 0px;
   border: none;
   outline: none;
 `;
 
-export const Key = styled.div`
+export const Option = styled.div`
   font-size: 0.8125rem;
   display: flex;
   flex-direction: column;
@@ -75,98 +94,117 @@ export const Key = styled.div`
   }
 `;
 
-export const KeyContent = styled.div`
+export const Content = styled.div`
+  height: 1.75rem;
   line-height: 1.625rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
-export const KeyLabel = styled.span`
-  margin-top: 0.125rem;
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.disabled};
+export const Label = styled.div`
+  display: inline-flex;
 `;
 
-export const Input = styled.input`
+export const Description = styled.span`
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: ${props => props.theme.disabled};
+`;
+
+export const Badges = styled.div`
+  margin-left: 0.5rem;
+  gap: 0.25rem;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transition: 0.2s ease 0s;
+  transition-property: opacity, scale;
+  transform: scale(0.99);
+
+  &.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
+
+export const BadgeItem = styled.span`
+  height: 1.25rem;
+  min-width: 1.25rem;
+  padding: 0 0.25rem;
+  font-size: 0.688rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  color: ${props => props.theme.popoverForeground};
+  border: 1px solid ${props => props.theme.border};
+  border-radius: 3px;
+`;
+
+export const Input = styled.input<{ $name?: string; type?: string }>`
+  width: 12rem;
   height: 1.75rem;
   padding: 0 0.5rem;
-  font:
-    400 0.8125rem 'Inter',
-    sans-serif;
-  outline: none;
-  appearance: none;
-  color: ${({ theme }) => theme.disabled};
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  font-size: 0.8125rem;
+  color: ${props => props.theme.disabled};
+  background: ${props => props.theme.transparent};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transition: color 0.2s ease 0s;
 
   &:hover,
   &:focus {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 
   ${({ type }) =>
-    type === 'text'
-      ? css`
-          width: 12.5rem;
-        `
-      : type === 'number'
-      ? css`
-          width: 3rem;
-        `
-      : css`
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
-        `}
+    type === 'number' &&
+    css`
+      width: 4rem;
+    `}
 
-  ${({ label }) =>
-    label === 'Scrollback'
-      ? css`
-          width: 4.5rem;
-        `
-      : label === 'Opacity'
-      ? css`
-          width: 3.3rem;
-        `
-      : ''}
+  ${props =>
+    props.$name === 'Scrollback' &&
+    css`
+      width: 5rem;
+    `}
 `;
 
 export const Switch = styled.div`
   position: relative;
   width: 1.875rem;
   height: 1.125rem;
+  padding-block: 0.125rem;
   cursor: pointer;
-  background: ${({ theme }) => theme.border};
-  border-radius: 10px;
-  transition: background 0.2s ease 0s;
+  background: ${props => props.theme.border};
+  transition: background 0s ease 0.1s;
+  border-radius: 100px;
 
   &.checked {
-    background: ${({ theme }) => theme.foreground};
+    background: ${props => props.theme.foreground};
 
     & span {
-      left: 0.75rem;
-      background: ${({ theme }) => theme.background};
+      transform: translateX(13px);
+      background: ${props => props.theme.background};
     }
   }
 `;
 
-export const SwitchThumb = styled.span`
-  position: absolute;
+export const SwitchSlider = styled.span`
   width: 0.875rem;
   height: 0.875rem;
-  margin: 0.125rem;
-  left: 0;
-  background: ${({ theme }) => theme.foreground};
-  border-radius: 10px;
-  transition:
-    left 0.2s ease 0s,
-    background ease 0s;
+  display: block;
+  background: ${props => props.theme.disabled};
+  transition: 0.1s ease 0.1s;
+  transition-property: transform, background;
+  transform: translateX(2px);
+  will-change: transform;
+  border-radius: 100px;
 `;
 
-export const Selector = styled.select`
+export const Selector = styled.select<{ $name: string }>`
   width: 4rem;
   height: 1.75rem;
   padding: 0 0.5rem;
@@ -176,36 +214,42 @@ export const Selector = styled.select`
   line-height: 1rem;
   outline: none;
   appearance: none;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
   background: 85% center no-repeat
     url("data:image/svg+xml,%3Csvg width='0.5rem' height='1.5rem' viewBox='0 0 8 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 7L7 11H1L4 7Z' fill='%23404040' /%3E%3Cpath d='M4 17L1 13L7 13L4 17Z' fill='%23404040' /%3E%3C/svg%3E");
-  border: 1px solid ${({ theme }) => theme.border};
+  background-color: ${props => props.theme.transparent};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transition: color 0.2s ease 0s;
 
   &:hover,
   &:focus {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 
   & option {
-    background: ${({ theme }) => theme.background};
+    background: ${props => props.theme.background};
   }
 
-  ${({ label }) =>
-    label === 'Language'
+  ${({ $name }) =>
+    $name === 'Language'
       ? css`
           width: 6.875rem;
-          background-position: 90%;
+          background-position: 92%;
         `
-      : label === 'Renderer'
-      ? css`
-          width: 4.5rem;
-        `
-      : label === 'Default Shell'
-      ? css`
-          width: 5.25rem;
-          background-position: 90%;
-        `
-      : ''}
+      : $name === 'Renderer' || $name === 'Link modifier'
+        ? css`
+            width: 5rem;
+            background-position: 90%;
+          `
+        : $name === 'Default profile'
+          ? css`
+              width: 9rem;
+              background-position: 94%;
+            `
+          : $name === 'Right click' &&
+            css`
+              width: 7.625rem;
+              background-position: 93%;
+            `}
 `;

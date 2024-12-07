@@ -2,9 +2,9 @@ import { h } from 'preact';
 import { memo } from 'preact/compat';
 
 import { getGroups } from 'app/common/profiles';
-import { execCommand } from 'app/keymaps';
-import { onSearch, sortArray } from 'lib/utils';
+import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
+import { onSearch, sortArray } from 'lib/utils';
 
 import {
   BadgeItem,
@@ -23,28 +23,21 @@ import {
   Wrapper,
 } from '../styles';
 
-const Profiles: React.FC<ModalProps> = ({
-  handleModal,
-  isVisible,
-}: ModalProps) => {
+const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
   const groups = getGroups();
 
   const { setProfile } = useStore();
 
   const handleClick = (profile: IProfile) => {
-    execCommand('terminal:create', profile).then(() => {
-      handleModal();
-    });
+    execCommand('terminal:create', profile).then(props.handleModal);
   };
 
   const handleCreate = () => {
-    handleModal(undefined, 'Form');
-
-    setProfile(undefined);
+    props.handleModal(undefined, 'Form').then(() => setProfile(null));
   };
 
   return (
-    <Container $isVisible={isVisible}>
+    <Container $isVisible={props.isVisible}>
       <Tags>
         <Tag>Profiles</Tag>
         <Tag $isAction onClick={handleCreate}>

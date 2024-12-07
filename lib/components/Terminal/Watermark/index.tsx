@@ -1,45 +1,49 @@
 import { h } from 'preact';
-import { memo } from 'preact/compat';
+import { memo, useEffect, useState } from 'preact/compat';
 
 import { app } from '@electron/remote';
-import { execCommand } from 'app/keymaps';
+import { watchKeys } from 'app/keymaps/schema';
+import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 
+import { AlphaIcon } from 'lib/components/Icons';
 import {
   Container,
+  Footer,
+  KeyItem,
+  Keys,
   Logo,
   LogoName,
-  Shortcuts,
-  ShortcutItem,
-  ShortcutLabel,
-  ShortcutKeys,
-  Footer,
   Version,
+  Wrapper,
 } from './styles';
-import { AlphaIcon } from 'lib/components/Icons';
 
 const Watermark: React.FC = () => {
-  const { context } = useStore();
+  const {
+    current: { origin },
+  } = useStore();
 
-  const opacity = Object.keys(context).length > 0 ? 0 : 1;
+  const [keys, setKeys] = useState<string[]>([]);
+
+  useEffect(() => watchKeys('app:commands', setKeys, false), []);
 
   return (
-    <Container style={{ opacity }}>
+    <Container $hidden={Boolean(origin)}>
       <Logo>
         <AlphaIcon />
         <LogoName>LPHA</LogoName>
       </Logo>
-      <Shortcuts>
-        <ShortcutItem>
-          <ShortcutLabel>
-            Press
-            <ShortcutKeys>Ctrl+Shift+P</ShortcutKeys>
-            to show all commands
-          </ShortcutLabel>
-        </ShortcutItem>
-      </Shortcuts>
-      <Footer $isVisible={Object.keys(context).length < 1}>
-        <Version onClick={() => execCommand('terminal:debug')}>
+      <Wrapper>
+        Press
+        <Keys>
+          {keys.map((key, index) => (
+            <KeyItem key={index}>{key}</KeyItem>
+          ))}
+        </Keys>
+        to show all commands
+      </Wrapper>
+      <Footer>
+        <Version onClick={() => execCommand('app:modal', 'About')}>
           {app.getVersion()}
         </Version>
       </Footer>

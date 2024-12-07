@@ -32,15 +32,15 @@ export const EnvInput = styled.input`
   padding: 0 0.5rem;
   flex: 1 1 0%;
   font-size: 0.8125rem;
-  color: ${({ theme }) => theme.disabled};
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.disabled};
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transition: color 0.2s ease 0s;
 
   &:hover,
   &:focus {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
@@ -52,15 +52,15 @@ export const EnvAdd = styled.div`
   display: inline-flex;
   align-items: center;
   text-transform: uppercase;
-  color: ${({ theme }) => theme.disabled};
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.disabled};
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 4px;
   transition: 0.2s ease 0s;
   transition-property: color, opacity;
 
   &:hover {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
@@ -86,14 +86,14 @@ export const EnvName = styled.span`
   margin-right: auto;
   font-size: 0.8125rem;
   line-height: 1.625rem;
-  color: ${({ theme }) => theme.foreground};
+  color: ${props => props.theme.foreground};
 `;
 
 export const EnvValue = styled.span`
   padding: 0.1875rem 0.375rem;
   font-size: 0.75rem;
-  color: ${({ theme }) => theme.popoverForeground};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.popoverForeground};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
 `;
 
@@ -101,12 +101,12 @@ export const EnvAction = styled.span`
   font-size: 0.8125rem;
   cursor: pointer;
   opacity: 0;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
   transition: 0.2s ease 0s;
   transition-property: color, opacity;
 
   &:hover {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
@@ -117,7 +117,7 @@ export const EnvWarning = styled.span`
   display: flex;
   align-items: center;
   font-size: 0.8125rem;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
   justify-content: center;
   transform: translate(-50%, -50%);
 `;
@@ -134,9 +134,9 @@ export {
 export {
   Option,
   Content as OptionContent,
-  Label,
+  Description,
   Input,
   Separator,
   Switch,
   SwitchSlider,
-} from 'lib/components/Terminal/Settings/styles';
+} from 'lib/components/Settings/styles';

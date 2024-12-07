@@ -1,9 +1,7 @@
 import yaml from 'js-yaml';
-import { isEqual } from 'lodash';
-import { readFileSync, writeFileSync } from 'fs';
+import { screen } from 'electron';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { boundsPath } from 'app/settings/constants';
-
-let local = <Electron.Rectangle>{};
 
 function getBounds(): Partial<Electron.Rectangle> {
   let bounds = <Electron.Rectangle>{};
@@ -16,32 +14,38 @@ function getBounds(): Partial<Electron.Rectangle> {
     console.error(error);
   }
 
+  return getAdjustedBounds(bounds);
+}
+
+function saveBounds(
+  bounds: Electron.Rectangle | Partial<Electron.Rectangle>,
+): void {
+  try {
+    const content = yaml.dump(bounds, { indent: 2 });
+
+    writeFileSync(boundsPath, content, 'utf-8');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function getAdjustedBounds(bounds: Electron.Rectangle): Partial<typeof bounds> {
+  const { workAreaSize } = screen.getPrimaryDisplay();
+
+  if (
+    bounds.width > workAreaSize.width ||
+    bounds.height > workAreaSize.height ||
+    bounds.x + bounds.width > workAreaSize.width ||
+    bounds.y + bounds.height > workAreaSize.height
+  ) {
+    return {};
+  }
+
   return bounds;
 }
 
-function saveBounds(): void {
-  const { screenX, screenY, innerWidth, innerHeight } = window;
-
-  const bounds: Electron.Rectangle = {
-    height: innerHeight,
-    width: innerWidth,
-    x: screenX,
-    y: screenY,
-  };
-
-  const changed = !isEqual(local, bounds);
-
-  if (changed) {
-    local = bounds;
-
-    try {
-      const content = yaml.dump(bounds, { indent: 2 });
-
-      writeFileSync(boundsPath, content, 'utf-8');
-    } catch (error) {
-      console.log(error);
-    }
-  }
+if (!existsSync(boundsPath)) {
+  saveBounds({});
 }
 
 export { getBounds, saveBounds };

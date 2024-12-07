@@ -1,19 +1,51 @@
 import { h } from 'preact';
 import { memo, useState } from 'preact/compat';
 
+import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 
 import { CloseTabIcon } from 'lib/components/Icons';
 import { Close, Container, Group, Title } from './styles';
 import Popover from '../Popover';
 
-const Tab: React.FC<TabProps> = ({ title, isCurrent, onSelect, onClose }) => {
+const TabGroup: React.FC = () => {
+  const {
+    context,
+    processes,
+    current: { origin, instances },
+    onSelect,
+    onClose,
+  } = useStore();
+
+  return (
+    <Group role="group">
+      {Object.keys(context).map(id => {
+        const [focused] = instances[id];
+
+        const { title } = processes[focused];
+
+        const props: TabProps = {
+          title,
+          isCurrent: id === origin,
+          onSelect: onSelect.bind(null, id),
+          onClose: onClose.bind(null, id),
+        };
+
+        return <Tab {...props} key={id} />;
+      })}
+    </Group>
+  );
+};
+
+const Tab: React.FC<TabProps> = (props: TabProps) => {
   const [transition, setTransition] = useState<boolean>(true);
 
-  const handleSelect = () => {
-    onSelect();
+  const handleSelect = ({ target }) => {
+    const signal = target.getAttribute('data-signal');
 
-    window.send('window:set-title', title);
+    if (signal !== 'SIGHUP') {
+      execCommand('window:title', title).then(props.onSelect);
+    }
   };
 
   const handleClose = () => {
@@ -22,9 +54,11 @@ const Tab: React.FC<TabProps> = ({ title, isCurrent, onSelect, onClose }) => {
     setTimeout(() => {
       setTransition(true);
 
-      onClose();
+      props.onClose();
     }, 150);
   };
+
+  const { title, isCurrent } = props;
 
   return (
     <Container
@@ -33,32 +67,11 @@ const Tab: React.FC<TabProps> = ({ title, isCurrent, onSelect, onClose }) => {
       onClick={handleSelect}
     >
       <Title title={title}>{title}</Title>
-      <Close onClick={handleClose}>
+      <Close data-signal="SIGHUP" onClick={handleClose}>
         <CloseTabIcon />
-        <Popover label={`Close ${title === 'Settings' ? title : 'Terminal'}`} />
+        <Popover label={`Close ${title === 'Settings' ? title : 'terminal'}`} />
       </Close>
     </Container>
-  );
-};
-
-const TabGroup: React.FC = () => {
-  const { context, current, onSelect, onClose } = useStore();
-
-  return (
-    <Group role="group">
-      {Object.keys(context).map((id, index) => {
-        const { title } = context[id];
-
-        const props: TabProps = {
-          title,
-          isCurrent: id === current,
-          onSelect: onSelect.bind(null, id),
-          onClose: onClose.bind(null, id),
-        };
-
-        return <Tab {...props} key={index} />;
-      })}
-    </Group>
   );
 };
 

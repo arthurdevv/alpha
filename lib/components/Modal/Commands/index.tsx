@@ -1,7 +1,8 @@
 import { h } from 'preact';
 import { memo } from 'preact/compat';
 
-import { menuCommands } from 'app/keymaps/schema';
+import { getPaletteSchema, paletteCommands } from 'app/keymaps/schema';
+import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 import { onSearch } from 'lib/utils';
 
@@ -21,16 +22,15 @@ import {
   Wrapper,
 } from '../styles';
 
-const Commands: React.FC<ModalProps> = ({ isVisible }: ModalProps) => {
+const Commands: React.FC<ModalProps> = (props: ModalProps) => {
   const { setModal } = useStore();
 
-  const handleClick = (action: () => Promise<boolean>) =>
-    action().then(() => {
-      setModal(undefined);
-    });
+  const handleClick = (command: string) => {
+    execCommand(command).then(() => setModal(null));
+  };
 
   return (
-    <Container $isVisible={isVisible}>
+    <Container $isVisible={props.isVisible}>
       <Tag>Command Palette</Tag>
       <Content>
         <Search>
@@ -40,30 +40,30 @@ const Commands: React.FC<ModalProps> = ({ isVisible }: ModalProps) => {
           />
         </Search>
         <Wrapper>
-          {Object.keys(menuCommands).map((group, index) => {
-            const commands = menuCommands[group];
+          {Object.entries(paletteCommands).map(([label, actions], index) => (
+            <List role="list" key={index}>
+              <Separator />
+              <Label>{label}</Label>
+              {actions.map((action, index) => {
+                const { command, keys } = getPaletteSchema(action);
 
-            return (
-              <List role="group" key={index}>
-                <Separator />
-                <Label>{group}</Label>
-                {commands.map(({ name, keys, action }, index) => (
+                return (
                   <ListItem
                     key={index}
-                    data-name={name}
-                    onClick={() => handleClick(action)}
+                    data-name={action}
+                    onClick={() => handleClick(command)}
                   >
-                    <Name>{name}</Name>
+                    <Name>{action}</Name>
                     <Badges>
                       {keys.map((key, index) => (
                         <BadgeItem key={index}>{key}</BadgeItem>
                       ))}
                     </Badges>
                   </ListItem>
-                ))}
-              </List>
-            );
-          })}
+                );
+              })}
+            </List>
+          ))}
         </Wrapper>
       </Content>
     </Container>

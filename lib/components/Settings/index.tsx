@@ -1,145 +1,207 @@
-import { h, Fragment } from 'preact';
-import { memo } from 'preact/compat';
-import { useState } from 'preact/hooks';
+import { createElement, h } from 'preact';
+import { memo, useEffect, useState } from 'preact/compat';
 
 import { getSettings, setSettings } from 'app/settings';
-import schema from './schema';
+import { getGroups } from 'app/common/profiles';
+import listeners from 'app/settings/listeners';
+import schema from 'app/settings/schema';
 
 import {
+  BadgeItem,
+  Badges,
   Container,
+  Content,
+  Description,
+  Input,
+  Label,
   Navigation,
   NavigationItem,
+  Option,
   Section,
-  Title,
-  Key,
-  KeyContent,
-  KeyLabel,
-  Input,
   Selector,
   Separator,
   Switch,
-  SwitchThumb,
+  SwitchSlider,
+  Title,
+  Wrapper,
 } from './styles';
 import Application from './Application';
 import Keymaps from './Keymaps';
+import Profiles from './Profiles';
+
+const initialSettings = getSettings();
+
+function getProfiles(): Record<string, string[]> {
+  const profiles = getGroups(true) as IProfile[];
+
+  return {
+    options: profiles.map(({ name }) => name),
+    values: profiles.map(({ id }) => id),
+  };
+}
 
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   const [section, setSection] = useState<Section>('Application');
 
-  const handleSection = (event: React.TargetedEvent<HTMLElement>) => {
-    const { innerText, classList, parentElement } = event.currentTarget;
+  const [profiles, setProfiles] = useState(getProfiles);
 
-    setSection(innerText as Section);
+  const [transition, setTransition] = useState<boolean>(true);
 
-    parentElement?.childNodes.forEach(element => {
-      (element as Element).classList.remove('selected');
-    });
+  const handleSection = (value: Section) => {
+    if (value !== section) {
+      setTransition(false);
 
-    classList.add('selected');
+      setTimeout(() => {
+        setTransition(true);
+
+        setSection(value);
+      }, 125);
+    }
   };
 
-  return props.isCurrent ? (
-    <Container>
+  const handleBadges = ({ parentElement }) => {
+    const option = parentElement.querySelector('div');
+
+    const badges: HTMLElement = option.querySelector('div');
+
+    if (badges) badges.classList.toggle('visible');
+  };
+
+  const handleBadgesClass = (key: string, value: any) =>
+    initialSettings[key] === value ? undefined : 'visible';
+
+  const handleUpdate = (
+    key: string,
+    { type, options, values }: ISettingsOption,
+    { currentTarget },
+  ) => {
+    let { value, classList } = currentTarget;
+
+    switch (type) {
+      case 'number':
+        value = Number(value);
+        break;
+
+      case 'boolean':
+        value = classList.toggle('checked');
+        handleBadges(currentTarget);
+        break;
+    }
+
+    if (key === 'defaultProfile') {
+      [options, values] = [profiles.options, profiles.values];
+    }
+
+    if (options && values) {
+      const index = options.indexOf(value);
+
+      value = values[index];
+    }
+
+    setSettings(key as keyof ISettings, value);
+  };
+
+  useEffect(() => {
+    listeners.subscribe('options', () => setProfiles(getProfiles));
+  }, []);
+
+  const options = Object.entries(schema[section]).map(
+    ([title, value], index) => (
+      <Wrapper key={index}>
+        {section !== 'Application' && (
+          <Title>{title === 'Default' ? section : title}</Title>
+        )}
+        {Object.entries(value).map(([key, option], index) => {
+          const { name, label, type, input, options, values, range, badges } =
+            option;
+
+          const value = getSettings()[key];
+
+          const handleChange = handleUpdate.bind(null, key, option);
+
+          return (
+            <Option key={index}>
+              <Separator />
+              <Content>
+                <Label>
+                  {name}
+                  {badges && (
+                    <Badges className={handleBadgesClass(key, value)}>
+                      {badges.map((text, index) => (
+                        <BadgeItem key={index}>{text}</BadgeItem>
+                      ))}
+                    </Badges>
+                  )}
+                </Label>
+                {input === 'checkbox' ? (
+                  <Switch
+                    className={value ? 'checked' : undefined}
+                    onClick={handleChange}
+                  >
+                    <SwitchSlider />
+                  </Switch>
+                ) : input === 'select' ? (
+                  <Selector $name={name} onChange={handleChange}>
+                    {(options || profiles.options)?.map((option, index) => {
+                      let selected = false;
+
+                      if (values) {
+                        selected = (values[index] || option) === value;
+                      } else {
+                        selected = profiles.values[index] === value;
+                      }
+
+                      return (
+                        <option key={index} value={option} selected={selected}>
+                          {option}
+                        </option>
+                      );
+                    })}
+                  </Selector>
+                ) : (
+                  <Input
+                    $name={name}
+                    type={type}
+                    value={value}
+                    onChange={handleChange}
+                    {...range}
+                  />
+                )}
+              </Content>
+              <Description>{label}</Description>
+            </Option>
+          );
+        })}
+      </Wrapper>
+    ),
+  );
+
+  const children = (() => {
+    const element = createElement({ Application, Profiles, Keymaps }[section], {
+      section,
+      options,
+    });
+
+    return element.type ? element : null;
+  })();
+
+  return (
+    <Container $origin={props.origin}>
       <Navigation>
         {Object.keys(schema).map((value, index) => (
           <NavigationItem
             key={index}
-            onClick={handleSection}
-            className={value === section && 'selected'}
+            className={value === section ? 'selected' : undefined}
+            onClick={() => handleSection(value as Section)}
           >
             {value}
           </NavigationItem>
         ))}
       </Navigation>
-      {section !== 'Keymaps' ? (
-        <Section $section={section}>
-          {section === 'Application' ? (
-            <Application />
-          ) : (
-            <Title>{section}</Title>
-          )}
-          {Object.keys(schema[section]).map((key, index) => {
-            const { label, type, valueType, description, options, range } =
-              schema[section][key];
-
-            const keyValue = getSettings(false)[key];
-
-            const defaultValue = getSettings(true)[key];
-
-            const handleUpdate = (
-              event: React.ChangeEvent<HTMLInputElement>,
-            ) => {
-              const { value: inputValue, classList } = event.currentTarget;
-
-              let value: string | number | boolean;
-
-              switch (valueType) {
-                case 'number':
-                  value = Number(inputValue);
-                  break;
-
-                case 'boolean':
-                  value = classList.toggle('checked');
-                  break;
-
-                default:
-                  value = inputValue;
-              }
-
-              setSettings(key as keyof ISettings, value);
-            };
-
-            return (
-              <Key key={index}>
-                <Separator />
-                <KeyContent>
-                  <span>{label}</span>
-                  {type === 'checkbox' ? (
-                    <Switch
-                      className={keyValue && 'checked'}
-                      onClick={handleUpdate}
-                    >
-                      <SwitchThumb />
-                    </Switch>
-                  ) : type === 'select' ? (
-                    <Selector label={label} onChange={handleUpdate}>
-                      {options?.map((value, index) => (
-                        <option
-                          key={index}
-                          value={value}
-                          selected={value === keyValue}
-                        >
-                          {key === 'shell' ? value.split('\\').pop() : value}
-                        </option>
-                      ))}
-                    </Selector>
-                  ) : (
-                    <Input
-                      type={valueType}
-                      value={keyValue}
-                      label={label}
-                      placeholder={defaultValue}
-                      onChange={handleUpdate}
-                      min={range?.min}
-                      max={range?.max}
-                      step={range?.step}
-                    />
-                  )}
-                </KeyContent>
-                <KeyLabel>{description}</KeyLabel>
-              </Key>
-            );
-          })}
-        </Section>
-      ) : (
-        <Section $section={section}>
-          <Title>{section}</Title>
-          <Keymaps />
-        </Section>
-      )}
+      <Section $section={section} $transition={transition}>
+        {children || options}
+      </Section>
     </Container>
-  ) : (
-    <Fragment />
   );
 };
 

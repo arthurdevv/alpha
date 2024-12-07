@@ -19,19 +19,19 @@ export const Content = styled.span<{ $label: string }>`
   pointer-events: none;
   display: flex;
   align-items: center;
-  color: ${({ theme }) => theme.foreground};
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.foreground};
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
-  box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
+  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s ease 0s;
 
-  ${({ $label }) =>
-    $label === 'Close'
+  ${props =>
+    props.$label === 'Close'
       ? css`
           right: 0.5rem;
         `
-      : $label === 'New Terminal'
+      : props.$label === 'New terminal' || props.$label === 'Profiles'
         ? css`
             padding: 0.25rem 0.25rem 0.25rem 0.5rem;
             left: 0.5rem;
@@ -40,18 +40,18 @@ export const Content = styled.span<{ $label: string }>`
               left: auto !important;
             }
           `
-        : $label === 'Settings' &&
+        : props.$label === 'Settings' &&
           css`
             padding: 0.25rem 0.25rem 0.25rem 0.5rem;
           `}
 `;
 
-export const Keys = styled.div`
+export const Keys = styled.div<{ $hidden: boolean }>`
   margin-left: 0.5rem;
   gap: 0.25rem;
   display: flex;
   align-items: center;
-  display: ${({ hidden }) => hidden && 'none'};
+  display: ${props => props.$hidden && 'none'};
 `;
 
 export const KeyItem = styled.div`
@@ -63,8 +63,8 @@ export const KeyItem = styled.div`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  color: ${({ theme }) => theme.popoverForeground};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.popoverForeground};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
 `;
 
@@ -79,7 +79,7 @@ export const Arrow = styled.span`
   align-items: center;
   justify-content: center;
   border: 6px solid transparent;
-  border-bottom-color: ${({ theme }) => theme.border};
+  border-bottom-color: ${props => props.theme.border};
   transition: opacity 0.2s ease 0s;
   -webkit-mask: none !important;
 
@@ -90,6 +90,6 @@ export const Arrow = styled.span`
     height: 0;
     top: -5px;
     border: 7px solid transparent;
-    border-bottom-color: ${({ theme }) => theme.background};
+    border-bottom-color: ${props => props.theme.background};
   }
 `;

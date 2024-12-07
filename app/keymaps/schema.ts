@@ -1,63 +1,101 @@
-import { getKeymaps, writeKeymaps, execCommand } from '.';
-
-export function parseKeys(command: string, initial?: boolean) {
-  const { size } = new Set(
-    [false, true].map(value => getKeymaps(value)[command][0]),
-  );
-
-  const handleReset = (stateUpdater: Function) => {
-    const changedKeys = getKeymaps();
-
-    changedKeys[command] = getKeymaps(true)[command];
-
-    writeKeymaps(changedKeys);
-
-    stateUpdater();
-  };
-
-  const keys = getKeymaps(initial)[command][0].split('+');
-
-  return { keys, changed: size !== 1, handleReset };
-}
+import listeners from 'app/settings/listeners';
+import { getKeymaps } from '.';
 
 const schema: Record<string, string> = {
-  'terminal:create': 'New Terminal',
-  'window:create': 'New Window',
-  'terminal:clear': 'Clear Terminal',
-  'terminal:close': 'Close Current Terminal',
+  'terminal:create': 'New terminal',
+  'terminal:clear': 'Clear terminal',
+  'terminal:close': 'Close terminal',
   'terminal:search': 'Search',
-  'terminal:settings': 'Settings',
-  'terminal:commands': 'Command Palette',
-  'tab:next': 'Move To Next Tab',
-  'tab:previous': 'Move To Previous Tab',
-  'window:devtools': 'Toggle Developer Tools',
+  'app:profiles': 'Profiles',
+  'app:settings': 'Settings',
+  'app:commands': 'Command palette',
+  'terminal:copy': 'Copy',
+  'terminal:paste': 'Paste',
+  'terminal:selectAll': 'Select all',
+  'pane:broadcast': 'Broadcast',
+  'pane:expand': 'Expand/collapse pane',
+  'pane:next': 'Move to next pane',
+  'pane:previous': 'Move to previous pane',
+  'pane:close': 'Close pane',
+  'pane:split-horizontal': 'Split horizontal',
+  'pane:split-vertical': 'Split vertical',
+  'tab:next': 'Next tab',
+  'tab:previous': 'Previous tab',
+  'window:create': 'New window',
+  'window:fullscreen': 'Toggle fullscreen',
+  'window:devtools': 'Toggle developer tools',
 };
 
-const menuCommands: Record<string, IMenuCommand[]> = {
-  Terminal: [
-    {
-      name: 'New Terminal',
-      keys: ['Ctrl', '⇧', 't'],
-      action: () => execCommand('terminal:create'),
-    },
-    {
-      name: 'Profiles',
-      keys: [],
-      action: () => execCommand('terminal:profiles'),
-    },
-    {
-      name: 'Settings',
-      keys: ['Ctrl', ','],
-      action: () => execCommand('terminal:settings'),
-    },
-  ],
-  Help: [
-    {
-      name: 'Toggle Developer Tools',
-      keys: ['Ctrl', '⇧', 'i'],
-      action: () => execCommand('window:devtools'),
-    },
-  ],
+const boundCommands: Record<string, Record<string, string[]>> = {
+  tab: {
+    move: ['next', 'previous'],
+  },
+  pane: {
+    move: ['next', 'previous'],
+    split: ['vertical', 'horizontal'],
+    action: ['expand', 'broadcast'],
+  },
+  terminal: {
+    action: ['copy', 'paste', 'selectAll', 'clear', 'focus'],
+  },
+  app: {
+    modal: ['commands', 'profiles'],
+  },
 };
 
-export { schema, menuCommands };
+const paletteCommands: Record<string, string[]> = {
+  Terminal: ['New terminal', 'Profiles', 'Settings'],
+  Window: ['New window'],
+  Help: ['Toggle developer tools'],
+};
+
+function parseKeys(command: string, initial?: boolean) {
+  const [keys] = getKeymaps(initial)[command];
+
+  return keys.split('+');
+}
+
+function formatKeys(command: string, initial?: boolean) {
+  const keys = parseKeys(command, initial);
+
+  return keys.map(key => {
+    switch (key) {
+      case 'shift':
+        return '⇧';
+
+      case 'enter':
+        return '↵';
+
+      default:
+        return key;
+    }
+  });
+}
+
+function watchKeys(command: string, callback: Function, format = true) {
+  listeners.subscribe('keymaps', () =>
+    callback(format ? formatKeys(command) : parseKeys(command)),
+  );
+}
+
+function getPaletteSchema(label: string) {
+  const command = Object.keys(schema).find(value => schema[value] === label);
+
+  if (command) {
+    const keys = formatKeys(command);
+
+    return { command, keys };
+  }
+
+  return { command: '', keys: [] };
+}
+
+export {
+  schema,
+  boundCommands,
+  paletteCommands,
+  parseKeys,
+  formatKeys,
+  watchKeys,
+  getPaletteSchema,
+};

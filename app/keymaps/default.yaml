@@ -1,20 +1,44 @@
-terminal:create:
-  - ctrl+shift+t
-terminal:clear:
-  - ctrl+shift+k
-terminal:close:
-  - ctrl+shift+w
-terminal:search:
-  - ctrl+shift+f
-terminal:settings:
-  - ctrl+,
-terminal:commands:
+app:commands:
   - ctrl+shift+p
+app:profiles:
+  - ctrl+shift+e
+app:settings:
+  - ctrl+,
+pane:broadcast:
+  - ctrl+alt+b
+pane:close:
+  - ctrl+w
+pane:expand:
+  - ctrl+alt+enter
+pane:next:
+  - ctrl+alt+right
+pane:previous:
+  - ctrl+alt+left
+pane:split-horizontal:
+  - ctrl+shift+s
+pane:split-vertical:
+  - ctrl+shift+d
 tab:next:
   - ctrl+tab
 tab:previous:
   - ctrl+shift+tab
+terminal:clear:
+  - ctrl+shift+k
+terminal:close:
+  - ctrl+shift+w
+terminal:copy:
+  - ctrl+shift+c
+terminal:create:
+  - ctrl+shift+t
+terminal:paste:
+  - ctrl+shift+v
+terminal:search:
+  - ctrl+shift+f
+terminal:selectAll:
+  - ctrl+shift+a
 window:create:
   - ctrl+shift+n
 window:devtools:
   - ctrl+shift+i
+window:fullscreen:
+  - f11

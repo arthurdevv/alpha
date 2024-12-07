@@ -1,15 +1,16 @@
 import { Fragment, h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { createProfile } from 'app/common/profiles';
 import { getSettings, setSettings } from 'app/settings';
+import { createProfile } from 'app/common/profiles';
 import useStore from 'lib/store';
 
+import Enviroment from './env';
 import {
   Container,
   Content,
+  Description,
   Input,
-  Label,
   Option,
   OptionContent,
   Search,
@@ -21,10 +22,10 @@ import {
   Tags,
   Wrapper,
 } from './styles';
-import Enviroment from './env';
 
 const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
-  const { profile, setProfile, updateProfile } = useStore() as any;
+  const { profile, setProfile, updateProfile } =
+    useStore() as NestedExclude<AlphaStore>;
 
   const [isEnv, setIsEnv] = useState<boolean>(false);
 
@@ -78,9 +79,9 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
 
   useEffect(() => {
     if (!profile) {
-      const genericProfile = createProfile();
+      const blankProfile = createProfile();
 
-      setProfile(genericProfile);
+      setProfile(blankProfile);
     } else {
       handleIsFilled();
     }
@@ -92,7 +93,7 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
     return (
       <Container $width={45} $isVisible={isVisible}>
         <Tags>
-          <Tag>{isFilled ? 'Profile' : 'Create a new profile'}</Tag>
+          <Tag>Profile</Tag>
           <Tag $isAction onClick={() => setIsEnv(!isEnv)}>
             {isEnv ? 'Options' : 'Enviroment'}
           </Tag>
@@ -101,7 +102,7 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
           </Tag>
           <Tag
             $isAction
-            onClick={isFilled && handleSave}
+            onClick={isFilled ? handleSave : undefined}
             style={{ cursor: isFilled === false ? 'not-allowed' : 'pointer' }}
           >
             Save
@@ -131,9 +132,9 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
                       onChange={handleUpdate}
                     />
                   </OptionContent>
-                  <Label>
-                    Group name to be allocated in the list of profiles.
-                  </Label>
+                  <Description>
+                    Name of the group to appear in the profiles list.
+                  </Description>
                 </Option>
                 <Option>
                   <Separator />
@@ -145,7 +146,9 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
                       onChange={handleUpdate}
                     />
                   </OptionContent>
-                  <Label>Executable to run in the profile.</Label>
+                  <Description>
+                    Path to the executable to be launched for the profile.
+                  </Description>
                 </Option>
                 <Option>
                   <Separator />
@@ -153,11 +156,13 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
                     <span>Working Directory</span>
                     <Input
                       aria-label="cwd"
-                      value={options.cwd}
+                      value={options.cwd!}
                       onChange={handleUpdate}
                     />
                   </OptionContent>
-                  <Label>Absolute path to be set for the child program.</Label>
+                  <Description>
+                    Absolute path where the executable will run.
+                  </Description>
                 </Option>
                 <Option>
                   <Separator />
@@ -165,13 +170,15 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
                     <span>Tab Title</span>
                     <Switch
                       aria-label="title"
-                      className={title && 'checked'}
+                      className={title ? 'checked' : undefined}
                       onClick={handleUpdate}
                     >
                       <SwitchSlider />
                     </Switch>
                   </OptionContent>
-                  <Label>Replaces the tab title with the profile name.</Label>
+                  <Description>
+                    Sets the tab title to match the profile name.
+                  </Description>
                 </Option>
               </Wrapper>
             </Fragment>

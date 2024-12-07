@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-export const Overlay = styled.div<{ $isVisible: boolean }>`
+export const Overlay = styled.div<{ $modal?: string; $isVisible: boolean }>`
   position: fixed;
   width: 100%;
   height: 100%;
@@ -10,7 +10,7 @@ export const Overlay = styled.div<{ $isVisible: boolean }>`
   overflow: auto;
   display: flex;
   justify-content: center;
-  background: ${({ theme }) => theme.overlay};
+  background: ${props => props.theme.overlay};
   transition: opacity 0.1s linear 0.1s;
 
   ${({ $isVisible }) =>
@@ -21,6 +21,7 @@ export const Overlay = styled.div<{ $isVisible: boolean }>`
         `
       : css`
           opacity: 0;
+          pointer-events: none;
         `}
 `;
 
@@ -29,7 +30,6 @@ export const Container = styled.div<{ $isVisible: boolean; $width?: number }>`
   width: 100%;
   height: max-content;
   max-width: ${({ $width }) => $width || '31.25'}rem;
-  /* max-height: 70vh; */
   transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
   transition-property: transform, opacity;
 
@@ -48,13 +48,10 @@ export const Container = styled.div<{ $isVisible: boolean; $width?: number }>`
 export const Content = styled.div<{ $maxHeight?: number }>`
   position: relative;
   overflow: hidden;
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 4px;
-  box-shadow:
-    0px 2px 7px rgba(0, 0, 0, 0.15),
-    0px -2px 7px rgba(0, 0, 0, 0.15),
-    0px 5px 17px rgba(0, 0, 0, 0.3);
+  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
 
   ${({ $maxHeight }) =>
     $maxHeight &&
@@ -73,7 +70,7 @@ export const Tags = styled.div`
   }
 `;
 
-export const Tag = styled.div<{ $isAction: boolean }>`
+export const Tag = styled.div<{ $isAction?: boolean }>`
   max-width: 100%;
   height: 1.5rem;
   margin-bottom: 0.5rem;
@@ -81,16 +78,16 @@ export const Tag = styled.div<{ $isAction: boolean }>`
   display: inline-flex;
   align-items: center;
   font-size: 0.6875rem;
-  color: ${({ theme }) => theme.foreground};
-  background: ${({ theme }) => theme.background};
+  color: ${props => props.theme.foreground};
+  background: ${props => props.theme.background};
   border-radius: 4px;
-  border: 1px solid ${({ theme }) => theme.border};
+  border: 1px solid ${props => props.theme.border};
 
   & svg {
     width: 0.8125rem;
     height: 0.8125rem;
     margin-right: 0.25rem;
-    color: ${({ theme }) => theme.popoverForeground};
+    color: ${props => props.theme.popoverForeground};
   }
 
   ${({ $isAction }) =>
@@ -98,11 +95,11 @@ export const Tag = styled.div<{ $isAction: boolean }>`
     css`
       cursor: pointer;
       text-transform: uppercase;
-      color: ${({ theme }) => theme.disabled};
+      color: ${props => props.theme.disabled};
       transition: color 0.2s ease 0s;
 
       &:hover {
-        color: ${({ theme }) => theme.foreground};
+        color: ${props => props.theme.foreground};
       }
     `}
 `;
@@ -121,7 +118,7 @@ export const SearchInput = styled.input`
   font: inherit;
   line-height: 1;
   letter-spacing: -0.011em;
-  color: ${({ theme }) => theme.foreground};
+  color: ${props => props.theme.foreground};
 `;
 
 export const Wrapper = styled.div`
@@ -147,7 +144,7 @@ export const Label = styled.div`
   width: 100%;
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
 `;
 
 export const Name = styled.div`
@@ -172,7 +169,7 @@ export const ListItem = styled.li`
   transition: background 0.2s ease 0s;
 
   &:hover {
-    background: ${({ theme }) => theme.divider};
+    background: ${props => props.theme.divider};
   }
 `;
 
@@ -192,8 +189,8 @@ export const BadgeItem = styled.span`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  color: ${({ theme }) => theme.popoverForeground};
-  border: 1px solid ${({ theme }) => theme.border};
+  color: ${props => props.theme.popoverForeground};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transition: border-color 0.2s ease 0s;
 `;

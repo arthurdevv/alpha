@@ -1,114 +1,77 @@
 import { Fragment, h } from 'preact';
-import { memo, useEffect, useRef } from 'preact/compat';
+import { memo } from 'preact/compat';
 
-import { clipboard } from '@electron/remote';
-import Terminal, { terms } from 'app/common/terminal';
 import useStore from 'lib/store';
 
-import { Container, Content, Group } from './styles';
+import { Group } from './styles';
+import Term from './term';
+import SplitTerm from './split';
 import Viewport from './Viewport';
-import Settings from './Settings';
-import Watermark from './Watermark';
+import Settings from '../Settings';
 
-const Term: React.FC<TermProps> = (props: TermProps) => {
-  const terminal = new Terminal(props);
+const Terms: React.FC = () => {
+  const store = useStore();
 
-  const parent = useRef<HTMLDivElement>();
-
-  const onContextMenu = () => {
-    const term = terms[props.id];
-
-    if (term) {
-      const hasSelection = term.hasSelection();
-
-      if (hasSelection) {
-        const selection = term.getSelection();
-
-        clipboard.writeText(selection);
-      } else {
-        document.execCommand('paste');
-      }
-    }
-  };
-
-  useEffect(() => {
-    const { current } = parent;
-
-    if (current) {
-      terminal.open(current);
-    }
-
-    terms[props.id] = terminal.term;
-
-    return () => {
-      delete terms[props.id];
-    };
-  }, []);
-
-  useEffect(() => {
-    const term = terms[props.id];
-
-    if (term) {
-      const { options, isDirty, isCurrent } = props;
-
-      if (!isDirty) term.clear();
-
-      if (isCurrent) term.focus();
-
-      term.options = options;
-    }
-  }, [props]);
-
-  return (
-    <Container
-      role="presentation"
-      $isCurrent={props.isCurrent}
-      onContextMenu={onContextMenu}
-    >
-      <Content ref={parent} />
-    </Container>
-  );
-};
-
-const TermGroup: React.FC = () => {
   const {
     context,
-    options,
-    cols,
-    rows,
-    current,
-    onSelect,
-    onResize,
-    onTitleChange,
-  } = useStore();
+    current: { origin, instances },
+  } = store;
 
   return (
     <Fragment>
-      <Group role="group">
-        {Object.keys(context).map((id, index) => {
-          const { name, shell, isDirty } = context[id];
+      {Object.entries(context).map(([id, group]) => {
+        const props: TermGroupProps = {
+          ...store,
+          group,
+          current: instances[id],
+        };
 
-          const props: TermProps = {
-            id,
-            isDirty,
-            isCurrent: id === current,
-            onSelect: onSelect.bind(null, id),
-            onTitleChange: onTitleChange.bind(null, id, name),
-            onResize,
-            options,
-          };
-
-          return shell ? (
-            <Term {...props} key={index} />
-          ) : (
-            <Settings key={index} />
-          );
-        })}
-        <Viewport cols={cols} rows={rows} />
-      </Group>
-      <Watermark />
+        return id === 'Settings' ? (
+          <Settings origin={origin} />
+        ) : (
+          <Group role="group" key={id} $isCurrent={id === origin}>
+            <TermGroup {...props} />
+          </Group>
+        );
+      })}
+      <Viewport {...store} />
     </Fragment>
   );
 };
 
-export default memo(TermGroup);
+const TermGroup: React.FC<TermGroupProps> = (props: TermGroupProps) => {
+  const { group, processes, current } = props;
+
+  const createTerm = (id: string) => {
+    const process = processes[id];
+
+    const termProps: TermProps = {
+      ...props,
+      ...process,
+      isCurrent: current.includes(id),
+      onFocus: props.onFocus.bind(null, id),
+      onResize: props.onResize.bind(null, id),
+      onTitleChange: props.onTitleChange.bind(null, id),
+    };
+
+    return <Term {...termProps} key={id} />;
+  };
+
+  const createSplit = (children: JSX.Element[]) => {
+    const splitProps: SplitTermProps = {
+      ...group,
+      children,
+      onResizeGroup: props.onResizeGroup.bind(null, group.id),
+    };
+
+    return <SplitTerm {...splitProps} />;
+  };
+
+  const children = group.children.map(group => (
+    <TermGroup {...props} group={group} key={group.id} />
+  ));
+
+  return group.pid ? createTerm(group.pid) : createSplit(children);
+};
+
+export default memo(Terms);

@@ -36,12 +36,9 @@ export const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
-  box-shadow:
-    0px 2px 7px rgba(0, 0, 0, 0.15),
-    0px -2px 7px rgba(0, 0, 0, 0.15),
-    0px 5px 17px rgba(0, 0, 0, 0.3);
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
+  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   border-radius: 4px;
 `;
 
@@ -50,7 +47,7 @@ export const Count = styled.span`
   white-space: nowrap;
   display: flex;
   align-items: center;
-  color: ${({ theme }) => theme.disabled};
+  color: ${props => props.theme.disabled};
 `;
 
 export const Controls = styled.div`
@@ -65,16 +62,16 @@ export const Control = styled.div`
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
-  background: ${({ theme }) => theme.background};
+  background: ${props => props.theme.background};
 
   & svg {
-    color: ${({ theme }) => theme.disabled};
+    color: ${props => props.theme.disabled};
     transition: color 0.2s ease 0s;
   }
 
   &:hover {
     svg {
-      color: ${({ theme }) => theme.foreground};
+      color: ${props => props.theme.foreground};
     }
 
     :last-child {
@@ -84,49 +81,50 @@ export const Control = styled.div`
   }
 
   &.actived svg {
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
 export const Label = styled.div`
   position: fixed;
+  width: max-content;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
-  top: 3.125rem;
+  top: 54px;
   z-index: 100;
   opacity: 0;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border};
+  background: ${props => props.theme.background};
+  border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
-  box-shadow: ${({ theme }) => theme.boxShadow} 0px 2px 7px;
+  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s ease 0s;
 
   & span {
     font-size: 0.75rem;
-    color: ${({ theme }) => theme.foreground};
+    color: ${props => props.theme.foreground};
   }
 `;
 
 export const Arrow = styled.div`
   position: absolute;
-  top: -0.75rem;
+  top: -0.6875rem;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 6px solid transparent;
-  border-bottom-color: ${({ theme }) => theme.border};
+  border-bottom-color: ${props => props.theme.border};
   transition: opacity 0.2s ease 0s;
 
   &::before {
     content: '';
     position: absolute;
-    top: -5px;
+    top: -0.3125rem;
     border: 7px solid transparent;
-    border-bottom-color: ${({ theme }) => theme.background};
+    border-bottom-color: ${props => props.theme.background};
   }
 `;
