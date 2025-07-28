@@ -34,7 +34,7 @@ export const LogoText = styled.div`
 
 export const Version = styled.div`
   position: absolute;
-  right: -2.5rem;
+  right: -2.1875rem;
   bottom: 1.5rem;
   font-size: 0.8125rem;
   cursor: pointer;

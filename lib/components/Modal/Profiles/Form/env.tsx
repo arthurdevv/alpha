@@ -1,46 +1,51 @@
-import { Fragment, h } from 'preact';
-import { memo } from 'preact/compat';
+import { h } from 'preact';
+import { Fragment, memo, useState } from 'preact/compat';
 
 import { clipboard } from '@electron/remote';
 
+import { FormOption } from '.';
 import {
-  EnvAction,
-  EnvAdd,
-  EnvForm,
-  EnvInfo,
-  EnvInput,
-  EnvItem,
-  EnvList,
-  EnvName,
-  EnvValue,
-  EnvWarning,
-  Wrapper,
+  Copied,
+  Property,
+  PropertyAction,
+  PropertyAdd,
+  PropertyForm,
+  PropertyInfo,
+  PropertyInput,
+  PropertyList,
+  PropertyName,
+  PropertyTooltip,
+  PropertyValue,
+  PropertyValues,
+  Warning,
 } from './styles';
 
-const Enviroment: React.FC<EnviromentProps> = ({ profile, setProfile }) => {
-  const variable: Record<string, string> = {};
+const property: Record<string, string> = {};
 
-  const { env } = profile.options;
+const EnvironmentForm: React.FC<EnvironmentFormProps> = (
+  props: EnvironmentFormProps,
+) => {
+  const { schema, profile, properties } = props;
 
-  const handleEnv = ({ currentTarget }) => {
-    const { ariaLabel, tagName } = currentTarget;
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const handleProperty = ({ currentTarget }) => {
+    const { tagName, value, placeholder, ariaLabel } = currentTarget;
 
     if (tagName === 'INPUT') {
-      const { value, placeholder } = currentTarget;
-
-      variable[placeholder.toLowerCase()] = value;
+      property[placeholder.toLowerCase()] = value;
     } else {
-      if (tagName === 'SPAN') {
-        delete env[ariaLabel];
-      } else {
-        const { name, value } = variable;
+      const target = profile.options[schema.key];
 
-        if (name && value) {
-          env[name] = value;
-        }
+      if (tagName === 'SPAN') {
+        delete target[ariaLabel];
+      } else {
+        const { name, value } = property;
+
+        if (name && value) target[name] = value;
       }
 
-      setProfile({ ...profile });
+      props.setProfile({ ...profile });
     }
   };
 
@@ -48,36 +53,69 @@ const Enviroment: React.FC<EnviromentProps> = ({ profile, setProfile }) => {
     const { innerText } = currentTarget;
 
     clipboard.writeText(innerText);
+
+    setCopied(true);
+
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
     <Fragment>
-      <Wrapper>
-        <EnvForm>
-          <EnvInput placeholder="Name" onChange={handleEnv} />
-          <EnvInput placeholder="Value" onChange={handleEnv} />
-          <EnvAdd onClick={handleEnv}>Add</EnvAdd>
-        </EnvForm>
-        {Object.keys(env).length > 0 ? (
-          <EnvList>
-            {Object.entries(env).map(([name, value], index) => (
-              <EnvItem key={index}>
-                <EnvInfo>
-                  <EnvName>{name}</EnvName>
-                  <EnvValue onClick={handleCopy}>{value}</EnvValue>
-                </EnvInfo>
-                <EnvAction aria-label={name} onClick={handleEnv}>
-                  Remove
-                </EnvAction>
-              </EnvItem>
-            ))}
-          </EnvList>
-        ) : (
-          <EnvWarning>No variables added</EnvWarning>
-        )}
-      </Wrapper>
+      {Array.isArray(schema) ? (
+        schema.map(option => {
+          const value = profile[option.key] || profile.options[option.key];
+
+          return (
+            <FormOption key={option} option={option} value={value} {...props} />
+          );
+        })
+      ) : (
+        <Fragment>
+          <PropertyForm>
+            {(schema as ProfileFormSchemaProperty).inputs.map(input => {
+              const { label, type } = input;
+
+              return (
+                <PropertyInput
+                  key={label}
+                  type={type}
+                  placeholder={label}
+                  onChange={handleProperty}
+                />
+              );
+            })}
+            <PropertyAdd onClick={handleProperty}>Add</PropertyAdd>
+          </PropertyForm>
+          <PropertyList>
+            {properties && properties.length > 0 ? (
+              properties.map(([name, value]) => (
+                <Property key={name}>
+                  <PropertyInfo>
+                    <PropertyName>{name}</PropertyName>
+                    <PropertyValues>
+                      <PropertyValue $select onClick={handleCopy}>
+                        {value}
+                      </PropertyValue>
+                      <PropertyTooltip>
+                        <div />
+                        <span>Click to copy</span>
+                      </PropertyTooltip>
+                    </PropertyValues>
+                  </PropertyInfo>
+                  <PropertyAction aria-label={name} onClick={handleProperty}>
+                    Remove
+                  </PropertyAction>
+                </Property>
+              ))
+            ) : (
+              <Warning>{schema.placeholder}</Warning>
+            )}
+          </PropertyList>
+        </Fragment>
+      )}
+      <Copied $hasCopied={copied}>Copied to clipboard</Copied>
     </Fragment>
   );
 };
 
-export default memo(Enviroment);
+export default memo(EnvironmentForm);

@@ -1,24 +1,25 @@
 {
   "compilerOptions": {
     "target": "ES2021",
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
-    "sourceMap": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "strict": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
     "noImplicitAny": false,
     "baseUrl": ".",
-    "outDir": "target",
     "paths": {
       "react": ["./node_modules/preact/compat/"],
       "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
-      "react-dom": ["./node_modules/preact/compat/"]
+      "react-dom": ["./node_modules/preact/compat/"],
+      "react-dom/*": ["./node_modules/preact/compat/*"],
+      "components/*": ["./lib/components/*"]
     },
     "typeRoots": ["node_modules/@types", "typings/*.d.ts"]
   },
@@ -28,6 +29,7 @@
     "cli/**/*",
     "test/**/*",
     "shared/**/*",
-    "typings/**/*"
+    "typings/**/*",
+    "./vite.config.mts"
   ]
 }

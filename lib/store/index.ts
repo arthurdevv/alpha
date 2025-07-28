@@ -3,18 +3,18 @@ import { create } from 'zustand';
 import actions from './actions';
 import methods from './methods';
 
-const initialState: AlphaState = {
+const initialState = <AlphaState>{
   context: {},
-  processes: {},
+  instances: {},
   current: {
     origin: null,
     focused: '',
-    instances: {},
+    terms: {},
   },
   options: {},
+  profile: {},
   viewport: {},
   modal: null,
-  profile: null,
 };
 
 const useStore = create<AlphaStore>((set, getStore) => {

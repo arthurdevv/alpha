@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
 import { app } from '@electron/remote';
@@ -34,13 +34,17 @@ const Watermark: React.FC = () => {
         <LogoName>LPHA</LogoName>
       </Logo>
       <Wrapper>
-        Press
-        <Keys>
-          {keys.map((key, index) => (
-            <KeyItem key={index}>{key}</KeyItem>
-          ))}
-        </Keys>
-        to show all commands
+        {keys.length > 0 && (
+          <Fragment>
+            Press
+            <Keys>
+              {keys.map((key, index) => (
+                <KeyItem key={index}>{key}</KeyItem>
+              ))}
+            </Keys>
+            to show all commands
+          </Fragment>
+        )}
       </Wrapper>
       <Footer>
         <Version onClick={() => execCommand('app:modal', 'About')}>

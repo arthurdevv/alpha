@@ -18,6 +18,10 @@ pane:split-horizontal:
   - ctrl+shift+s
 pane:split-vertical:
   - ctrl+shift+d
+process:disconnect:
+  - ctrl+c
+process:reconnect:
+  - ctrl+r
 tab:next:
   - ctrl+tab
 tab:previous:

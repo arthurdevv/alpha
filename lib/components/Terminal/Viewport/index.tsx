@@ -1,23 +1,22 @@
 import { h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { somePropertyIsTrue } from 'lib/utils';
+import { countTrueProperties } from 'lib/utils';
 
 import { Container } from './styles';
 
-const Viewport: React.FC<ViewportProps> = (props: ViewportProps) => {
+const Viewport: React.FC<AlphaStore> = (props: AlphaStore) => {
   const [isVisible, setVisible] = useState<boolean>(false);
 
-  const [shifted, setShifted] = useState<boolean>(false);
+  const [shift, setShift] = useState<number>(0);
 
   const {
     viewport: { cols, rows },
-    processes,
+    current: { focused },
+    instances,
   } = props;
 
   useEffect(() => {
-    setShifted(somePropertyIsTrue(processes, 'isExpanded'));
-
     let timeout: NodeJS.Timeout;
 
     if (cols || rows) {
@@ -33,8 +32,20 @@ const Viewport: React.FC<ViewportProps> = (props: ViewportProps) => {
     };
   }, [cols, rows]);
 
+  useEffect(() => {
+    const instance = instances[focused];
+
+    if (instance && instance.id !== 'Settings') {
+      const { type } = instance.profile;
+
+      const shift = countTrueProperties(instance, ['isExpanded']);
+
+      setShift((type !== 'shell' ? 1 : 0) + shift);
+    }
+  }, [instances]);
+
   return (
-    <Container $isVisible={isVisible} $shifted={shifted}>
+    <Container $isVisible={isVisible} $shift={shift}>
       {cols}x{rows}
     </Container>
   );

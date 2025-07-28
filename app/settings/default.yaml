@@ -19,18 +19,23 @@ terminal:
   renderer: default
   scrollback: 25000
   scrollOnUserInput: true
-  focusOnHover: false
   rightClick: contextmenu
   linkHandlerKey: ctrl
-  preserveCWD: true
   copyOnSelect: true
   trimSelection: true
   wordSeparators: ()[]{}< >/\|"'.,;
+  focusOnHover: false
+  preserveCWD: true
   openOnStart: false
   restoreOnStart: true
 window:
   acrylic: false
   opacity: 1
+  tabWidth: fixed
+  newTabPosition: end
+  onSecondInstance: attach
   alwaysOnTop: false
   autoHideOnBlur: false
+  launchMode: default
+  centerOnLaunch: false
 profiles: []

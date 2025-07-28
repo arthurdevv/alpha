@@ -7,7 +7,7 @@ export const Overlay = styled.div<{ $modal?: string; $isVisible: boolean }>`
   padding: 10vh 1rem 1rem;
   inset: 0;
   z-index: 100;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   background: ${props => props.theme.overlay};
@@ -28,7 +28,6 @@ export const Overlay = styled.div<{ $modal?: string; $isVisible: boolean }>`
 export const Container = styled.div<{ $isVisible: boolean; $width?: number }>`
   position: relative;
   width: 100%;
-  height: max-content;
   max-width: ${({ $width }) => $width || '31.25'}rem;
   transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
   transition-property: transform, opacity;
@@ -47,6 +46,9 @@ export const Container = styled.div<{ $isVisible: boolean; $width?: number }>`
 
 export const Content = styled.div<{ $maxHeight?: number }>`
   position: relative;
+  max-height: calc(100% - 3rem);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   background: ${props => props.theme.background};
   border: 1px solid ${props => props.theme.border};
@@ -70,18 +72,25 @@ export const Tags = styled.div`
   }
 `;
 
-export const Tag = styled.div<{ $isAction?: boolean }>`
+export const Tag = styled.div<{ $isTitle?: boolean }>`
   max-width: 100%;
   height: 1.5rem;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   font-size: 0.6875rem;
-  color: ${props => props.theme.foreground};
+  text-transform: uppercase;
+  color: ${props => props.theme.disabled};
   background: ${props => props.theme.background};
   border-radius: 4px;
   border: 1px solid ${props => props.theme.border};
+  transition: color 0.2s ease 0s;
+
+  &:hover {
+    color: ${props => props.theme.foreground};
+  }
 
   & svg {
     width: 0.8125rem;
@@ -90,30 +99,35 @@ export const Tag = styled.div<{ $isAction?: boolean }>`
     color: ${props => props.theme.popoverForeground};
   }
 
-  ${({ $isAction }) =>
-    $isAction &&
+  ${({ $isTitle }) =>
+    $isTitle &&
     css`
-      cursor: pointer;
-      text-transform: uppercase;
-      color: ${props => props.theme.disabled};
-      transition: color 0.2s ease 0s;
-
-      &:hover {
-        color: ${props => props.theme.foreground};
-      }
+      cursor: default;
+      text-transform: none;
+      color: ${props => props.theme.foreground};
     `}
 `;
 
-export const Search = styled.div`
-  height: 3rem;
+export const Search = styled.div<{ $fade?: boolean }>`
+  width: calc(100% - 0.125rem);
   padding: 0 1rem;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  flex-direction: row;
+  justify-content: flex-start;
+  transition: opacity 0.15s linear 0s;
+
+  ${({ $fade }) =>
+    $fade
+      ? css`
+          opacity: 0;
+        `
+      : css`
+          opacity: 1;
+        `}
 `;
 
 export const SearchInput = styled.input`
+  height: 3rem;
   flex: 1;
   font: inherit;
   line-height: 1;
@@ -122,7 +136,6 @@ export const SearchInput = styled.input`
 `;
 
 export const Wrapper = styled.div`
-  max-height: 25rem;
   overflow: auto;
   display: flex;
   align-items: center;
@@ -130,6 +143,25 @@ export const Wrapper = styled.div`
 
   &.hidden {
     display: none;
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.25rem;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-corner,
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.scrollbarThumb};
+    border-radius: 4px;
+
+    &:hover {
+      background: ${props => props.theme.scrollbarHover};
+    }
   }
 `;
 

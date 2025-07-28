@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-export const Container = styled.div<{ $isVisible: boolean; $shifted: boolean }>`
+export const Container = styled.div<{ $isVisible: boolean; $shift: number }>`
   position: fixed;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
@@ -14,7 +14,7 @@ export const Container = styled.div<{ $isVisible: boolean; $shifted: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.acrylic};
+  background: ${props => props.theme.background};
   border: 1px solid ${props => props.theme.border};
   border-radius: 4px;
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
@@ -28,10 +28,10 @@ export const Container = styled.div<{ $isVisible: boolean; $shifted: boolean }>`
       opacity: 1;
     `}
 
-  ${({ $shifted }) =>
-    $shifted &&
+  ${({ $shift }) =>
+    $shift &&
     css`
-      right: 3.125rem;
-      transition-delay: 0.1s, 0s;
+      right: ${$shift === 1 ? '3.125rem' : '5.25rem'};
+      transition-delay: 0.1s, ${$shift === 1 ? '0.1s' : '0s'};
     `}
 `;

@@ -1,62 +1,77 @@
-import { Fragment, h } from 'preact';
-import { memo, useEffect, useState } from 'preact/compat';
+import { h } from 'preact';
+import React, {
+  createElement,
+  Fragment,
+  memo,
+  useEffect,
+  useMemo,
+  useState,
+} from 'preact/compat';
 
+import { dialog, getCurrentWindow } from '@electron/remote';
 import { getSettings, setSettings } from 'app/settings';
-import { createProfile } from 'app/common/profiles';
 import useStore from 'lib/store';
 
-import Enviroment from './env';
+import { Search, SearchInput } from 'components/Modal/styles';
+import { SpinnerDownIcon, SpinnerIcon } from 'components/Icons';
 import {
   Container,
   Content,
   Description,
+  Dialog,
+  Entry,
   Input,
   Option,
   OptionContent,
-  Search,
-  SearchInput,
+  Selector,
   Separator,
+  Spinner,
   Switch,
   SwitchSlider,
   Tag,
   Tags,
   Wrapper,
 } from './styles';
+import EnvironmentForm from './env';
+import ConnectionForm from './connection';
+import schema from './schema';
+
+let cachedSection: string = 'general';
 
 const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
-  const { profile, setProfile, updateProfile } =
-    useStore() as NestedExclude<AlphaStore>;
+  const { profile, setProfile } = useStore();
 
-  const [isEnv, setIsEnv] = useState<boolean>(false);
+  const [section, setSection] = useState<string>('general');
 
   const [isFilled, setFilled] = useState<boolean>(false);
 
-  const handleIsFilled = () => {
-    const values: any[] = [];
+  const [fade, setFade] = useState(false);
 
-    const getValidation = (options: object) => {
-      Object.values(options).forEach(value => {
-        if (typeof value === 'object') {
-          getValidation(value);
-        } else if (typeof value !== 'boolean') {
-          values.push(value);
-        }
-      });
-    };
+  const handleSection = (
+    { currentTarget: { innerText } },
+    value: string,
+    toggle = false,
+  ) => {
+    if (toggle) {
+      const section = value === 'advanced' ? 'general' : 'advanced';
 
-    getValidation(profile);
+      cachedSection =
+        section !== cachedSection ? section : innerText.toLowerCase();
+    }
 
-    const isFilled = values.every(value => !!value === true);
-
-    setFilled(isFilled);
-
-    return isFilled;
+    handleFade(toggle ? cachedSection : value);
   };
 
-  const handleUpdate = ({ currentTarget }) => {
-    const { value, ariaLabel } = currentTarget;
+  const handleSingleSection = () => {
+    const index = 1 - tags.indexOf(section);
 
-    updateProfile(ariaLabel, value);
+    handleFade(tags[index]);
+  };
+
+  const handleChange = (key: string, { currentTarget: { value } }) => {
+    const target = key in profile.options ? profile.options : profile;
+
+    target[key] = value;
 
     handleIsFilled();
   };
@@ -77,118 +92,245 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
     setSettings('profiles', profiles, handleModal);
   };
 
-  useEffect(() => {
-    if (!profile) {
-      const blankProfile = createProfile();
+  const handleFade = (value: string) => {
+    if (section === value) return;
 
-      setProfile(blankProfile);
-    } else {
-      handleIsFilled();
-    }
+    setFade(true);
+
+    setTimeout(() => {
+      setSection(value);
+
+      setFade(false);
+    }, 100);
+  };
+
+  const handleIsFilled = () => {
+    const values: any[] = [];
+
+    const getValidation = (options: object) => {
+      Object.values(options).forEach(value => {
+        if (!value) return;
+
+        if (typeof value === 'object') {
+          getValidation(value);
+        } else if (typeof value !== 'boolean') {
+          values.push(value);
+        }
+      });
+    };
+
+    getValidation(profile);
+
+    const isFilled = values.every(value => !!value === true);
+
+    setFilled(isFilled);
+
+    return isFilled;
+  };
+
+  useEffect(() => {
+    handleIsFilled();
+
+    return () => {
+      setProfile(null);
+    };
   }, []);
 
-  if (profile) {
-    const { name, group, title, options } = profile;
+  const tags = useMemo(
+    () => (profile ? Object.keys(schema[profile.type]) : []),
+    [profile],
+  );
 
-    return (
-      <Container $width={45} $isVisible={isVisible}>
-        <Tags>
-          <Tag>Profile</Tag>
-          <Tag $isAction onClick={() => setIsEnv(!isEnv)}>
-            {isEnv ? 'Options' : 'Enviroment'}
+  const content = useMemo(() => {
+    const entries = schema[profile.type][section];
+
+    let properties: Record<string, string> | any[] = {};
+
+    if (entries.key in profile.options) {
+      const values = profile.options[entries.key];
+
+      properties = Array.isArray(values) ? values : Object.entries(values);
+    }
+
+    return { schema: entries, properties };
+  }, [profile, section]);
+
+  const componentMap = {
+    shell: EnvironmentForm,
+    ...Object.fromEntries(['ssh', 'serial'].map(t => [t, ConnectionForm])),
+  } as const;
+
+  return (
+    <Container $width={45} $isVisible={isVisible}>
+      <Tags>
+        <Tag $isTitle>Profile</Tag>
+        {tags.length <= 2 ? (
+          <Tag onClick={handleSingleSection}>
+            {tags[1 - tags.indexOf(section)]}
           </Tag>
-          <Tag $isAction onClick={handleModal}>
-            Cancel
-          </Tag>
-          <Tag
-            $isAction
-            onClick={isFilled ? handleSave : undefined}
-            style={{ cursor: isFilled === false ? 'not-allowed' : 'pointer' }}
+        ) : (
+          <Fragment>
+            <Tag onClick={event => handleSection(event, section, true)}>
+              {cachedSection === 'general' ? 'advanced' : 'general'}
+            </Tag>
+            {tags.slice(2).map((section, index) => (
+              <Tag onClick={event => handleSection(event, section)} key={index}>
+                {section}
+              </Tag>
+            ))}
+          </Fragment>
+        )}
+        <Tag onClick={handleModal}>Cancel</Tag>
+        <Tag
+          onClick={isFilled ? handleSave : undefined}
+          style={{ cursor: isFilled === false ? 'not-allowed' : 'pointer' }}
+        >
+          Save
+        </Tag>
+      </Tags>
+      <Content $maxHeight={20.4} style={{ overflow: 'auto' }}>
+        {section === 'general' && (
+          <Search $fade={fade}>
+            <SearchInput
+              placeholder="Name"
+              value={profile.name}
+              onChange={event => handleChange('name', event)}
+            />
+          </Search>
+        )}
+        <Wrapper $section={section} $fade={fade}>
+          {createElement(componentMap[profile.type], {
+            ...content,
+            section,
+            profile,
+            setProfile,
+          } as ProfileFormProps)}
+        </Wrapper>
+      </Content>
+    </Container>
+  );
+};
+
+export const FormOption: React.FC<ProfileFormOptionProps> = (
+  props: ProfileFormOptionProps,
+) => {
+  const { option, profile, value } = props;
+
+  const handleSpinner = (key: string, action: -1 | 1, { currentTarget }) => {
+    const input = currentTarget.closest('.number').querySelector('input');
+
+    input[action === 1 ? 'stepUp' : 'stepDown']();
+
+    profile.options[key] = Number(input.value);
+  };
+
+  const handleOption = (
+    key: string,
+    { currentTarget: { value, type, dataset } },
+  ) => {
+    const target = key in profile.options ? profile.options : profile;
+
+    if (!type) {
+      target[key] = !target[key];
+
+      props.setProfile({ ...profile });
+    } else {
+      target[key] =
+        type === 'number' || options?.every(value => typeof value === 'number')
+          ? Number(value)
+          : value;
+    }
+
+    if (dataset.auth) props.setAuthType && props.setAuthType(value);
+  };
+
+  const handleDialog = (key: string) => {
+    dialog
+      .showOpenDialog(getCurrentWindow(), {
+        properties: ['openFile'],
+        buttonLabel: 'Select private key file',
+      })
+      .then(({ filePaths: [path], canceled }) => {
+        if (!canceled) {
+          profile.options[key] = path;
+
+          props.setProfile({ ...profile });
+        }
+      });
+  };
+
+  const { key, label, description, type, options, values } = option;
+
+  const handleChange = handleOption.bind(null, key);
+
+  return (
+    <Option>
+      <Separator />
+      <OptionContent>
+        <span>{label}</span>
+        {options ? (
+          <Entry>
+            <Selector data-auth={key === 'authType'} onChange={handleChange}>
+              {options.map((option, index) => {
+                const selected = values ? values[index] === value : false;
+
+                return (
+                  <option
+                    key={option}
+                    value={values && values[index]}
+                    selected={selected}
+                  >
+                    {option}
+                  </option>
+                );
+              })}
+            </Selector>
+            <Spinner style={{ top: '-0.0625rem' }} $input="text">
+              <SpinnerDownIcon />
+            </Spinner>
+          </Entry>
+        ) : type === 'checkbox' ? (
+          <Switch
+            className={value ? 'checked' : undefined}
+            onClick={handleChange as any}
           >
-            Save
-          </Tag>
-        </Tags>
-        <Content $maxHeight={21.375}>
-          {isEnv ? (
-            <Enviroment profile={profile} setProfile={setProfile} />
-          ) : (
-            <Fragment>
-              <Search>
-                <SearchInput
-                  aria-label="name"
-                  placeholder="Name"
-                  value={name}
-                  onChange={handleUpdate}
+            <SwitchSlider />
+          </Switch>
+        ) : type === 'text' || type === 'number' || type === 'password' ? (
+          <Entry $flex={true} className={type}>
+            <Input
+              type={type}
+              value={value}
+              placeholder={type === 'password' ? 'Enter password' : '...'}
+              onChange={handleChange}
+              $width="calc(25ch + 0.125rem)"
+            />
+            {type === 'number' && (
+              <Spinner $input={type} style={{ top: 1 }}>
+                <SpinnerIcon
+                  arg0={event => handleSpinner(key, 1, event)}
+                  arg1={event => handleSpinner(key, -1, event)}
                 />
-              </Search>
-              <Wrapper>
-                <Option>
-                  <Separator />
-                  <OptionContent>
-                    <span>Group</span>
-                    <Input
-                      aria-label="group"
-                      value={group}
-                      onChange={handleUpdate}
-                    />
-                  </OptionContent>
-                  <Description>
-                    Name of the group to appear in the profiles list.
-                  </Description>
-                </Option>
-                <Option>
-                  <Separator />
-                  <OptionContent>
-                    <span>Command Line</span>
-                    <Input
-                      aria-label="shell"
-                      value={options.shell}
-                      onChange={handleUpdate}
-                    />
-                  </OptionContent>
-                  <Description>
-                    Path to the executable to be launched for the profile.
-                  </Description>
-                </Option>
-                <Option>
-                  <Separator />
-                  <OptionContent>
-                    <span>Working Directory</span>
-                    <Input
-                      aria-label="cwd"
-                      value={options.cwd!}
-                      onChange={handleUpdate}
-                    />
-                  </OptionContent>
-                  <Description>
-                    Absolute path where the executable will run.
-                  </Description>
-                </Option>
-                <Option>
-                  <Separator />
-                  <OptionContent>
-                    <span>Tab Title</span>
-                    <Switch
-                      aria-label="title"
-                      className={title ? 'checked' : undefined}
-                      onClick={handleUpdate}
-                    >
-                      <SwitchSlider />
-                    </Switch>
-                  </OptionContent>
-                  <Description>
-                    Sets the tab title to match the profile name.
-                  </Description>
-                </Option>
-              </Wrapper>
-            </Fragment>
-          )}
-        </Content>
-      </Container>
-    );
-  }
-
-  return <Fragment />;
+              </Spinner>
+            )}
+          </Entry>
+        ) : (
+          <Fragment>
+            <Dialog title={value} onClick={() => handleDialog(key)}>
+              {value || 'Upload key...'}
+            </Dialog>
+          </Fragment>
+        )}
+      </OptionContent>
+      <Description>
+        {type === 'password'
+          ? 'Password used for authentication.'
+          : type === 'dialog'
+            ? 'Private key file used for authentication.'
+            : description}
+      </Description>
+    </Option>
+  );
 };
 
 export default memo(Form);

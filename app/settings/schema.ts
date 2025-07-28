@@ -1,7 +1,4 @@
-const schema: Record<
-  Section,
-  Record<string, Record<string, ISettingsOption>>
-> = {
+export default {
   Application: {
     Default: {
       language: {
@@ -48,6 +45,7 @@ const schema: Record<
         type: 'number',
         input: 'select',
         options: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        values: [100, 200, 300, 400, 500, 600, 700, 800, 900],
       },
       fontWeightBold: {
         name: 'Bold font weight',
@@ -55,6 +53,7 @@ const schema: Record<
         type: 'number',
         input: 'select',
         options: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        values: [100, 200, 300, 400, 500, 600, 700, 800, 900],
       },
       drawBoldTextInBrightColors: {
         name: 'Bold text in bright colors',
@@ -73,14 +72,14 @@ const schema: Record<
         label: 'Controls the line height.',
         input: 'text',
         type: 'number',
-        range: { min: '0', max: '99', step: '0.1' },
+        range: { min: '1', max: '99', step: '0.1' },
       },
       letterSpacing: {
         name: 'Letter spacing',
         label: 'Controls the spacing in whole pixels between characters.',
         type: 'number',
         input: 'text',
-        range: { min: '-99', max: '99', step: '0.1' },
+        range: { min: '-10', max: '10', step: '0.1' },
       },
       minimumContrastRatio: {
         name: 'Minimum contrast ratio',
@@ -232,7 +231,34 @@ const schema: Record<
         range: { min: '0.5', max: '1', step: '0.01' },
       },
     },
+    Layout: {
+      tabWidth: {
+        name: 'Tab width',
+        label: 'Controls the tabs width mode.',
+        type: 'string',
+        input: 'select',
+        options: ['Auto', 'Fixed'],
+        values: ['auto', 'fixed'],
+      },
+      newTabPosition: {
+        name: 'New tab position',
+        label: 'Controls where new tabs are added in the tab row.',
+        type: 'string',
+        input: 'select',
+        options: ['After current tab', 'End of the row'],
+        values: ['current', 'end'],
+      },
+    },
     Behavior: {
+      onSecondInstance: {
+        name: 'Instance behavior',
+        label: 'Controls the behavior of new instances of the application.',
+        type: 'string',
+        input: 'select',
+        options: ['Create new window', 'Attach to existing window'],
+        values: ['create', 'attach'],
+        badges: ['Restart Required'],
+      },
       alwaysOnTop: {
         name: 'Always on top',
         label: 'Whether the window should stay on top of other windows.',
@@ -247,7 +273,22 @@ const schema: Record<
         input: 'checkbox',
       },
     },
+    Launch: {
+      launchMode: {
+        name: 'Launch mode',
+        label: 'Controls the initial display mode of the window.',
+        type: 'string',
+        input: 'select',
+        options: ['Default', 'Maximized', 'Full screen'],
+        values: ['default', 'maximized', 'fullscreen'],
+      },
+      centerOnLaunch: {
+        name: 'Center on launch',
+        label: 'Whether to show window in the center of the screen.',
+        type: 'boolean',
+        input: 'checkbox',
+      },
+    },
   },
-};
-
-export default schema;
+  Config: {},
+} as Record<Section, Record<string, Record<string, ISettingsOption>>>;

@@ -1,10 +1,11 @@
-import { terms } from 'app/common/terminal';
 import {
   CloseIcon,
   CopyIcon,
+  DisconnectIcon,
   EnterFullScreenIcon,
   ExitFullScreenIcon,
   PasteIcon,
+  ReconnectIcon,
   RecordIcon,
   SearchIcon,
   SelectAllIcon,
@@ -77,27 +78,48 @@ const selectionSchema = [
   },
 ];
 
+const connectionSchema = [
+  {
+    label: 'Disconnect',
+    command: 'process:disconnect',
+    icon: DisconnectIcon({ vb: '15 15' }),
+  },
+  {
+    label: 'Reconnect',
+    command: 'process:reconnect',
+    icon: ReconnectIcon(),
+  },
+];
+
 export default (
-  { group, process, term }: ContextMenuSchemaState,
+  { group, instance, term }: ContextMenuSchemaProps,
   isExtended: boolean,
 ) => {
   let schema: IContextMenuSchema[] = [];
 
   if (term) {
-    if (term.hasSelection()) {
+    if (instance?.profile.type !== 'shell') {
+      schema = schema.concat(connectionSchema);
+    } else {
+      schema = schema.concat(initialSchema);
+    }
+
+    if (term.hasSelection) {
       schema = schema.concat(selectionSchema);
     }
 
-    schema = schema.concat(initialSchema);
-
     if (isExtended) {
+      if (instance?.profile.type !== 'shell') {
+        schema = schema.concat(initialSchema);
+      }
+
       schema = schema.concat(extrasSchema);
 
       if (group && group.children.length > 1) {
         const filteredSchema = interactionSchema.filter(
           ({ label }) =>
             label !==
-            (process && process.isExpanded ? 'Expand Pane' : 'Collapse Pane'),
+            (instance && instance.isExpanded ? 'Expand Pane' : 'Collapse Pane'),
         );
 
         schema = schema.concat(filteredSchema);
@@ -105,7 +127,7 @@ export default (
 
       schema = schema.concat(extendedSchema);
 
-      if (process && process.isExpanded) {
+      if (instance && instance.isExpanded) {
         schema = schema.filter(
           ({ label }) => label !== 'Broadcast' && !label.includes('Split'),
         );

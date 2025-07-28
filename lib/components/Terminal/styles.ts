@@ -11,6 +11,10 @@ export const Group = styled.div<{ $isCurrent: boolean }>`
     css`
       display: block;
     `}
+
+  &:has([role="presentation"].expanded) *[role="presentation"]:not(.expanded) {
+    opacity: 0;
+  }
 `;
 
 export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
@@ -18,6 +22,10 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
   width: 100%;
   height: 100%;
   display: flex;
+
+  &:has(.expanded) > span {
+    opacity: 0;
+  }
 
   ${({ $cursor }) =>
     $cursor === 'ew-resize'
@@ -47,7 +55,7 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
     `}
 `;
 
-export const Pane = styled.div<{ $isCurrent?: boolean; $isExpanded?: boolean }>`
+export const Pane = styled.div<{ $isCurrent?: boolean }>`
   position: relative;
   width: 100%;
   height: 100%;
@@ -63,16 +71,14 @@ export const Pane = styled.div<{ $isCurrent?: boolean; $isExpanded?: boolean }>`
       opacity: 1;
     `}
 
-  ${({ $isExpanded }) =>
-    $isExpanded &&
-    css`
-      position: fixed;
-      height: calc(100% - 2.375rem);
-      top: 2.375rem;
-      left: 0;
-      z-index: 10;
-      background: ${props => props.theme.expanded};
-      animation: ${keyframes`
+  &.expanded {
+    position: fixed;
+    height: calc(100% - 2.375rem);
+    top: 2.375rem;
+    left: 0;
+    z-index: 10;
+    opacity: 0;
+    animation: ${keyframes`
         from {
           opacity: 0;
         }
@@ -80,13 +86,8 @@ export const Pane = styled.div<{ $isCurrent?: boolean; $isExpanded?: boolean }>`
         to {
           opacity: 1;
         }
-      `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0s;
-
-      & > div:last-of-type {
-        opacity: 1;
-        transition-delay: 0.35s;
-      }
-    `}
+      `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0.1s;
+  }
 `;
 
 export const SplitPane = styled.div`
@@ -141,24 +142,4 @@ export const Divider = styled.span`
     background: ${props => props.theme.dividerHover};
     transition: background 0.2s ease-in-out 0.3s;
   }
-`;
-
-export const Indicator = styled.div`
-  position: fixed;
-  width: 1.875rem;
-  height: 1.875rem;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 10;
-  opacity: 0;
-  cursor: default;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => props.theme.acrylic};
-  border: 1px solid ${props => props.theme.border};
-  box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
-  border-radius: 4px;
-  transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
 `;

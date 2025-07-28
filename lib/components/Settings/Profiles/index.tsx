@@ -1,5 +1,5 @@
 import { Fragment, h } from 'preact';
-import { memo, useEffect, useState } from 'preact/compat';
+import { memo, useEffect, useMemo, useState } from 'preact/compat';
 
 import { execCommand } from 'app/keymaps/commands';
 import { getGroups } from 'app/common/profiles';
@@ -9,12 +9,13 @@ import useStore from 'lib/store';
 import {
   Action,
   Actions,
+  BadgeItem,
+  Badges,
   Column,
   Group,
   Info,
   Item,
   List,
-  Shell,
   Tag,
 } from './styles';
 
@@ -25,8 +26,31 @@ const Profiles: React.FC<SectionProps> = ({ options }) => {
 
   const handleModal = (modal: string, profile: IProfile | null) => {
     setModal(modal);
-
     setProfile(profile);
+  };
+
+  const getFilteredBadges = (profile: IProfile) => {
+    let badges: (string | number)[] = [];
+
+    if (profile.type === 'shell') {
+      let { file, args } = profile.options;
+
+      file = (args.find(arg => arg.includes('.exe')) ?? file)
+        .split(/(\\|\/)/g)
+        .pop()!;
+
+      badges.push(file);
+    } else if (profile.type === 'ssh') {
+      const { host, port } = profile.options;
+
+      badges.push(host, port);
+    } else {
+      const { path, baudRate } = profile.options;
+
+      badges.push(path, baudRate);
+    }
+
+    return { ...profile, badges };
   };
 
   useEffect(() => {
@@ -34,6 +58,24 @@ const Profiles: React.FC<SectionProps> = ({ options }) => {
 
     setGroups(groups);
   }, [modal]);
+
+  const actions = useMemo(
+    () => ({
+      Run: {
+        condition: (group: string) => group,
+        onClick: (profile: IProfile) => execCommand('terminal:create', profile),
+      },
+      Edit: {
+        condition: (group: string) => group !== 'System',
+        onClick: (profile: IProfile) => handleModal('Form', profile),
+      },
+      Delete: {
+        condition: (group: string) => group !== 'System',
+        onClick: (profile: IProfile) => handleModal('Dialog', profile),
+      },
+    }),
+    [],
+  );
 
   return (
     <Fragment>
@@ -47,36 +89,33 @@ const Profiles: React.FC<SectionProps> = ({ options }) => {
               <Tag>{name}</Tag>
               <List role="group">
                 {sortArray(group).map((profile: IProfile, index) => {
-                  const { name, group, options } = profile;
+                  const { name, group, badges } = getFilteredBadges(profile);
 
                   return (
                     <Item key={index} data-name={name}>
                       <Info>
                         <span>{name}</span>
-                        <Shell>{options.shell.split(/(\\|\/)/g).pop()}</Shell>
+                        <Badges>
+                          {badges.map((value, key) => (
+                            <BadgeItem key={key}>{value}</BadgeItem>
+                          ))}
+                        </Badges>
                       </Info>
                       <Actions>
-                        <Action
-                          onClick={() =>
-                            execCommand('terminal:create', profile)
-                          }
-                        >
-                          Run
-                        </Action>
-                        {group !== 'System' && (
-                          <Fragment>
+                        {Object.entries(actions).map(([label, action]) => {
+                          const { condition, onClick } = action;
+
+                          return condition(group) ? (
                             <Action
-                              onClick={() => handleModal('Form', profile)}
+                              key={label}
+                              onClick={() => onClick(profile)}
                             >
-                              Edit
+                              {label}
                             </Action>
-                            <Action
-                              onClick={() => handleModal('Dialog', profile)}
-                            >
-                              Delete
-                            </Action>
-                          </Fragment>
-                        )}
+                          ) : (
+                            <Fragment key={label} />
+                          );
+                        })}
                       </Actions>
                     </Item>
                   );

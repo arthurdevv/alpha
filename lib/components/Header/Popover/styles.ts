@@ -7,7 +7,7 @@ export const Container = styled.div`
   justify-content: center;
 `;
 
-export const Content = styled.span<{ $label: string }>`
+export const Content = styled.span<{ $keys: string[]; $label: string }>`
   position: fixed;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
@@ -17,6 +17,7 @@ export const Content = styled.span<{ $label: string }>`
   line-height: 1rem;
   font-size: 0.75rem;
   pointer-events: none;
+  white-space: nowrap;
   display: flex;
   align-items: center;
   color: ${props => props.theme.foreground};
@@ -26,12 +27,12 @@ export const Content = styled.span<{ $label: string }>`
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s ease 0s;
 
-  ${props =>
-    props.$label === 'Close'
+  ${({ $label }) =>
+    $label === 'Close'
       ? css`
           right: 0.5rem;
         `
-      : props.$label === 'New terminal' || props.$label === 'Profiles'
+      : $label === 'New terminal' || $label === 'Profiles'
         ? css`
             padding: 0.25rem 0.25rem 0.25rem 0.5rem;
             left: 0.5rem;
@@ -40,13 +41,19 @@ export const Content = styled.span<{ $label: string }>`
               left: auto !important;
             }
           `
-        : props.$label === 'Settings' &&
+        : $label === 'Settings' &&
           css`
             padding: 0.25rem 0.25rem 0.25rem 0.5rem;
           `}
+
+  ${({ $keys }) =>
+    $keys.length === 0 &&
+    css`
+      padding: 0.25rem 0.5rem;
+    `}
 `;
 
-export const Keys = styled.div<{ $hidden: boolean }>`
+export const Keys = styled.div<{ $hidden?: boolean }>`
   margin-left: 0.5rem;
   gap: 0.25rem;
   display: flex;

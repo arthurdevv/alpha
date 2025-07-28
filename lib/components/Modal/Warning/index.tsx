@@ -18,13 +18,9 @@ const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   return (
     <Container $width={34} $isVisible={isVisible}>
       <Tags>
-        <Tag>Warning</Tag>
-        <Tag $isAction onClick={handleModal}>
-          Cancel
-        </Tag>
-        <Tag $isAction onClick={handlePaste}>
-          Paste anyway
-        </Tag>
+        <Tag $isTitle>Warning</Tag>
+        <Tag onClick={handleModal}>Cancel</Tag>
+        <Tag onClick={handlePaste}>Paste anyway</Tag>
       </Tags>
       <Content>
         <Wrapper>

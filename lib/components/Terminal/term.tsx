@@ -5,8 +5,8 @@ import Terminal, { terms } from 'app/common/terminal';
 import { execCommand } from 'app/keymaps/commands';
 import { getSettings } from 'app/settings';
 
-import { Content, Indicator, Pane } from './styles';
-import { ScreenFullIcon } from '../Icons';
+import { Content, Pane } from './styles';
+import Tooltip from './Tooltip';
 
 const Term: React.FC<TermProps> = (props: TermProps) => {
   const parent = useRef<HTMLElement | null>(null);
@@ -100,16 +100,14 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
   return (
     <Pane
       role="presentation"
+      className={props.isExpanded ? 'expanded' : undefined}
       $isCurrent={props.isCurrent}
-      $isExpanded={props.isExpanded}
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onContextMenu={onContextMenu}
     >
       <Content ref={onRef} />
-      <Indicator>
-        <ScreenFullIcon />
-      </Indicator>
+      <Tooltip {...props} />
     </Pane>
   );
 };

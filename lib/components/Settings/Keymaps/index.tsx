@@ -1,71 +1,101 @@
 import { Fragment, h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { getKeymaps, writeKeymaps } from 'app/keymaps';
+import { getKeymaps, mousetrap, writeKeymaps } from 'app/keymaps';
 import { parseKeys, schema } from 'app/keymaps/schema';
 
 import { Overlay } from 'lib/components/Modal/styles';
 import { KeyItem as KeyBadge } from 'lib/components/Header/Popover/styles';
 import { Title } from '../styles';
 import {
+  Action,
+  Editor,
+  EditorContent,
+  EditorKey,
+  EditorKeys,
+  EditorTag,
+  EditorTags,
+  EditorTitle,
+  Item,
   Key,
   Keys,
   Label,
   List,
-  ListItem,
-  Preview,
-  PreviewKey,
-  PreviewKeys,
-  PreviewTitle,
   Separator,
+  Wrapper,
 } from './styles';
 
+let combination: string[] = [];
+
 const Keymaps: React.FC = () => {
-  const [command, setCommand] = useState<string | undefined>();
+  const [command, setCommand] = useState({ value: '', index: -1 });
 
-  const [inputKeys, setInputKeys] = useState<string[]>([]);
+  const [pressedKeys, setPressedKeys] = useState<string[]>([]);
 
-  const handleKeys = (event: KeyboardEvent) => {
+  const [shouldReset, setShouldReset] = useState<boolean>(false);
+
+  const getEventKey = ({ key }: KeyboardEvent) => {
+    if (key.includes('Arrow')) {
+      key = key.replace('Arrow', '');
+    } else if (key === 'Control') {
+      key = 'Ctrl';
+    }
+
+    return key.toLowerCase();
+  };
+
+  const getCommandKeymap = () => {
+    const keymaps = getKeymaps();
+
+    return { keymaps, keys: keymaps[command.value] };
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
     event.preventDefault();
 
-    let { key, ctrlKey } = event;
+    const key = getEventKey(event);
 
-    if (key === 'Escape') {
+    if (key === 'escape') {
       return resetState();
     }
 
-    key = ctrlKey ? 'Ctrl' : key;
-
-    setInputKeys(keys => {
-      if (key === 'Enter') {
-        if (keys.length >= 1 && command) {
-          const keymaps = getKeymaps();
-
-          keymaps[command] = [keys.join('+').toLowerCase()];
-
-          writeKeymaps(keymaps);
-        }
-
+    if (key === 'enter') {
+      if (pressedKeys.length === 0) {
         return resetState();
       }
 
-      const updatedKeys = new Set([...keys, key]);
+      if (pressedKeys.length > 0 && combination.length <= 1) {
+        return setShouldReset(true);
+      }
+    }
 
-      return keys.length < 5 ? Array.from(updatedKeys) : keys;
+    setPressedKeys(keys => {
+      combination.push(key);
+
+      if (!keys.includes(key)) {
+        keys.push(key);
+      }
+
+      return [...keys];
     });
   };
 
-  const handleCommand = ({ currentTarget }) => {
-    const command = currentTarget.getAttribute('data-command');
+  const handleKeyUp = (event: KeyboardEvent) => {
+    const key = getEventKey(event);
 
-    setCommand(command);
+    combination = combination.filter(value => value !== key);
   };
 
-  const resetState = () => {
-    setInputKeys([]);
-    setCommand(undefined);
+  const handleDelete = () => {
+    const { keymaps, keys } = getCommandKeymap();
 
-    return [];
+    if (command.index !== -1) {
+      keys.splice(command.index, 1);
+
+      writeKeymaps(keymaps);
+    }
+
+    resetState();
   };
 
   const handleOverlay = (event: React.TargetedEvent<HTMLElement>) => {
@@ -74,13 +104,43 @@ const Keymaps: React.FC = () => {
     target === currentTarget && resetState();
   };
 
+  const resetState = () => {
+    setCommand({ value: '', index: -1 });
+    setPressedKeys([]);
+    setShouldReset(false);
+  };
+
   useEffect(() => {
-    if (command) {
-      document.addEventListener('keydown', handleKeys);
+    if (pressedKeys.length > 0) {
+      const { keymaps, keys } = getCommandKeymap();
+
+      const joinedKeys = pressedKeys.join('+');
+
+      if (command.index === -1) {
+        keys.push(joinedKeys);
+      } else if (!keys.includes(joinedKeys)) {
+        keys[command.index] = joinedKeys;
+      }
+
+      writeKeymaps(keymaps);
+    }
+
+    resetState();
+  }, [shouldReset]);
+
+  useEffect(() => {
+    if (command.value) {
+      mousetrap.stopCallback = () => true;
+
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeys);
+      mousetrap.stopCallback = () => false;
+
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [command]);
 
@@ -94,31 +154,47 @@ const Keymaps: React.FC = () => {
           const keys = parseKeys(command);
 
           return (
-            <ListItem key={index}>
+            <Item key={index}>
               <Separator />
               <Label>{label}</Label>
-              <Keys>
-                <Key data-command={command} onClick={handleCommand}>
-                  {keys.map((value, index) => (
-                    <span key={index}>{value}</span>
-                  ))}
-                </Key>
-              </Keys>
-            </ListItem>
+              <Wrapper>
+                <Action
+                  onClick={() => setCommand({ value: command, index: -1 })}
+                >
+                  Add keys...
+                </Action>
+                {keys.map((keys, index) => (
+                  <Keys key={index}>
+                    <Key onClick={() => setCommand({ value: command, index })}>
+                      {keys.map((key, index) => (
+                        <span key={index}>{key}</span>
+                      ))}
+                    </Key>
+                  </Keys>
+                ))}
+              </Wrapper>
+            </Item>
           );
         })}
       </List>
-      <Overlay $isVisible={Boolean(command)} onClick={handleOverlay}>
-        <Preview>
-          <PreviewTitle>
-            Press key combination and then press <KeyBadge>ENTER</KeyBadge>
-          </PreviewTitle>
-          <PreviewKeys>
-            {inputKeys.map((value, index) => (
-              <PreviewKey key={index}>{value}</PreviewKey>
-            ))}
-          </PreviewKeys>
-        </Preview>
+      <Overlay $isVisible={Boolean(command.value)} onClick={handleOverlay}>
+        <Editor $isVisible={Boolean(command.value)}>
+          <EditorTags>
+            {command.index !== -1 && (
+              <EditorTag onClick={handleDelete}>Delete</EditorTag>
+            )}
+          </EditorTags>
+          <EditorContent>
+            <EditorTitle>
+              Press key combination and then press <KeyBadge>ENTER</KeyBadge>
+            </EditorTitle>
+            <EditorKeys>
+              {pressedKeys.map((value, index) => (
+                <EditorKey key={index}>{value}</EditorKey>
+              ))}
+            </EditorKeys>
+          </EditorContent>
+        </Editor>
       </Overlay>
     </Fragment>
   );

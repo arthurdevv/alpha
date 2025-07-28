@@ -9,18 +9,21 @@ export default (set: AlphaSet) => ({
 
   onTitleChange(id: string, title: string) {
     set(state => {
-      const { profile } = state.processes[id];
+      const { profile } = state.instances[id];
 
-      if (profile && profile.title) {
-        return state.set(['processes', id, 'title'], profile.name);
-      }
-
-      return state.set(['processes', id, 'title'], title.trim());
+      return state.set(
+        ['instances', id, 'title'],
+        profile.title ? profile.name : title.trim(),
+      );
     });
   },
 
   onExpand(id: string) {
-    set(state => state.toggle(['processes', id, 'isExpanded']));
+    set(state => state.toggle(['instances', id, 'isExpanded']));
+  },
+
+  onConnect(id: string, value: boolean) {
+    set(state => state.set(['instances', id, 'isConnected'], value));
   },
 
   onResize(id: string, { cols, rows }: IViewport) {
@@ -45,10 +48,10 @@ export default (set: AlphaSet) => ({
 
   onFocus(id: string, broadcast?: boolean) {
     set(state => {
-      const { origin, instances } = state.current;
+      const { origin, terms } = state.current;
 
       if (typeof broadcast === 'boolean' && origin) {
-        const current = instances[origin];
+        const current = terms[origin];
 
         const children =
           current.length > 1 ? [id] : getCurrentChildren(state, true);
@@ -65,10 +68,10 @@ export default (set: AlphaSet) => ({
   onData(data: string) {
     set(state => {
       const {
-        current: { origin, instances },
+        current: { origin, terms },
       } = state;
 
-      const children = origin ? instances[origin] : [];
+      const children = origin ? terms[origin] : [];
 
       children.forEach(id => execCommand('process:write', { id, data }));
 
@@ -87,15 +90,17 @@ export default (set: AlphaSet) => ({
         const children = getCurrentChildren(state, true, id);
 
         children.forEach(id => {
-          state = state.without(['processes', id]);
+          state = state.without(['instances', id]);
 
-          execCommand('process:kill', { id });
+          execCommand('process:action', 'kill', id);
         });
       }
 
       const tabs = Object.keys(context);
 
-      if (tabs.length > 0) {
+      if (tabs.length === 1) {
+        state = state.set('current', { origin: null, focused: '', terms: {} });
+      } else {
         const index = tabs.indexOf(id);
 
         if (id === tabs[tabs.length - 1]) {
@@ -105,18 +110,14 @@ export default (set: AlphaSet) => ({
         }
 
         state = state.set(['current', 'origin'], origin);
-      } else {
-        state = state.set('current', { origin: null, instances: {} });
       }
 
       return state.without(['context', id]);
     });
   },
 
-  setOptions(options: ISettings | (() => ISettings)) {
-    set(state =>
-      state.set('options', typeof options === 'function' ? options() : options),
-    );
+  setOptions(options: ISettings) {
+    set(state => state.set('options', options));
   },
 
   setModal(modal: string | null) {
@@ -131,21 +132,6 @@ export default (set: AlphaSet) => ({
 
   setProperty(property: keyof AlphaState, value: AlphaState[typeof property]) {
     set(state => state.set(property, value));
-  },
-
-  updateProfile(key: string, value: any) {
-    set(state => {
-      const { profile } = state;
-
-      if (profile) {
-        const { title, options } = profile;
-
-        (key in options ? options : profile)[key] =
-          key === 'title' ? !title : value;
-      }
-
-      return state.set('profile', profile);
-    });
   },
 
   ...actions(set),

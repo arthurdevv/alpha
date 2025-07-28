@@ -11,7 +11,7 @@
   },
   "extraResources": [
     {
-      "from": "app/utils/clink",
+      "from": "resources/clink",
       "to": "clink"
     },
     {

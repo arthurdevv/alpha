@@ -12,6 +12,7 @@ import {
   RegexIcon,
   WholeWordIcon,
 } from 'lib/components/Icons';
+import { SearchInput } from '../styles';
 import {
   Arrow,
   Container,
@@ -21,7 +22,6 @@ import {
   Count,
   Label,
 } from './styles';
-import { SearchInput } from '../styles';
 
 const schema = {
   caseSensitive: {

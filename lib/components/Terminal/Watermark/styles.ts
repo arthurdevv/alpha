@@ -98,7 +98,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Keys = styled.div`
-  margin: 0 0.5rem;
+  margin: 0 0.3125rem;
   gap: 0.25rem;
   display: flex;
   align-items: center;
@@ -113,6 +113,7 @@ export const KeyItem = styled.div`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
+  background: ${props => props.theme.background};
   color: ${props => props.theme.popoverForeground};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;

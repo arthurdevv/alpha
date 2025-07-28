@@ -28,13 +28,9 @@ const Dialog: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   return (
     <Container $isVisible={isVisible}>
       <Tags>
-        <Tag>Profile</Tag>
-        <Tag $isAction onClick={handleModal}>
-          Cancel
-        </Tag>
-        <Tag $isAction onClick={handleDelete}>
-          Delete
-        </Tag>
+        <Tag $isTitle>Profile</Tag>
+        <Tag onClick={handleModal}>Cancel</Tag>
+        <Tag onClick={handleDelete}>Delete</Tag>
       </Tags>
       <Content>
         <Title>

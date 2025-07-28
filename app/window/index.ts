@@ -7,12 +7,34 @@ import invokeEvents from 'app/events';
 import installCLI from 'cli/install';
 import { getBounds, saveBounds } from './bounds';
 
-initialize();
+let isSingleInstance: boolean = true;
 
-const { gpu, autoUpdates, acrylic } = getSettings();
+function handleInitialization(): void {
+  const { onSecondInstance } = getSettings();
 
-export function createWindow(): void {
-  const mainWindow = new glasstron.BrowserWindow({
+  if (onSecondInstance === 'attach') {
+    isSingleInstance = app.requestSingleInstanceLock();
+
+    if (!isSingleInstance) {
+      app.quit();
+    } else {
+      app.on('second-instance', async (event, _, cwd) => {
+        event.preventDefault();
+
+        if (mainWindow) {
+          mainWindow.webContents.send('second-instance', { cwd });
+        }
+      });
+    }
+  }
+
+  initialize();
+}
+
+let mainWindow: Alpha.BrowserWindow | null = null;
+
+function createWindow(): void {
+  mainWindow = new glasstron.BrowserWindow({
     width: 1050,
     height: 560,
     minWidth: 400,
@@ -27,31 +49,36 @@ export function createWindow(): void {
       nodeIntegration: true,
       contextIsolation: false,
     },
-    ...getBounds(),
+    ...settings,
+    ...getBounds(centerOnLaunch),
   });
 
   enable(mainWindow.webContents);
 
   mainWindow.loadURL(
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:4000'
-      : `file://${__dirname}/index.html`,
+    app.isPackaged ? `file://${__dirname}/index.html` : 'http://localhost:4000',
   );
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
+    if (mainWindow) {
+      mainWindow.show();
+
+      !app.isPackaged && mainWindow.webContents.openDevTools();
+    }
   });
 
   mainWindow.on('close', () => {
-    saveBounds(mainWindow.getBounds());
+    mainWindow && saveBounds(mainWindow.getBounds());
+  });
 
-    mainWindow.close();
+  mainWindow.on('closed', () => {
+    mainWindow = null;
   });
 
   mainWindow.on('blur', () => {
     const { alwaysOnTop, autoHideOnBlur } = getSettings();
 
-    if (!alwaysOnTop && !mainWindow.isFocused()) {
+    if (mainWindow && !alwaysOnTop && !mainWindow.isFocused()) {
       mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
     }
   });
@@ -60,17 +87,30 @@ export function createWindow(): void {
 
   if (autoUpdates) checkForUpdates(mainWindow);
 
+  switch (launchMode) {
+    case 'fullscreen':
+      mainWindow.setFullScreen(true);
+      break;
+
+    case 'maximized':
+      mainWindow.maximize();
+      break;
+  }
+
   invokeEvents(mainWindow);
 }
 
-Menu.setApplicationMenu(null);
+handleInitialization();
+
+const { autoUpdates, gpu, acrylic, launchMode, centerOnLaunch, ...settings } =
+  getSettings();
 
 if (!gpu) {
   app.disableHardwareAcceleration();
 }
 
 app.whenReady().then(() => {
-  createWindow();
+  isSingleInstance && createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -88,3 +128,7 @@ app.on('window-all-closed', () => {
 });
 
 app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
+
+Menu.setApplicationMenu(null);
+
+export { createWindow };

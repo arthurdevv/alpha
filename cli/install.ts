@@ -3,13 +3,11 @@ import { join } from 'path';
 import { appPath } from 'app/settings/constants';
 import enableShellIntegration from 'app/utils/shell-integration';
 
-enableShellIntegration();
-
 const binPath = join(appPath, '../../bin');
 
-const { HKCU, Access, ValueType } = Registry;
-
 function installCLI(): void {
+  const { HKCU, Access, ValueType } = Registry;
+
   const envKey = Registry.openKey(HKCU, 'Environment', Access.ALL_ACCESS)!;
 
   let value = Registry.queryValue(envKey, 'Path') as string;
@@ -23,11 +21,13 @@ function installCLI(): void {
       envKey,
       'Path',
       ValueType.EXPAND_SZ,
-      Registry.formatString(binPath),
+      Registry.formatString(value),
     );
   }
 
   Registry.closeKey(envKey);
+
+  enableShellIntegration();
 }
 
 export default installCLI;

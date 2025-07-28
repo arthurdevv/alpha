@@ -5,6 +5,7 @@ import { getSettings, setSettings } from 'app/settings';
 import { getGroups } from 'app/common/profiles';
 import listeners from 'app/settings/listeners';
 import schema from 'app/settings/schema';
+import storage from 'app/utils/local-storage';
 
 import {
   BadgeItem,
@@ -12,6 +13,7 @@ import {
   Container,
   Content,
   Description,
+  Entry,
   Input,
   Label,
   Navigation,
@@ -20,14 +22,17 @@ import {
   Section,
   Selector,
   Separator,
+  Spinner,
   Switch,
   SwitchSlider,
   Title,
   Wrapper,
 } from './styles';
+import { SpinnerDownIcon, SpinnerIcon } from '../Icons';
 import Application from './Application';
 import Keymaps from './Keymaps';
 import Profiles from './Profiles';
+import Config from './Config';
 
 const initialSettings = getSettings();
 
@@ -41,7 +46,9 @@ function getProfiles(): Record<string, string[]> {
 }
 
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
-  const [section, setSection] = useState<Section>('Application');
+  const [section, setSection] = useState<Section>(
+    () => storage.parseItem('section', 'Application') as Section,
+  );
 
   const [profiles, setProfiles] = useState(getProfiles);
 
@@ -56,13 +63,15 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
         setSection(value);
       }, 125);
+
+      storage.updateItem('section', value);
     }
   };
 
   const handleBadges = ({ parentElement }) => {
     const option = parentElement.querySelector('div');
 
-    const badges: HTMLElement = option.querySelector('div');
+    const badges = option.querySelector('div');
 
     if (badges) badges.classList.toggle('visible');
   };
@@ -99,6 +108,21 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
     }
 
     setSettings(key as keyof ISettings, value);
+  };
+
+  const handleSpinner = (
+    key: string,
+    action: -1 | 1,
+    { max, min, step }: any,
+  ) => {
+    const prop = getSettings()[key] as number;
+
+    const value =
+      Math.round((prop + (step ? action * Number(step) : action)) * 100) / 100;
+
+    if (value <= Number(max) && value >= Number(min)) {
+      setSettings(key as keyof ISettings, value);
+    }
   };
 
   useEffect(() => {
@@ -141,31 +165,50 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                     <SwitchSlider />
                   </Switch>
                 ) : input === 'select' ? (
-                  <Selector $name={name} onChange={handleChange}>
-                    {(options || profiles.options)?.map((option, index) => {
-                      let selected = false;
+                  <Entry>
+                    <Selector onChange={handleChange}>
+                      {(options || profiles.options)?.map((option, index) => {
+                        let selected = false;
 
-                      if (values) {
-                        selected = (values[index] || option) === value;
-                      } else {
-                        selected = profiles.values[index] === value;
-                      }
+                        if (values) {
+                          selected = (values[index] || option) === value;
+                        } else {
+                          selected = profiles.values[index] === value;
+                        }
 
-                      return (
-                        <option key={index} value={option} selected={selected}>
-                          {option}
-                        </option>
-                      );
-                    })}
-                  </Selector>
+                        return (
+                          <option
+                            key={index}
+                            value={option}
+                            selected={selected}
+                          >
+                            {option}
+                          </option>
+                        );
+                      })}
+                    </Selector>
+                    <Spinner $input={input}>
+                      <SpinnerDownIcon />
+                    </Spinner>
+                  </Entry>
                 ) : (
-                  <Input
-                    $name={name}
-                    type={type}
-                    value={value}
-                    onChange={handleChange}
-                    {...range}
-                  />
+                  <Entry>
+                    <Input
+                      type={type}
+                      value={value}
+                      onChange={handleChange}
+                      placeholder="..."
+                      {...(type === 'number' ? range : {})}
+                    />
+                    {type === 'number' && (
+                      <Spinner $input={input}>
+                        <SpinnerIcon
+                          arg0={() => handleSpinner(key, 1, range)}
+                          arg1={() => handleSpinner(key, -1, range)}
+                        />
+                      </Spinner>
+                    )}
+                  </Entry>
                 )}
               </Content>
               <Description>{label}</Description>
@@ -177,10 +220,13 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   );
 
   const children = (() => {
-    const element = createElement({ Application, Profiles, Keymaps }[section], {
-      section,
-      options,
-    });
+    const element = createElement(
+      { Application, Profiles, Keymaps, Config }[section],
+      {
+        section,
+        options,
+      },
+    );
 
     return element.type ? element : null;
   })();

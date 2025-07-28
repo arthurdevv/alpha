@@ -1,8 +1,10 @@
-function sortArray(array: any[]) {
+import { cloneDeepWith, isPlainObject, transform } from 'lodash';
+
+export function sortArray(array: any[]) {
   return array.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function onSearch({ currentTarget }) {
+export function onSearch({ currentTarget }) {
   const {
     value,
     parentElement: { parentElement },
@@ -16,7 +18,7 @@ function onSearch({ currentTarget }) {
     let count = 0;
 
     items.forEach(item => {
-      const name = item.getAttribute('data-name')?.toLowerCase();
+      const name = (item as any).dataset.name?.toLowerCase();
 
       const isVisible = name && name.includes(value.toLowerCase());
 
@@ -29,7 +31,7 @@ function onSearch({ currentTarget }) {
   });
 }
 
-function isNonEmptyObject(target: any): boolean {
+export function isNonEmptyObject(target: any): boolean {
   const keys = Object.keys(target);
 
   if (keys.length === 0) {
@@ -43,11 +45,38 @@ function isNonEmptyObject(target: any): boolean {
   });
 }
 
-function somePropertyIsTrue<T extends object>(
+export function countTrueProperties<T extends object>(
   target: T,
-  key: keyof T[keyof T],
-): boolean {
-  return Object.values(target).some(value => value[key] === true);
+  keys: (keyof T)[],
+): number {
+  return keys.reduce((count, key) => count + (target[key] === true ? 1 : 0), 0);
 }
 
-export { sortArray, onSearch, isNonEmptyObject, somePropertyIsTrue };
+export function serialize<T extends object>(target: T): T {
+  return cloneDeepWith(target, val =>
+    typeof val === 'function' ||
+    typeof val === 'symbol' ||
+    val === undefined ||
+    Buffer?.isBuffer?.(val)
+      ? undefined
+      : undefined,
+  );
+}
+
+export function sanitizeObject(target: any): any {
+  return transform(target, (result, value, key) => {
+    if (
+      value === undefined ||
+      typeof value === 'function' ||
+      typeof value === 'symbol' ||
+      Buffer?.isBuffer?.(value)
+    ) {
+      return;
+    }
+
+    result[key] =
+      isPlainObject(value) || Array.isArray(value)
+        ? sanitizeObject(value)
+        : value;
+  });
+}

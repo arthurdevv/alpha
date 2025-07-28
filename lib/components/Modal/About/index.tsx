@@ -26,10 +26,8 @@ const About: React.FC<ModalProps> = ({ isVisible }) => {
   return (
     <Container $width={20} $isVisible={isVisible}>
       <Tags>
-        <Tag>About</Tag>
-        <Tag $isAction onClick={handleCopy}>
-          Copy
-        </Tag>
+        <Tag $isTitle>About</Tag>
+        <Tag onClick={handleCopy}>Copy</Tag>
       </Tags>
       <Content>
         <Wrapper>

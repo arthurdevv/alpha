@@ -25,6 +25,7 @@ const Popover: React.FC<PopoverProps> = ({ label, style }) => {
       <Arrow />
       <Content
         $label={label}
+        $keys={keys}
         style={style}
         className={Object.keys(context).length > 0 ? 'auto' : undefined}
       >

@@ -1,7 +1,7 @@
-import { h } from 'preact';
-import { memo } from 'preact/compat';
+import { Fragment, h } from 'preact';
+import { memo, useState } from 'preact/compat';
 
-import { getGroups } from 'app/common/profiles';
+import { createProfile, getGroups } from 'app/common/profiles';
 import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 import { onSearch, sortArray } from 'lib/utils';
@@ -24,30 +24,65 @@ import {
 } from '../styles';
 
 const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
-  const groups = getGroups();
-
   const { setProfile } = useStore();
 
-  const handleClick = (profile: IProfile) => {
+  const [isSelecting, setIsSelecting] = useState<boolean>(false);
+
+  const handleClick = (profile: IProfile | null) => {
+    if (isSelecting) {
+      return props
+        .handleModal(undefined, 'Form')
+        .then(() => setProfile(createProfile(profile)));
+    }
+
     execCommand('terminal:create', profile).then(props.handleModal);
   };
 
-  const handleCreate = () => {
-    props.handleModal(undefined, 'Form').then(() => setProfile(null));
+  const getFilteredBadges = (profile: IProfile) => {
+    let badges: (string | number)[] = [];
+
+    if (profile.type === 'shell') {
+      let { file, args } = profile.options;
+
+      file = (args.find(arg => arg.includes('.exe')) ?? file)
+        .split(/(\\|\/)/g)
+        .pop()!;
+
+      badges.push(file);
+    } else if (profile.type === 'ssh') {
+      const { host, port } = profile.options;
+
+      badges.push(host, port);
+    } else {
+      const { path, baudRate } = profile.options;
+
+      badges.push(path, baudRate);
+    }
+
+    return { ...profile, badges };
   };
+
+  const groups = getGroups(false, isSelecting);
 
   return (
     <Container $isVisible={props.isVisible}>
       <Tags>
-        <Tag>Profiles</Tag>
-        <Tag $isAction onClick={handleCreate}>
-          Create new profile
-        </Tag>
+        <Tag $isTitle>Profiles</Tag>
+        {isSelecting ? (
+          <Tag onClick={() => setIsSelecting(false)}>Cancel</Tag>
+        ) : (
+          <Fragment>
+            <Tag onClick={() => setIsSelecting(true)}>Create new profile</Tag>
+            <Tag onClick={() => execCommand('app:settings', 'Profiles')}>
+              Manage profiles
+            </Tag>
+          </Fragment>
+        )}
       </Tags>
       <Content>
         <Search>
           <SearchInput
-            placeholder="Select or type a profile"
+            placeholder={`Select or type a profile${isSelecting ? ' to duplicate' : ''}`}
             onChange={onSearch}
           />
         </Search>
@@ -60,7 +95,7 @@ const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
                 <Separator />
                 <Label>{name}</Label>
                 {sortArray(group).map((profile: IProfile, index) => {
-                  const { name, options } = profile;
+                  const { name, badges } = getFilteredBadges(profile);
 
                   return (
                     <ListItem
@@ -70,9 +105,9 @@ const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
                     >
                       <Name>{name}</Name>
                       <Badges>
-                        <BadgeItem>
-                          {options.shell.split(/(\\|\/)/g).pop()}
-                        </BadgeItem>
+                        {badges.map((value, key) => (
+                          <BadgeItem key={key}>{value}</BadgeItem>
+                        ))}
                       </Badges>
                     </ListItem>
                   );

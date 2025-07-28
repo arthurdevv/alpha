@@ -19,6 +19,7 @@ import {
   SearchInput,
   Separator,
   Tag,
+  Tags,
   Wrapper,
 } from '../styles';
 
@@ -31,7 +32,9 @@ const Commands: React.FC<ModalProps> = (props: ModalProps) => {
 
   return (
     <Container $isVisible={props.isVisible}>
-      <Tag>Command Palette</Tag>
+      <Tags>
+        <Tag $isTitle>Command Palette</Tag>
+      </Tags>
       <Content>
         <Search>
           <SearchInput
@@ -45,7 +48,10 @@ const Commands: React.FC<ModalProps> = (props: ModalProps) => {
               <Separator />
               <Label>{label}</Label>
               {actions.map((action, index) => {
-                const { command, keys } = getPaletteSchema(action);
+                const {
+                  command,
+                  keys: [keys = []],
+                } = getPaletteSchema(action);
 
                 return (
                   <ListItem
