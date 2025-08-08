@@ -29,7 +29,7 @@ const ContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
 
   const {
     context,
-    processes,
+    instances,
     current: { origin },
   } = useStore();
 
@@ -37,7 +37,7 @@ const ContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
     {
       term: global.id ? terms[global.id] : null,
       group: origin ? context[origin] : null,
-      process: global.id ? processes[global.id] : null,
+      instance: global.id ? instances[global.id] : null,
     },
     isExtended,
   );
@@ -83,7 +83,7 @@ const ContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
           {schema.map((action, index) => {
             const { label, command, icon } = action;
 
-            const keys = formatKeys(command);
+            const [keys = []] = formatKeys(command);
 
             return (
               <Action
@@ -91,10 +91,10 @@ const ContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
                 key={index}
               >
                 {icon}
-                <Label>
+                <Label $keys={keys}>
                   <Arrow />
                   <span>{label}</span>
-                  <Keys>
+                  <Keys $hidden={keys.length === 0} key={index}>
                     {keys.map((key, index) => (
                       <Key key={index}>{key}</Key>
                     ))}
@@ -105,7 +105,7 @@ const ContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
           })}
           <Action onClick={handleAction}>
             <DotsIcon />
-            <Label>
+            <Label $keys={[]}>
               <Arrow />
               <span>{isExtended ? 'See Less' : 'See More'}</span>
             </Label>

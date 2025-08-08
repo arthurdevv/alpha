@@ -5,13 +5,21 @@ function createItem(key: string, value?: any): any {
     localStorage.setItem(key, value ?? '{}');
   }
 
-  return typeof value === 'boolean' ? value : {};
+  return typeof value !== 'object' ? value : {};
 }
 
 function parseItem(key: string, value?: any): any {
-  const item = localStorage.getItem(key);
+  let item = localStorage.getItem(key);
 
-  return item ? JSON.parse(item) : createItem(key, value);
+  if (item) {
+    try {
+      item = JSON.parse(item);
+    } catch (error) {
+      return item;
+    }
+  }
+
+  return item ?? createItem(key, value);
 }
 
 function updateItem(key: string, value: any, spread?: boolean): void {
@@ -22,7 +30,7 @@ function updateItem(key: string, value: any, spread?: boolean): void {
   localStorage.setItem(key, value);
 }
 
-function deleteItem(key: string) {
+function deleteItem(key: string): { updateItem: typeof updateItem } {
   localStorage.removeItem(key);
 
   return { updateItem };

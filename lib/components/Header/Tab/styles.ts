@@ -10,28 +10,26 @@ export const Group = styled.div`
 export const Container = styled.div<{
   $isCurrent: boolean;
   $transition: boolean;
+  $tabWidth: 'auto' | 'fixed' | undefined;
 }>`
   position: relative;
   width: 12.5rem;
-  padding-right: 1rem;
   z-index: 100;
+  padding: 0 1rem;
   cursor: pointer;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${props => props.theme.disabled};
-  transition: color 0.2s ease 0s;
+  transition: 0.2s ease 0s;
+  transition-property: width, color, opacity;
   animation: ${keyframes`
     0% {
       width: 0;
       padding: 0;
     }
-
-    100% {
-      width: 12.5rem;
-    }
-  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+  `} 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
 
   &:hover {
     & span:first-of-type {
@@ -40,7 +38,8 @@ export const Container = styled.div<{
         60px auto;
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-position: left, right;
-      -webkit-mask-image: linear-gradient(#000 0 0),
+      -webkit-mask-image:
+        linear-gradient(#000 0 0),
         linear-gradient(to left, transparent 0%, #000 100%);
     }
 
@@ -57,25 +56,37 @@ export const Container = styled.div<{
       color: ${props => props.theme.foreground};
     `}
 
-  ${props =>
-    !props.$transition &&
+  ${({ $transition }) =>
+    !$transition &&
     css`
-      width: 0;
+      width: 0 !important;
       padding: 0;
       opacity: 0;
-      transition:
-        color 0.2s ease 0s,
-        width 0.15s linear 0s,
-        opacity 0.2s linear 0s;
     `}
+
+  ${({ $tabWidth }) =>
+    $tabWidth === 'fixed'
+      ? css`
+          width: 12.5rem;
+        `
+      : css`
+          width: fit-content;
+
+          & div {
+            right: 0;
+          }
+        `}
 `;
 
 export const Title = styled.span`
-  margin-left: 1rem;
-  font-size: 0.813rem;
+  font-size: 0.8125rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  animation: ${keyframes`
+    from { opacity: 0; }
+    to { opacity: 1; }
+  `} 0.6s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
 `;
 
 export const Close = styled.div`

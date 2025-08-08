@@ -6,14 +6,6 @@ export const handlers: Record<string, Function[]> = {
   keymaps: [],
 };
 
-const watchOptions: chokidar.ChokidarOptions = {
-  atomic: true,
-  persistent: true,
-};
-
-const getWatcher = (path: string): chokidar.FSWatcher =>
-  chokidar.watch(path, watchOptions);
-
 function subscribe(key: string, callback: Function) {
   const handler = handlers[key];
 
@@ -21,11 +13,14 @@ function subscribe(key: string, callback: Function) {
 
   callback();
 
-  const watcher = getWatcher(
+  const watcher = chokidar.watch(
     key === 'options' ? userSettingsPath : userKeymapsPath,
+    { atomic: true, persistent: true },
   );
 
   watch(watcher, key);
+
+  return { subscribe };
 }
 
 function watch(watcher: chokidar.FSWatcher, key: string) {

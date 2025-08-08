@@ -19,6 +19,8 @@ const schema: Record<string, string> = {
   'pane:close': 'Close pane',
   'pane:split-horizontal': 'Split horizontal',
   'pane:split-vertical': 'Split vertical',
+  'process:reconnect': 'Reconnect client',
+  'process:disconnect': 'Disconnect client',
   'tab:next': 'Next tab',
   'tab:previous': 'Previous tab',
   'window:create': 'New window',
@@ -38,6 +40,9 @@ const boundCommands: Record<string, Record<string, string[]>> = {
   terminal: {
     action: ['copy', 'paste', 'selectAll', 'clear', 'focus'],
   },
+  process: {
+    action: ['clear', 'kill', 'disconnect', 'reconnect'],
+  },
   app: {
     modal: ['commands', 'profiles'],
   },
@@ -50,32 +55,50 @@ const paletteCommands: Record<string, string[]> = {
 };
 
 function parseKeys(command: string, initial?: boolean) {
-  const [keys] = getKeymaps(initial)[command];
+  let keys: string[] | string[][] = getKeymaps(initial)[command];
 
-  return keys.split('+');
+  if (keys.length > 0) {
+    keys = keys.map(value => value.split('+'));
+
+    return keys;
+  }
+
+  return [];
 }
 
 function formatKeys(command: string, initial?: boolean) {
   const keys = parseKeys(command, initial);
 
-  return keys.map(key => {
-    switch (key) {
-      case 'shift':
-        return '⇧';
+  return keys.map(keys =>
+    keys.map(key => {
+      switch (key) {
+        case 'shift':
+          return '⇧';
 
-      case 'enter':
-        return '↵';
+        case 'enter':
+          return '↵';
 
-      default:
-        return key;
-    }
-  });
+        default:
+          return key;
+      }
+    }),
+  );
 }
 
 function watchKeys(command: string, callback: Function, format = true) {
-  listeners.subscribe('keymaps', () =>
-    callback(format ? formatKeys(command) : parseKeys(command)),
-  );
+  listeners.subscribe('keymaps', () => {
+    const [keys = []] = format ? formatKeys(command) : parseKeys(command);
+
+    callback(keys);
+  });
+}
+
+function watchKeymaps(callback: (keymaps: Set<string>) => void) {
+  listeners.subscribe('keymaps', () => {
+    const keymaps = new Set<string>(getKeymaps(false, true) as any);
+
+    callback(keymaps);
+  });
 }
 
 function getPaletteSchema(label: string) {
@@ -97,5 +120,6 @@ export {
   parseKeys,
   formatKeys,
   watchKeys,
+  watchKeymaps,
   getPaletteSchema,
 };

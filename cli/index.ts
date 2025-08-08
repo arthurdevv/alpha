@@ -1,7 +1,11 @@
 import args from 'args';
 import { existsSync } from 'fs';
 import { isAbsolute, resolve } from 'path';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import {
+  spawn,
+  type SpawnOptionsWithoutStdio,
+  type StdioPipeNamed,
+} from 'child_process';
 
 args.command('<default>', 'Initialize Alpha');
 
@@ -17,14 +21,12 @@ args.command('<default>', 'Initialize Alpha');
   const argsc = args.sub.map(path => {
     const cwd = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
-    if (!existsSync(cwd)) {
-      process.exit(1);
-    }
+    if (!existsSync(cwd)) process.exit(1);
 
     return cwd;
   });
 
-  const env = Object.assign(process.env, {
+  const env: NodeJS.ProcessEnv = Object.assign(process.env, {
     ALPHA_CLI: 'true',
   });
 
@@ -33,6 +35,7 @@ args.command('<default>', 'Initialize Alpha');
   const options: SpawnOptionsWithoutStdio = {
     env,
     detached: true,
+    stdio: 'ignore' as StdioPipeNamed,
   };
 
   const child = spawn(process.execPath, argsc, options);

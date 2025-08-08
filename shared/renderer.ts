@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { ipcRenderer } from 'electron';
+import { delay } from 'lodash';
 
 class IPCRenderer {
   private emitter: EventEmitter;
@@ -9,14 +10,18 @@ class IPCRenderer {
   constructor() {
     this.emitter = new EventEmitter();
 
-    ipcRenderer.on('ipc-start', (_, id: string) => {
+    ipcRenderer.on('app:start', (_, id: string) => {
       this.id = id;
 
       ipcRenderer.on(id, (_, { channel, args }) => {
         this.emitter.emit(channel, args);
       });
 
-      this.send('ipc-main-ready');
+      delay(event => this.emit(event), 3900, 'app:renderer-ready');
+    });
+
+    ipcRenderer.on('second-instance', (_, args) => {
+      this.emit('app:second-instance', args);
     });
   }
 

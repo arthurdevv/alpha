@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment, h, JSX } from 'preact';
 import { memo } from 'preact/compat';
 
 import useStore from 'lib/store';
@@ -14,7 +14,7 @@ const Terms: React.FC = () => {
 
   const {
     context,
-    current: { origin, instances },
+    current: { origin, terms },
   } = store;
 
   return (
@@ -23,7 +23,7 @@ const Terms: React.FC = () => {
         const props: TermGroupProps = {
           ...store,
           group,
-          current: instances[id],
+          current: terms[id],
         };
 
         return id === 'Settings' ? (
@@ -40,14 +40,14 @@ const Terms: React.FC = () => {
 };
 
 const TermGroup: React.FC<TermGroupProps> = (props: TermGroupProps) => {
-  const { group, processes, current } = props;
+  const { group, instances, current } = props;
 
   const createTerm = (id: string) => {
-    const process = processes[id];
+    const instance = instances[id];
 
     const termProps: TermProps = {
       ...props,
-      ...process,
+      ...instance,
       isCurrent: current.includes(id),
       onFocus: props.onFocus.bind(null, id),
       onResize: props.onResize.bind(null, id),

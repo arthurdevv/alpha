@@ -3,6 +3,7 @@ import { SearchAddon } from '@xterm/addon-search';
 import { LigaturesAddon } from '@xterm/addon-ligatures';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { ImageAddon } from '@xterm/addon-image';
 import { WebglAddon } from '@xterm/addon-webgl';
 import { CanvasAddon } from '@xterm/addon-canvas';
 import { shell } from '@electron/remote';
@@ -11,7 +12,7 @@ import { decorations } from 'lib/styles/theme';
 
 const addons: Record<string, Addons> = {};
 
-export function findResult(id: string, term: string, action: string) {
+function findResult(id: string, term: string, action: string) {
   const { SearchAddon } = addons[id];
 
   const controls = storage.parseItem('controls');
@@ -19,13 +20,13 @@ export function findResult(id: string, term: string, action: string) {
   SearchAddon[action](term, { decorations, ...controls });
 }
 
-export function clearResult(id: string) {
+function clearResult(id: string) {
   const { SearchAddon } = addons[id];
 
   SearchAddon.clearDecorations();
 }
 
-export function onChangeResults(id: string, updater: Function) {
+function onChangeResults(id: string, updater: Function) {
   const { SearchAddon } = addons[id];
 
   return SearchAddon.onDidChangeResults(({ resultIndex, resultCount }) =>
@@ -38,6 +39,8 @@ export default class Addons {
 
   SearchAddon = new SearchAddon();
 
+  ImageAddon = new ImageAddon();
+
   Unicode11Addon = new Unicode11Addon();
 
   WebLinksAddon: WebLinksAddon | undefined;
@@ -47,14 +50,18 @@ export default class Addons {
   RendererAddon: CanvasAddon | WebglAddon | undefined;
 
   constructor(id: string, options: Partial<ISettings>) {
-    const { renderer, fontLigatures, linkHandlerKey } = options;
+    const { fontLigatures } = options;
 
-    this.WebLinksAddon = new WebLinksAddon((event, uri) => {
-      const shouldHandleLink = !linkHandlerKey || event[`${linkHandlerKey}Key`];
+    if (fontLigatures) {
+      this.LigaturesAddon = new LigaturesAddon();
+    }
 
-      if (shouldHandleLink) shell.openExternal(uri);
-    });
+    this.handleOptionalAddons(options);
 
+    addons[id] = this;
+  }
+
+  handleOptionalAddons({ renderer, linkHandlerKey }: Partial<ISettings>): void {
     if (renderer !== 'default') {
       this.RendererAddon = new (
         renderer === 'canvas' ? CanvasAddon : WebglAddon
@@ -63,16 +70,36 @@ export default class Addons {
       if (this.RendererAddon instanceof WebglAddon) {
         this.RendererAddon.onContextLoss(this.RendererAddon.dispose);
       }
+    } else if (this.RendererAddon) {
+      this.RendererAddon.dispose();
     }
 
-    if (fontLigatures) {
-      this.LigaturesAddon = new LigaturesAddon();
+    if (this.WebLinksAddon) {
+      this.WebLinksAddon.dispose();
+
+      this.WebLinksAddon = undefined;
     }
 
-    addons[id] = this;
+    this.WebLinksAddon = new WebLinksAddon((event, uri) => {
+      const shouldHandleLink = !linkHandlerKey || event[`${linkHandlerKey}Key`];
+
+      if (shouldHandleLink) shell.openExternal(uri);
+    });
+  }
+
+  load(term: any, addons?: any[]): void {
+    Object.values(addons || this).forEach(addon => term.loadAddon(addon));
+  }
+
+  reload(term: any, options: Partial<ISettings>): void {
+    this.handleOptionalAddons(options);
+
+    this.load(term, [this.RendererAddon, this.WebLinksAddon]);
   }
 
   fit(): void {
     this.FitAddon.fit();
   }
 }
+
+export { findResult, clearResult, onChangeResults };

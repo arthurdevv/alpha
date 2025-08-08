@@ -94,7 +94,13 @@ export const Info = styled.div`
   }
 `;
 
-export const Shell = styled.span`
+export const Badges = styled.div`
+  gap: 0.25rem;
+  display: flex;
+  align-items: center;
+`;
+
+export const BadgeItem = styled.span`
   height: 1.25rem;
   min-width: 1.25rem;
   padding: 0 0.25rem;

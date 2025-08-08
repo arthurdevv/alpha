@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo, useEffect } from 'preact/compat';
 
 import useStore from 'lib/store';

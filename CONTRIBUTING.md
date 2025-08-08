@@ -36,13 +36,7 @@ yarn install
 yarn run dev
 ```
 
-3. Rebuild `node-pty` in order to avoid compilation errors:
-
-```sh
-yarn run rebuild-pty
-```
-
-4. After finishing the application, you can generate the executable:
+3. After finishing the application, you can generate the executable:
 
 ```sh
 yarn run package
@@ -50,7 +44,7 @@ yarn run package
 
 > **Note: It will generate the executable in the `release` folder.**
 
-5. To make sure that your bundles works, run:
+4. To make sure that your bundles works, run:
 
 ```sh
 npx playwright test

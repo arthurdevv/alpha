@@ -11,8 +11,9 @@ import Popover from '../Popover';
 const TabGroup: React.FC = () => {
   const {
     context,
-    processes,
-    current: { origin, instances },
+    instances,
+    current: { origin, terms },
+    options: { tabWidth },
     onSelect,
     onClose,
   } = useStore();
@@ -20,15 +21,16 @@ const TabGroup: React.FC = () => {
   return (
     <Group role="group">
       {Object.keys(context).map(id => {
-        const [focused] = instances[id];
+        const [focused] = terms[id];
 
-        const { title } = processes[focused];
+        const { title } = instances[focused];
 
         const props: TabProps = {
           title,
           isCurrent: id === origin,
           onSelect: onSelect.bind(null, id),
           onClose: onClose.bind(null, id),
+          tabWidth,
         };
 
         return <Tab {...props} key={id} />;
@@ -41,7 +43,7 @@ const Tab: React.FC<TabProps> = (props: TabProps) => {
   const [transition, setTransition] = useState<boolean>(true);
 
   const handleSelect = ({ target }) => {
-    const signal = target.getAttribute('data-signal');
+    const { signal } = target.dataset;
 
     if (signal !== 'SIGHUP') {
       execCommand('window:title', title).then(props.onSelect);
@@ -55,15 +57,16 @@ const Tab: React.FC<TabProps> = (props: TabProps) => {
       setTransition(true);
 
       props.onClose();
-    }, 150);
+    }, 200);
   };
 
-  const { title, isCurrent } = props;
+  const { title, isCurrent, tabWidth } = props;
 
   return (
     <Container
-      $isCurrent={isCurrent}
       $transition={transition}
+      $isCurrent={isCurrent}
+      $tabWidth={tabWidth}
       onClick={handleSelect}
     >
       <Title title={title}>{title}</Title>

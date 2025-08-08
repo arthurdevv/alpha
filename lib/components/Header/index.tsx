@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import React, { memo, useState } from 'preact/compat';
+import React, { memo, useEffect, useState } from 'preact/compat';
 
 import { BrowserWindow } from '@electron/remote';
 import { execCommand } from 'app/keymaps/commands';
@@ -17,12 +17,12 @@ import { ActionItem, Actions, Container, DragRegion } from './styles';
 import TabGroup from './Tab';
 import Popover from './Popover';
 
+const getFocusedWindow = () => BrowserWindow.getFocusedWindow()!;
+
 const Header: React.FC = () => {
   const [isMaximized, setMaximized] = useState<boolean>(false);
 
   const handleAction = (action: string) => {
-    const focusedWindow = BrowserWindow.getFocusedWindow()!;
-
     switch (action) {
       case 'maximize':
       case 'restore':
@@ -34,8 +34,22 @@ const Header: React.FC = () => {
         break;
     }
 
-    focusedWindow[action]();
+    getFocusedWindow()[action]();
   };
+
+  useEffect(() => {
+    const focusedWindow = getFocusedWindow();
+
+    if (focusedWindow) {
+      ['maximize', 'unmaximize', 'restore', 'minimize'].forEach(eventName => {
+        focusedWindow.on(eventName as any, () => {
+          const isMaximized = focusedWindow.isMaximized();
+
+          setMaximized(isMaximized);
+        });
+      });
+    }
+  }, []);
 
   return (
     <Container onClick={() => execCommand('terminal:focus')}>

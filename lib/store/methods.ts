@@ -92,6 +92,28 @@ export default {
     return this.set([first], target);
   },
 
+  insert(path: string, value: any, origin: string | null): AlphaStore {
+    const target = this[path];
+
+    const entries = Object.entries(target);
+
+    if (origin && target[origin]) {
+      const index = entries.findIndex(([key]) => key === origin);
+
+      entries.splice(index + 1, 0, [value.id, value]);
+    } else {
+      entries.push([value.id, value]);
+    }
+
+    const result = <typeof target>{};
+
+    entries.forEach(([key, value]) => {
+      result[key] = value;
+    });
+
+    return this.set(path, result);
+  },
+
   without(path: string[]) {
     const [first] = path;
 

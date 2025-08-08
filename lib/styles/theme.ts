@@ -9,6 +9,7 @@ export const theme = {
   acrylic: acrylic ? 'rgba(0, 0, 0, 0.70)' : 'rgba(15, 15, 15, 1.0)',
   transparent: acrylic ? 'rgba(0, 0, 0, 0.0)' : 'rgba(15, 15, 15, 1.0)',
   expanded: 'rgba(15, 15, 15, 0.98)',
+  icon: 'rgba(64, 64, 64, 1.0)',
   border: 'rgba(40, 40, 40, 1.0)',
   overlay: 'rgba(15, 15, 15, 0.45)',
   divider: acrylic ? 'rgba(255, 255, 255, 0.04)' : 'rgba(7, 7, 7, 1.0)',

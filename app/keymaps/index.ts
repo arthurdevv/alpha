@@ -10,39 +10,45 @@ function getNumericKeys(): Record<string, string[]> {
   const keys: Record<string, string[]> = {};
 
   for (let i = 1; i <= 9; i += 1) {
-    const index = i === 9 ? 9 : i;
+    const index = i === 9 ? 9 : i - 1;
 
-    keys[`tab:${index}`] = [`ctrl+${i}`];
+    keys[`tab:${i}`] = [`ctrl+${i}`];
 
-    commands[`tab:${index}`] = () => {
-      execCommand(`tab:move`, i === 9 ? 9 : i - 1);
+    commands[`tab:${i}`] = () => {
+      execCommand(`tab:move`, index);
+    };
+
+    keys[`pane:${i}`] = [`alt+${i}`];
+
+    commands[`pane:${i}`] = () => {
+      execCommand(`pane:move`, index);
     };
   }
 
   return keys;
 }
 
-function getKeymaps(initial?: boolean): Record<string, string[]> {
+function getKeymaps(initial?: boolean, flat = false): Record<string, string[]> {
   let keymaps: Record<string, string[]> = {};
 
   try {
-    const exists = existsSync(userKeymapsPath);
+    const existsFile = existsSync(userKeymapsPath);
 
     const content = readFileSync(
-      initial || !exists ? keymapsPath : userKeymapsPath,
+      initial || !existsFile ? keymapsPath : userKeymapsPath,
       'utf-8',
     );
 
     keymaps = yaml.load(content) as typeof keymaps;
 
-    if (!exists) writeKeymaps(keymaps);
+    if (!existsFile) writeKeymaps(keymaps);
   } catch (error) {
     console.error(error);
   }
 
   keymaps = Object.assign(keymaps, getNumericKeys());
 
-  return keymaps;
+  return flat ? (Object.values(keymaps).flat() as any) : keymaps;
 }
 
 function writeKeymaps(keymaps: Record<string, string[]>): void {
@@ -61,18 +67,33 @@ function bindKeymaps(): void {
   mousetrap.reset().stopCallback = () => false;
 
   Object.keys(keymaps).forEach(command => {
-    const [keys] = keymaps[command];
+    const keymap = keymaps[command];
 
-    mousetrap.bind(
-      keys,
-      event => {
-        event.preventDefault();
+    keymap.forEach(keys => {
+      mousetrap.bind(
+        keys,
+        event => {
+          event.preventDefault();
 
-        execCommand(command);
-      },
-      'keydown',
-    );
+          execCommand(command);
+        },
+        'keydown',
+      );
+    });
   });
 }
 
-export { getKeymaps, writeKeymaps, bindKeymaps };
+function handleCustomKeys({ key, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
+  const keys: string[] = [];
+
+  if (ctrlKey) keys.push('ctrl');
+  if (altKey) keys.push('alt');
+  if (shiftKey) keys.push('shift');
+  if (key.includes('Arrow')) key = key.replace('Arrow', '');
+
+  keys.push(key.toLowerCase());
+
+  return keys.join('+');
+}
+
+export { getKeymaps, writeKeymaps, bindKeymaps, handleCustomKeys };

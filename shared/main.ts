@@ -15,7 +15,7 @@ class IPCMain {
     });
 
     window.webContents.on('did-finish-load', () => {
-      window.webContents.send('ipc-start', this.id);
+      window.webContents.send('app:start', this.id);
     });
   }
 

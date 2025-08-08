@@ -1,58 +1,75 @@
 import { v4 as uuidv4 } from 'uuid';
+import { delay } from 'lodash';
 import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
-import { checkForUpdates } from 'app/updater';
 import { createWindow } from 'app/window';
 import { getSettings } from 'app/settings';
+import { checkForUpdates } from 'app/updater';
 import { getDefaultProfile } from 'app/common/profiles';
-import Process, { processes } from 'app/common/process';
-import listeners from 'app/settings/listeners';
+import Shell from 'app/common/shell';
+import SSH from 'app/connections/ssh';
+import Serial from 'app/connections/serial';
 import IPC from 'shared/main';
+import { sanitizeObject } from 'lib/utils';
 
 let ipc: IPC;
 
-function createProcess({ id, source, options, profile }: CreateProcessOptions) {
+const processes: Record<string, Shell | SSH | Serial> = {};
+
+function createInstance({ profile, origin, id }: InstanceAttrs) {
   profile = getDefaultProfile(profile);
 
-  options = options || profile.options;
+  const { type, name, options } = profile;
 
-  if (id && !source) {
-    const { preserveCWD } = getSettings();
-
-    if (preserveCWD) {
-      const { process } = processes[id];
-
-      options.cwd = getWorkingDirectoryFromPID(process.pid);
-    }
-  }
-
-  const process = <IProcess>{
-    id: source ?? uuidv4(),
-    isExpanded: false,
+  const instance = <IInstance>{
     profile,
+    id: id ?? uuidv4(),
+    isExpanded: false,
+    isConnected: false,
+    title: type === 'shell' ? options.file : name,
   };
 
-  const pty = new Process(ipc, process.id, profile, options);
+  let process: Shell | Serial | SSH;
 
-  processes[process.id] = pty;
+  if (type === 'shell') {
+    const { options } = profile;
 
-  return process;
+    if (origin) {
+      const { preserveCWD } = getSettings();
+
+      if (preserveCWD) {
+        const { pty } = <Shell>processes[origin];
+
+        options.cwd = getWorkingDirectoryFromPID(pty.pid);
+      }
+    }
+
+    process = new Shell(options, instance, ipc);
+  } else {
+    const { options } = profile;
+
+    process = new (type === 'ssh' ? SSH : Serial)(options, instance, ipc);
+
+    delay(func => func.connect(), 100, process);
+  }
+
+  processes[instance.id] = process;
+
+  return instance;
 }
 
 export default (mainWindow: Alpha.BrowserWindow) => {
   ipc = new IPC(mainWindow);
 
-  ipc.on('terminal:create', profile => {
-    const process = createProcess({ profile });
+  ipc.on('terminal:create', (profile: IProfile) => {
+    const instance = createInstance({ profile });
 
-    ipc.send('terminal:request', { process });
+    ipc.send('terminal:request', { instance });
   });
 
   ipc.on('pane:create', ({ id, profile, orientation }) => {
-    const { options } = profile || processes[id];
+    const instance = createInstance({ profile, origin: id });
 
-    const process = createProcess({ id, options, profile });
-
-    ipc.send('pane:request', { id, process, orientation });
+    ipc.send('pane:request', { id, instance, orientation });
   });
 
   ipc.on('process:write', ({ id, data }) => {
@@ -64,19 +81,21 @@ export default (mainWindow: Alpha.BrowserWindow) => {
   ipc.on('process:resize', ({ id, cols, rows }) => {
     const process = processes[id];
 
-    if (process) process.resize({ cols, rows });
+    if (process && process instanceof Shell) process.resize({ cols, rows });
   });
 
-  ipc.on('process:clear', ({ id }) => {
+  ipc.on('process:action', ({ id, action }) => {
     const process = processes[id];
 
-    if (process) process.clear();
-  });
+    if (process) {
+      if (action === 'kill') {
+        delete processes[id];
 
-  ipc.on('process:kill', ({ id }) => {
-    const process = processes[id];
+        if (!(process instanceof Shell)) return process.disconnect();
+      }
 
-    if (process) process.kill();
+      action in process && process[action]();
+    }
   });
 
   ipc.on('window:create', createWindow);
@@ -97,41 +116,37 @@ export default (mainWindow: Alpha.BrowserWindow) => {
     mainWindow.webContents.toggleDevTools();
   });
 
-  ipc.on('app:check-for-updates', checkForUpdates);
-
-  ipc.on('app:save-session', () => {
-    const instances = Object.keys(processes).map(id => {
-      const { process, options, profile } = processes[id];
-
-      options.cwd = getWorkingDirectoryFromPID(process.pid) ?? options.cwd;
-
-      return { id, options, profile };
-    }) as IInstance[];
-
-    ipc.send('app:update-session', { instances });
+  ipc.on('window:fullscreen', () => {
+    mainWindow.setFullScreen(!mainWindow.fullScreen);
   });
 
-  ipc.on('app:restore-session', ({ instances }) => {
-    instances.forEach((instance: IInstance) => {
-      try {
-        const { id, options, profile } = instance;
+  ipc.on('app:save-session', () => {
+    const snapshot = Object.entries(processes).map<ISnapshot>(
+      ([id, process]) => {
+        const { type, options } = process.profile;
 
-        createProcess({ source: id, options, profile });
+        if (process instanceof Shell && type === 'shell') {
+          const { pty } = process;
+
+          options.cwd = getWorkingDirectoryFromPID(pty.pid) ?? options.cwd;
+        }
+
+        return { id, profile: process.profile };
+      },
+    );
+
+    ipc.send('app:update-session', { snapshot: sanitizeObject(snapshot) });
+  });
+
+  ipc.on('app:restore-session', ({ snapshot }: ISession) => {
+    snapshot.forEach(attrs => {
+      try {
+        createInstance(attrs);
       } catch (error) {
         console.error(error);
       }
     });
   });
 
-  ipc.on('ipc-main-ready', () => {
-    setTimeout(() => ipc.send('ipc-renderer-ready'), 3900);
-  });
-
-  listeners.subscribe('options', () => {
-    const settings = getSettings();
-
-    ['opacity', 'alwaysOnTop'].forEach(option => {
-      ipc.emit(`window:${option}`, settings[option]);
-    });
-  });
+  ipc.on('app:check-for-updates', checkForUpdates);
 };

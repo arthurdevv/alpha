@@ -90,7 +90,7 @@ export const Label = styled.div`
   width: max-content;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
-  top: 54px;
+  top: 3.4375rem;
   z-index: 100;
   opacity: 0;
   pointer-events: none;

@@ -74,22 +74,29 @@ function equalizeRatios(
 }
 
 export default (set: AlphaSet) => ({
-  requestTerm(process: IProcess, term = true) {
+  requestTerm(instance: IInstance, term = true, position?: 'current' | 'end') {
     set(state => {
-      const group = createGroup(process.id, term);
+      const group = createGroup(instance.id, term);
+
+      if (position === 'current') {
+        const { origin } = state.current;
+
+        state = state.insert('context', group, origin);
+      } else {
+        state = state.set(['context', group.id], group);
+      }
 
       return state
-        .set(['context', group.id], group)
-        .set(['processes', process.id], process)
+        .set(['instances', instance.id], instance)
         .set(['current', 'origin'], group.id)
-        .set(['current', 'focused'], process.id)
-        .assign(['current'], [process.id]);
+        .set(['current', 'focused'], instance.id)
+        .assign(['current'], [instance.id]);
     });
   },
 
   splitTerm(
     id: string,
-    process: IProcess,
+    instance: IInstance,
     orientation: 'vertical' | 'horizontal',
   ) {
     set(state => {
@@ -107,7 +114,7 @@ export default (set: AlphaSet) => ({
 
       const { index } = getGroupInfo(state, id, true);
 
-      children.splice(index, 0, createGroup(process.id));
+      children.splice(index, 0, createGroup(instance.id));
 
       state = state.update(['context', relativeGroup.id], {
         orientation,
@@ -117,9 +124,9 @@ export default (set: AlphaSet) => ({
       });
 
       return state
-        .set(['processes', process.id], process)
-        .set(['current', 'focused'], process.id)
-        .assign(['current'], [process.id]);
+        .set(['instances', instance.id], instance)
+        .set(['current', 'focused'], instance.id)
+        .assign(['current'], [instance.id]);
     });
   },
 
@@ -141,24 +148,20 @@ export default (set: AlphaSet) => ({
         if (index < 0) {
           index = children.length - 1;
         }
-      } else {
+      } else if (direction < children.length) {
         index = direction;
-
-        if (index > children.length) {
-          index = children.length - 1;
-        }
       }
 
       id = children[index];
 
       if (!pane) {
         const {
-          current: { instances },
+          current: { terms },
         } = state;
 
-        const [focused] = instances[id];
+        const [focused] = terms[id];
 
-        return state.set('current', { origin: id, focused, instances });
+        return state.set('current', { origin: id, focused, terms });
       }
 
       return state.set(['current', 'focused'], id).assign(['current'], [id]);
@@ -173,9 +176,9 @@ export default (set: AlphaSet) => ({
 
       removeChild(id, group);
 
-      return state.set(['context', origin], group).without(['processes', id]);
+      return state.set(['context', origin], group).without(['instances', id]);
     });
 
-    execCommand('process:kill', { id });
+    execCommand('process:action', 'kill', id);
   },
 });

@@ -9,10 +9,10 @@ import Profiles from './Profiles';
 import Commands from './Commands';
 import About from './About';
 import Search from './Search';
-import Form from './Profiles/Form';
-import Dialog from './Profiles/Dialog';
 import Warning from './Warning';
 import ContextMenu from './ContextMenu';
+import Form from './Profiles/Form';
+import Dialog from './Profiles/Dialog';
 
 const components = {
   Search,

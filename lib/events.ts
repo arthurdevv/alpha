@@ -1,5 +1,6 @@
 import { getSettings } from 'app/settings';
 import { bindKeymaps } from 'app/keymaps';
+import { getDefaultProfile } from 'app/common/profiles';
 import { terms } from 'app/common/terminal';
 import { appDir } from 'app/settings/constants';
 import listeners from 'app/settings/listeners';
@@ -10,14 +11,38 @@ import { isNonEmptyObject } from './utils';
 export default ({ getStore }: AlphaStore) => {
   const store = getStore();
 
-  ipc.on('terminal:request', ({ process }) => {
-    store.requestTerm(process);
+  ipc.on('terminal:request', ({ instance }) => {
+    const { newTabPosition } = getCurrent();
+
+    store.requestTerm(instance, true, newTabPosition);
   });
 
   ipc.on('terminal:write', ({ id, data }) => {
     const term = terms[id];
 
     if (term) term.write(data);
+  });
+
+  ipc.on('terminal:close', () => {
+    const { origin } = getCurrent();
+
+    if (origin) store.onClose(origin);
+  });
+
+  ipc.on('terminal:search', () => {
+    const { id } = getCurrent();
+
+    if (id) {
+      global.id = id;
+
+      store.setModal('Search');
+    }
+  });
+
+  ipc.on('terminal:connected', value => {
+    const { id } = getCurrent();
+
+    store.onConnect(id, value);
   });
 
   ipc.on('terminal:action', action => {
@@ -27,59 +52,53 @@ export default ({ getStore }: AlphaStore) => {
       const term = terms[id];
 
       if (term) {
-        if (action === 'clear') ipc.send('process:clear', { id });
+        if (action === 'clear') ipc.send('process:action', { id, action });
 
         term[action]();
       }
     }
   });
 
-  ipc.on('terminal:search', () => {
-    const { id } = getCurrent();
+  ipc.on('process:action', (action, id) => {
+    const { id: focused } = getCurrent();
 
-    global.id = id;
+    id = id || focused;
 
-    if (id) store.setModal('Search');
+    if (id) ipc.send('process:action', { id, action });
   });
 
-  ipc.on('terminal:close', () => {
-    const { origin } = getCurrent();
-
-    if (origin) store.onClose(origin);
-  });
-
-  ipc.on('pane:request', ({ id, process, orientation }) => {
-    store.splitTerm(id, process, orientation);
+  ipc.on('pane:request', ({ id, instance, orientation }) => {
+    store.splitTerm(id, instance, orientation);
   });
 
   ipc.on('pane:split', orientation => {
-    const { id, processes } = getCurrent();
+    const { id, instances } = getCurrent();
 
     if (id) {
-      const { profile, isExpanded } = processes[id];
+      const { profile, isExpanded } = instances[id];
 
       if (!isExpanded) ipc.send('pane:create', { id, profile, orientation });
     }
   });
 
   ipc.on('pane:move', direction => {
-    const { id, processes } = getCurrent();
+    const { id, instances } = getCurrent();
 
     if (id) {
-      const { isExpanded } = processes[id];
+      const { isExpanded } = instances[id];
 
       if (!isExpanded) store.switchTerm(id, direction);
     }
   });
 
   ipc.on('pane:action', action => {
-    const { id, children, processes, modal } = getCurrent();
+    const { id, children, instances, modal } = getCurrent();
 
     if (children.length > 1) {
       if (action === 'expand' && (!modal || modal === 'ContextMenu')) {
         store.onExpand(id);
       } else {
-        const { isExpanded } = processes[id];
+        const { isExpanded } = instances[id];
 
         if (!isExpanded) store.onFocus(id, true);
       }
@@ -104,12 +123,18 @@ export default ({ getStore }: AlphaStore) => {
     if (origin) store.switchTerm(origin, direction, false);
   });
 
-  ipc.on('app:settings', () => {
-    const { modal } = getStore();
+  ipc.on('app:settings', section => {
+    const { modal, newTabPosition } = getCurrent();
 
     if (modal) store.setModal(null);
 
-    store.requestTerm({ id: 'Settings', title: 'Settings' } as IProcess, false);
+    if (section) storage.updateItem('section', section);
+
+    store.requestTerm(
+      <IInstance>{ id: 'Settings', title: 'Settings' },
+      false,
+      newTabPosition,
+    );
   });
 
   ipc.on('app:modal', value => {
@@ -119,38 +144,56 @@ export default ({ getStore }: AlphaStore) => {
       value = `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
     }
 
-    if ((modal && modal !== value) || modal === value) {
+    if (modal === value && modal !== 'ContextMenu') return;
+
+    if (modal) {
       store.setModal(null);
 
       setTimeout(() => store.setModal(value), 100);
-    } else if (!modal) {
+    } else {
       store.setModal(value);
     }
   });
 
-  ipc.on('app:update-session', ({ instances }) => {
-    const { context, processes, current } = getStore();
+  ipc.on('app:update-session', ({ snapshot }) => {
+    const { context, instances, current } = getStore();
 
     if ('Settings' in context) delete context['Settings'];
 
-    storage
-      .deleteItem('session')
-      .updateItem('session', { context, processes, current, instances });
+    storage.updateItem('session', { context, instances, current, snapshot });
   });
 
-  ipc.on('ipc-renderer-ready', () => {
-    listeners.subscribe('keymaps', bindKeymaps);
+  ipc.on('app:second-instance', ({ cwd }) => {
+    const profile = getDefaultProfile();
 
+    if (profile.type === 'shell' && cwd !== appDir) profile.options.cwd = cwd;
+
+    ipc.send('terminal:create', profile);
+  });
+
+  ipc.on('app:renderer-ready', () => {
     const { openOnStart, restoreOnStart } = getSettings();
 
-    if (restoreOnStart) {
-      const session: ISession = storage.parseItem('session');
+    listeners
+      .subscribe('options', () => {
+        const settings = getSettings();
 
-      if (isNonEmptyObject(session)) {
+        ['opacity', 'alwaysOnTop'].forEach(option => {
+          ipc.send(`window:${option}`, settings[option]);
+        });
+
+        store.setOptions(settings);
+      })
+      .subscribe('keymaps', bindKeymaps);
+
+    if (restoreOnStart) {
+      const session: ISession | undefined = storage.parseItem('session');
+
+      if (session && isNonEmptyObject(session)) {
         ipc.send('app:restore-session', session);
 
         Object.keys(session)
-          .filter(key => key !== 'instances')
+          .filter(key => key !== 'session')
           .forEach(key =>
             store.setProperty(key as keyof AlphaState, session[key]),
           );
@@ -162,25 +205,24 @@ export default ({ getStore }: AlphaStore) => {
     }
   });
 
-  listeners.subscribe('options', () => store.setOptions(getSettings));
-
   function getCurrent() {
     const store = getStore();
 
     const {
       context,
-      current: { origin, focused, instances },
+      current: { origin, focused, terms },
       modal,
+      options,
     } = store;
 
     const { children } = origin ? context[origin] : { children: [] };
 
-    let [id] = origin ? instances[origin] : focused;
+    let [id] = origin ? terms[origin] : focused;
 
     if (modal === 'ContextMenu') {
       id = global.id || id;
     }
 
-    return { origin, id, children, ...store };
+    return { origin, id, children, ...store, ...options };
   }
 };

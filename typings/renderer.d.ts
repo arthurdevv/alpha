@@ -1,19 +1,20 @@
+import { JSX } from 'preact';
 import type Terminal from 'app/common/terminal';
 import type actions from 'lib/store/actions';
 
 declare global {
   type AlphaState = {
     context: Record<string, IGroup>;
-    processes: Record<string, IProcess>;
+    instances: Record<string, IInstance>;
     current: {
-      origin: string | null;
       focused: string;
-      instances: Record<string, string[]>;
+      origin: string | null;
+      terms: Record<string, string[]>;
     };
     options: Partial<ISettings>;
     viewport: Partial<IViewport>;
+    profile: IProfile;
     modal: string | null;
-    profile: IProfile | null;
   };
 
   type AlphaActions = {
@@ -22,6 +23,7 @@ declare global {
     update(path: string[], value: any): AlphaStore;
     toggle(path: string[]): AlphaStore;
     without(path: string[]): AlphaStore;
+    insert(path: string, value: any, origin: string | null): AlphaStore;
     merge<T extends object>(target: T, partial: NestedPartial<T>): T;
     getStore(): AlphaStore;
   } & ReturnType<typeof actions>;
@@ -41,11 +43,12 @@ declare global {
     orientation: 'vertical' | 'horizontal' | null;
   };
 
-  type IProcess = {
+  type IInstance = {
     id: string;
     title: string;
-    profile: IProfile | undefined;
     isExpanded: boolean;
+    isConnected: boolean;
+    profile: IProfile;
   };
 
   type IViewport = {
@@ -73,8 +76,22 @@ declare global {
     icon: JSX.Element;
   };
 
-  type ISession = Pick<AlphaState, 'context' | 'processes' | 'current'> & {
+  type IProfileFormProp = {
+    key: string;
+    name: string;
+    description: string;
+    values: (string | number)[];
+    options: (string | number)[];
+    type: 'text' | 'number' | 'checkbox' | 'selector';
+  } & {
+    key: 'env' | 'scripts' | 'ports';
+    inputs: string[];
+    warning: string;
+  };
+
+  type ISession = Pick<AlphaState, 'context' | 'instances' | 'current'> & {
     instances?: IInstance[];
+    snapshot: ISnapshot[];
   };
 
   type Section =
@@ -83,13 +100,15 @@ declare global {
     | 'Terminal'
     | 'Profiles'
     | 'Keymaps'
-    | 'Window';
+    | 'Window'
+    | 'Config';
 
   interface TabProps {
     title: string;
+    tabWidth: 'auto' | 'fixed' | undefined;
     isCurrent: boolean;
-    onSelect: () => void;
-    onClose: () => void;
+    onSelect(): void;
+    onClose(): void;
   }
 
   interface TermDefaultProps extends AlphaStore {
@@ -100,7 +119,7 @@ declare global {
     group: IGroup;
   }
 
-  interface TermProps extends Partial<IProcess> {
+  interface TermProps extends IInstance {
     id: string;
     current: string[];
     isCurrent: boolean;
@@ -134,22 +153,19 @@ declare global {
 
   interface ViewportProps {
     viewport: Partial<IViewport>;
-    processes: Record<string, IProcess>;
+    instances: Record<string, IInstance>;
   }
 
   interface PopoverProps {
     label: string;
+    badge?: string;
+    badged?: boolean;
     style?: React.CSSProperties;
   }
 
   interface SearchProps {
     isVisible: boolean;
     handleModal(_?: any, modal?: string | undefined): Promise<boolean>;
-  }
-
-  interface EnviromentProps {
-    profile: IProfile;
-    setProfile(profile: IProfile): void;
   }
 
   interface SectionProps {
@@ -161,10 +177,58 @@ declare global {
     origin: string | null;
   }
 
-  interface ContextMenuSchemaState {
+  interface ContextMenuSchemaProps {
     term: Terminal | null;
     group: IGroup | null;
-    process: IProcess | null;
+    instance: IInstance | null;
+  }
+
+  interface ProfileFormProps {
+    schema: any;
+    properties: any[] | Record<string, string>;
+    profile: IProfile;
+    section: string;
+    setProfile(profile: IProfile): void;
+  }
+
+  type ProfileFormSchemaOption = {
+    key: string;
+    label?: string;
+    description?: string;
+    type?: 'text' | 'number' | 'checkbox' | 'selector' | 'dialog' | 'password';
+    options?: (string | number)[];
+    values?: (string | number)[];
+  };
+
+  type ProfileFormSchemaProperty = {
+    key: string;
+    selectors: string[];
+    placeholder: string;
+    inputs: ProfileFormSchemaOption[];
+    value: Record<string, Exclude<'type', IForwardPort>>;
+  };
+
+  interface ProfileFormOptionProps {
+    option: ProfileFormSchemaOption;
+    profile: IProfile;
+    value: any;
+    setProfile(profile: IProfile): void;
+    setAuthType?: (authType: string) => void;
+  }
+
+  interface EnvironmentFormProps {
+    schema: any;
+    profile: IProfile<'shell'>;
+    properties: [string, string][];
+    setProfile(profile: IProfile): void;
+  }
+
+  interface ConnectionFormProps {
+    schema: any;
+    profile: IProfile<'ssh' | 'serial'>;
+    section: string;
+    properties: string[];
+    setProfile(profile: IProfile): void;
   }
 
   type NestedPartial<T> = { [K in keyof T]?: NestedPartial<T[K]> };

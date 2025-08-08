@@ -36,6 +36,7 @@ Alpha will **automatically** update when a new release is available.
 - Split panes
 - Session recovery
 - Acrylic background
+- SSH and Serial connections
 - Clink integration for Windows
 - Supports CMD, PowerShell, Git-Bash, WSL, and Cygwin
 

@@ -54,12 +54,12 @@ export const Action = styled.li`
   }
 `;
 
-export const Label = styled.div`
+export const Label = styled.div<{ $keys: string[] }>`
   position: fixed;
   width: max-content;
   height: 1.875rem;
   padding: 0.25rem 0.5rem;
-  top: 2.875rem;
+  top: 3rem;
   z-index: 100;
   opacity: 0;
   pointer-events: none;
@@ -72,6 +72,15 @@ export const Label = styled.div`
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s ease 0s;
 
+  ${({ $keys }) =>
+    $keys.length > 0
+      ? css`
+          padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+        `
+      : css`
+          padding: 0.25rem 0.5rem;
+        `}
+
   & span {
     font-size: 0.75rem;
     color: ${props => props.theme.foreground};
@@ -80,7 +89,7 @@ export const Label = styled.div`
 
 export const Arrow = styled.div`
   position: absolute;
-  top: -0.6875rem;
+  top: -0.75rem;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -98,11 +107,12 @@ export const Arrow = styled.div`
   }
 `;
 
-export const Keys = styled.div`
+export const Keys = styled.div<{ $hidden: boolean }>`
   margin-left: 0.5rem;
   gap: 0.25rem;
   display: flex;
   align-items: center;
+  display: ${props => props.$hidden && 'none'};
 `;
 
 export const Key = styled.div`

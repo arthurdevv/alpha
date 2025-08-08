@@ -3,7 +3,7 @@ import { isEqual } from 'lodash';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { settingsPath, userSettingsPath } from './constants';
 
-function loadSettings(initial?: boolean): IRawSettings {
+function loadSettings(initial?: boolean, raw = false): IRawSettings {
   let settings = <IRawSettings>{};
 
   try {
@@ -12,21 +12,40 @@ function loadSettings(initial?: boolean): IRawSettings {
       'utf-8',
     );
 
+    if (raw) return content as any;
+
     settings = yaml.load(content) as typeof settings;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   return settings;
 }
 
-function writeSettings(settings: IRawSettings): void {
-  try {
-    const content = yaml.dump(settings, { indent: 2 });
+function writeSettings(
+  settings: string | IRawSettings,
+  callback?: Function,
+): void {
+  if (typeof settings === 'string') {
+    settings = <IRawSettings>yaml.load(settings);
+  }
 
-    writeFileSync(userSettingsPath, content, 'utf-8');
-  } catch (error) {
-    console.log(error);
+  const validation = validateSettings(settings, loadSettings(true));
+
+  if (validation) {
+    try {
+      const content = yaml.dump(settings, { indent: 2 });
+
+      writeFileSync(userSettingsPath, content, 'utf-8');
+    } catch (error) {
+      console.error(error);
+    }
+
+    callback && callback();
+  } else {
+    console.error(
+      'Invalid config detected. Ensure that all properties are properly defined.',
+    );
   }
 }
 
@@ -85,6 +104,30 @@ function mergeSettings(current: IRawSettings, initial: IRawSettings) {
   return result;
 }
 
+function validateSettings(target: IRawSettings, source: IRawSettings): boolean {
+  let validation: boolean = true;
+
+  Object.keys(source).forEach(key => {
+    if (Array.isArray(source[key]) || !target) return;
+
+    if (typeof source[key] === 'object' && source[key] !== null) {
+      if (
+        !Object.prototype.hasOwnProperty.call(target, key) ||
+        typeof target[key] !== 'object'
+      ) {
+        validation = false;
+      }
+      if (!validateSettings(target[key], source[key])) {
+        validation = false;
+      }
+    } else if (!Object.prototype.hasOwnProperty.call(target, key)) {
+      validation = false;
+    }
+  });
+
+  return validation;
+}
+
 if (!existsSync(userSettingsPath)) {
   writeSettings(loadSettings(true));
 } else {
@@ -95,4 +138,4 @@ if (!existsSync(userSettingsPath)) {
   if (!isEqual(current, mergedSettings)) writeSettings(mergedSettings);
 }
 
-export { getSettings, setSettings };
+export { getSettings, setSettings, loadSettings, writeSettings };

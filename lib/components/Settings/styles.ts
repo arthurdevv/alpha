@@ -96,7 +96,6 @@ export const Option = styled.div`
 
 export const Content = styled.div`
   height: 1.75rem;
-  line-height: 1.625rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -104,16 +103,24 @@ export const Content = styled.div`
 
 export const Label = styled.div`
   display: inline-flex;
+  flex: 1 0 1%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 export const Description = styled.span`
   margin-top: 0.125rem;
   font-size: 0.75rem;
   color: ${props => props.theme.disabled};
+
+  @media screen and (max-width: 37.5rem) {
+    display: none;
+  }
 `;
 
 export const Badges = styled.div`
-  margin-left: 0.5rem;
+  margin-left: 0.375rem;
   gap: 0.25rem;
   opacity: 0;
   display: flex;
@@ -143,33 +150,98 @@ export const BadgeItem = styled.span`
   border-radius: 3px;
 `;
 
-export const Input = styled.input<{ $name?: string; type?: string }>`
-  width: 12rem;
+export const Entry = styled.div<{ $flex?: boolean }>`
+  position: relative;
+
+  ${props =>
+    props.$flex &&
+    css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `}
+
+  &:hover [type="number"] svg {
+    color: ${props => props.theme.foreground};
+  }
+`;
+
+export const Input = styled.input<{ $width?: string }>`
   height: 1.75rem;
-  padding: 0 0.5rem;
   font-size: 0.8125rem;
+  text-align: end;
+  text-overflow: ellipsis;
   color: ${props => props.theme.disabled};
   background: ${props => props.theme.transparent};
-  border: 1px solid ${props => props.theme.border};
-  border-radius: 3px;
+  border: none;
   transition: color 0.2s ease 0s;
 
   &:hover,
   &:focus {
     color: ${props => props.theme.foreground};
+
+    & ~ div svg {
+      color: ${props => props.theme.foreground};
+    }
   }
 
-  ${({ type }) =>
-    type === 'number' &&
-    css`
-      width: 4rem;
-    `}
+  ${({ type, $width }) =>
+    type === 'number'
+      ? css`
+          width: calc(5ch + 0.75rem);
+          padding-right: 0.75rem;
 
-  ${props =>
-    props.$name === 'Scrollback' &&
-    css`
-      width: 5rem;
-    `}
+          &::-webkit-inner-spin-button,
+          &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+          }
+        `
+      : css`
+          width: ${$width || 'calc(15ch + 0.125rem)'};
+          padding-right: 0.125rem;
+          z-index: 1;
+
+          &:hover ~ div {
+            color: ${props => props.theme.foreground};
+          }
+
+          &:focus ~ div {
+            opacity: 0;
+          }
+        `}
+`;
+
+export const Selector = styled.select`
+  position: relative;
+  width: fit-content;
+  max-width: 9.875rem;
+  height: 1.75rem;
+  padding-right: 0.75rem;
+  font:
+    400 0.8125rem 'Inter',
+    sans-serif;
+  z-index: 1;
+  text-align: end;
+  text-overflow: ellipsis;
+  outline: none;
+  appearance: none;
+  color: ${props => props.theme.disabled};
+  background: ${props => props.theme.transparent};
+  border: none;
+  transition: color 0.2s ease 0s;
+
+  &:hover,
+  &:focus {
+    color: ${props => props.theme.foreground};
+
+    & ~ div svg {
+      color: ${props => props.theme.foreground};
+    }
+  }
+
+  & option {
+    background: ${props => props.theme.background};
+  }
 `;
 
 export const Switch = styled.div`
@@ -204,52 +276,35 @@ export const SwitchSlider = styled.span`
   border-radius: 100px;
 `;
 
-export const Selector = styled.select<{ $name: string }>`
-  width: 4rem;
-  height: 1.75rem;
-  padding: 0 0.5rem;
-  font:
-    400 0.8125rem 'Inter',
-    sans-serif;
-  line-height: 1rem;
-  outline: none;
-  appearance: none;
-  color: ${props => props.theme.disabled};
-  background: 85% center no-repeat
-    url("data:image/svg+xml,%3Csvg width='0.5rem' height='1.5rem' viewBox='0 0 8 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 7L7 11H1L4 7Z' fill='%23404040' /%3E%3Cpath d='M4 17L1 13L7 13L4 17Z' fill='%23404040' /%3E%3C/svg%3E");
-  background-color: ${props => props.theme.transparent};
-  border: 1px solid ${props => props.theme.border};
-  border-radius: 3px;
-  transition: color 0.2s ease 0s;
+export const Spinner = styled.div<{ $input: string }>`
+  position: absolute;
+  top: ${props => (props.$input === 'text' ? '0.0625rem' : '0.125rem')};
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &:hover,
-  &:focus {
+  &:hover svg {
     color: ${props => props.theme.foreground};
   }
 
-  & option {
-    background: ${props => props.theme.background};
-  }
-
-  ${({ $name }) =>
-    $name === 'Language'
+  ${props =>
+    props.$input === 'text'
       ? css`
-          width: 6.875rem;
-          background-position: 92%;
+          z-index: 10;
+          top: 0.0625rem;
+
+          & svg path {
+            pointer-events: all;
+          }
         `
-      : $name === 'Renderer' || $name === 'Link modifier'
-        ? css`
-            width: 5rem;
-            background-position: 90%;
-          `
-        : $name === 'Default profile'
-          ? css`
-              width: 9rem;
-              background-position: 94%;
-            `
-          : $name === 'Right click' &&
-            css`
-              width: 7.625rem;
-              background-position: 93%;
-            `}
+      : css`
+          z-index: 1;
+          top: -0.0625rem;
+        `}
+
+  & svg {
+    color: ${props => props.theme.icon};
+    transition: color 0.2s ease 0s;
+  }
 `;
