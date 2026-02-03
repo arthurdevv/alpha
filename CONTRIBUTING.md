@@ -1,25 +1,37 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/77799470/221330080-6dfda7f6-ccd4-4f25-b4ef-943b153354e5.png" alt="Alpha">
+  <img width="400" src="https://github.com/user-attachments/assets/aed04cfb-dc2e-4a67-8d1f-88b19f596df9" alt="Alpha's Logo">
 </p>
 
 # Contributing to Alpha
 
 Thank you for taking the time to contribute to the project! 👋
 
+All kinds of contributions, including bug reports, features, documentation, and translations are welcome.
+
+---
+
 ## Getting started
 
-First, install the necessary tools:
+### Requirements
+
+Before you begin, make sure you have the following tools installed:
 
 - [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/download/releases/) (18.x)
-- [yarn](https://yarnpkg.com/en/docs/install)
+- [Node.js](https://nodejs.org/en/download/) (v24.x)
+  - If you need multiple Node versions, use [nvm](https://github.com/coreybutler/nvm-windows) to install and switch between them easily
+- [yarn](https://yarnpkg.com/en/docs/install) (classic)
 
-> **Note: Consider installing the ``Tools for Native Modules`` during Node.js installation.**
+> **Note:** To avoid build issues, install ``Tools for Native Modules`` during Node.js installation or the ``Desktop development with C++`` workload in Visual Studio Build Tools.
 
-Now, clone this repository to your local machine:
+### Fork & clone
+
+1. Fork the repository
+
+2. Clone your fork locally:
 
 ```sh
 git clone https://github.com/arthurdevv/alpha.git
+cd alpha
 ```
 
 ## Development
@@ -36,24 +48,65 @@ yarn install
 yarn run dev
 ```
 
-3. After finishing the application, you can generate the executable:
+3. After finishing your changes, you can generate the executable:
 
 ```sh
+yarn run clean
+yarn run build
 yarn run package
 ```
 
-> **Note: It will generate the executable in the `release` folder.**
+> **Note:** The executable will be generated in the `release/` folder.
 
-4. To make sure that your bundles works, run:
+4. Before submitting your changes, ensure everything works as expected:
 
 ```sh
-npx playwright test
+npx playwright test --debug
+```
+
+> **Note:** Please also perform basic manual testing to ensure the change works as expected.
+
+## Branchs & commits
+
+1. Create your feature branch:
+
+```sh
+git checkout -b feat/my-new-feature
+```
+
+> **Note:** Always create a branch for your changes.
+
+2. Commit your changes
+
+```sh
+git commit -am "Add some feature"
+```
+
+3. Push your branch to your fork:
+
+```sh
+git push origin feat/my-new-feature
 ```
 
 ## Pull Request
 
-Once finished the changes, it is time to create a [pull request](https://github.com/arthurdevv/alpha/pulls).
+Once all steps are completed, it is time to create a [pull request](https://github.com/arthurdevv/alpha/pulls).
 
-> **Note: For more information, see [Creating a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?platform=windows).**
+In the PR description, explain:
+- What was changed
+- Why the change is needed
+- Any related issue (e.g. Closes #123)
 
-That's it! Thank you so much for contributing to Alpha 👍
+> **Note:** For more details, see [Creating a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request?platform=windows).
+
+## Translations
+
+Translations are managed via **Crowdin** platform.
+
+To contribute translations, please join the [project here](https://crowdin.com/project/alpha-app/invite?h=3e25a4b059ebde29fd48d7fb03260ede2511626).
+
+> **Note:** No need to edit files manually in the `locales/` folder — all translations updates are managed through the Crowdin.
+
+---
+
+That's it! Thank you so much for contributing to Alpha 🤝

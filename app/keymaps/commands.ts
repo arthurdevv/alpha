@@ -1,30 +1,30 @@
-import ipc from 'shared/renderer';
+import ipc from 'shared/ipc/renderer';
 import { boundCommands } from './schema';
 
 const commands: Record<string, (...args: any[]) => void> = {};
 
-function getBoundCommand(value: string): typeof command {
+function getBoundCommand(value: string): string[] | [string, string[]] {
   const [scope, action] = value.split(':');
 
   const context = boundCommands[scope];
 
-  let command: (string | undefined)[] = [];
+  if (!context) return [];
 
-  if (context) {
-    const [prefix, head] = value.split('-');
+  const [prefix, head] = value.split('-');
 
-    if (head) {
-      command = [`${prefix}`, head];
-    } else {
-      Object.keys(context).forEach(key => {
-        if (context[key].includes(action)) {
-          command = [`${scope}:${key}`, action];
-        }
-      });
+  if (head && scope !== 'tab' && !action.includes('all')) {
+    if (scope === 'pane') {
+      const [, action] = prefix.split(':');
+
+      return [`${scope}:layout`, [action, head]];
     }
+
+    return [`${prefix}`, head];
   }
 
-  return command;
+  const key = Object.keys(context).find(k => context[k].includes(action));
+
+  return key ? [`${scope}:${key}`, action] : [];
 }
 
 function assignCommand(command: string, ...args: any[]): void {
@@ -41,20 +41,37 @@ function assignCommand(command: string, ...args: any[]): void {
   };
 }
 
-function execCommand(command: string, ...args: any[]): Promise<boolean> {
-  return new Promise<boolean>(resolve => {
-    if (!(command in commands)) assignCommand(command);
+function execCommand(command: string, ...args: any[]) {
+  if (!(command in commands)) assignCommand(command);
 
-    void commands[command](...args);
+  const callback = args[args.length - 1];
 
-    resolve(true);
-  });
+  if (typeof callback === 'function') {
+    callback();
+    args.pop();
+  }
+
+  void commands[command](...args);
+
+  return { execCommand };
+}
+
+function formatCommand(command: string): string {
+  let [prefix, action] = command.split(':');
+
+  action = action.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+
+  const capitalized = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+
+  return `${action}${capitalized}`;
 }
 
 const excludeCommands = [
   'app:check-for-updates',
   'app:save-session',
+  'app:run-workspace',
   'terminal:create',
+  'terminal:prepare-history',
   'process:write',
   'process:resize',
   'window:title',
@@ -63,4 +80,4 @@ const excludeCommands = [
   'window:fullscreen',
 ];
 
-export { commands, assignCommand, execCommand };
+export { commands, assignCommand, execCommand, formatCommand };

@@ -1,5 +1,5 @@
-import { h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { schema, watchKeys } from 'app/keymaps/schema';
 import useStore from 'lib/store';
@@ -11,8 +11,7 @@ const Popover: React.FC<PopoverProps> = ({ label, style }) => {
 
   const [keys, setKeys] = useState<string[]>([]);
 
-  const handleCapitalize = (text: string) =>
-    text.replace(/(^\w{1})|(\s+\w{1})/g, value => value.toUpperCase());
+  const { t } = useTranslation();
 
   useEffect(() => {
     const command = Object.keys(schema).find(key => schema[key] === label);
@@ -29,7 +28,7 @@ const Popover: React.FC<PopoverProps> = ({ label, style }) => {
         style={style}
         className={Object.keys(context).length > 0 ? 'auto' : undefined}
       >
-        {handleCapitalize(label)}
+        {t(label)}
         <Keys $hidden={keys.length === 0}>
           {keys.map((key, index) => (
             <KeyItem key={index}>{key}</KeyItem>

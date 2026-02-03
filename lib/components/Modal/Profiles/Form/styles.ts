@@ -160,12 +160,16 @@ export const PropertyValues = styled.div<{ $capitalize?: boolean }>`
   gap: 0.25rem;
   display: inline-flex;
   align-items: center;
-  text-transform: ${({ $capitalize }) => ($capitalize ? 'capitalize' : 'none')};
+
+  & span::first-letter {
+    text-transform: ${({ $capitalize }) =>
+      $capitalize ? 'uppercase' : 'none'};
+  }
 `;
 
 export const PropertyValue = styled.span<{ $select?: boolean }>`
   width: fit-content;
-  max-width: 35ch;
+  max-width: 32ch;
   padding: 0.1875rem 0.375rem;
   overflow: hidden;
   white-space: nowrap;
@@ -192,7 +196,22 @@ export const PropertyValue = styled.span<{ $select?: boolean }>`
 
   &:hover ~ div {
     opacity: 1;
-    transition-delay: 0.3s;
+    transition-delay: 0.6s;
+  }
+`;
+
+export const PropertyButton = styled.div`
+  padding: 0.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease 0s;
+  color: ${props => props.theme.disabled};
+
+  &:hover {
+    color: ${props => props.theme.foreground};
   }
 `;
 
@@ -214,8 +233,7 @@ export const PropertyTooltip = styled.div`
   width: max-content;
   height: 1.625rem;
   padding: 0.25rem 0.5rem;
-  top: -0.125rem;
-  right: -6.375rem;
+  right: -4.5625rem;
   z-index: 100;
   opacity: 0;
   text-transform: none;

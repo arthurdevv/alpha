@@ -25,6 +25,7 @@ export default createGlobalStyle`
   };
 
   body {
+    font: 400 16px 'Inter', sans-serif;
     overflow: hidden;
     user-select: none;
     background-color: transparent;
@@ -36,7 +37,6 @@ export default createGlobalStyle`
     height: 100vh;
     overflow: hidden;
     display: flex;
-    font: 400 16px 'Inter', sans-serif;
     color: ${props => props.theme.foreground};
     background: ${props => props.theme.acrylic};
   }

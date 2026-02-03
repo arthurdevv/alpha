@@ -1,5 +1,5 @@
-import { h } from 'preact';
 import { memo, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { clipboard } from '@electron/remote';
 import { debugVersions } from 'app/settings/constants';
@@ -9,6 +9,8 @@ import { Copied, Info, List, Wrapper } from './styles';
 
 const About: React.FC<ModalProps> = ({ isVisible }) => {
   const [hasCopied, setCopied] = useState<boolean>(false);
+
+  const { t } = useTranslation();
 
   const handleCopy = () => {
     const text = JSON.stringify(debugVersions, null, '\t').replace(
@@ -26,8 +28,8 @@ const About: React.FC<ModalProps> = ({ isVisible }) => {
   return (
     <Container $width={20} $isVisible={isVisible}>
       <Tags>
-        <Tag $isTitle>About</Tag>
-        <Tag onClick={handleCopy}>Copy</Tag>
+        <Tag $isTitle>{t('About')}</Tag>
+        <Tag onClick={handleCopy}>{t('Copy')}</Tag>
       </Tags>
       <Content>
         <Wrapper>
@@ -37,14 +39,14 @@ const About: React.FC<ModalProps> = ({ isVisible }) => {
 
               return (
                 <Info key={index}>
-                  <span>{key}</span>
+                  <span>{t(key)}</span>
                   <BadgeItem>{value}</BadgeItem>
                 </Info>
               );
             })}
           </List>
         </Wrapper>
-        <Copied $hasCopied={hasCopied}>Copied to clipboard</Copied>
+        <Copied $hasCopied={hasCopied}>{t('Copied to clipboard')}</Copied>
       </Content>
     </Container>
   );

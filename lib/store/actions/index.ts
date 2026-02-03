@@ -1,6 +1,6 @@
-import { execCommand } from 'app/keymaps/commands';
 import { getCurrentChildren } from 'lib/store/selectors';
-import actions from './terms';
+import tabsActions from './tabs';
+import termsActions, { emitDispose } from './terms';
 
 export default (set: AlphaSet) => ({
   onSelect(id: string) {
@@ -9,7 +9,9 @@ export default (set: AlphaSet) => ({
 
   onTitleChange(id: string, title: string) {
     set(state => {
-      const { profile } = state.instances[id];
+      const { profile, hasCustomTitle } = state.instances[id];
+
+      if (hasCustomTitle) return state;
 
       return state.set(
         ['instances', id, 'title'],
@@ -30,17 +32,15 @@ export default (set: AlphaSet) => ({
     set(state => {
       const { focused } = state.current;
 
+      state.exec('process:resize', { id, cols, rows });
+
       return id === focused ? state.set('viewport', { cols, rows }) : state;
     });
-
-    execCommand('process:resize', { id, cols, rows });
   },
 
   onResizeGroup(id: string, ratios: number[]) {
     set(state => {
-      if (ratios.find(ratio => ratio < 0.1)) {
-        return state;
-      }
+      if (ratios.find(ratio => ratio < 0.1)) return state;
 
       return state.update(['context', id], { ratios });
     });
@@ -50,7 +50,7 @@ export default (set: AlphaSet) => ({
     set(state => {
       const { origin, terms } = state.current;
 
-      if (typeof broadcast === 'boolean' && origin) {
+      if (typeof broadcast === 'boolean' && broadcast === true && origin) {
         const current = terms[origin];
 
         const children =
@@ -59,10 +59,13 @@ export default (set: AlphaSet) => ({
         return state.assign(['current'], children);
       }
 
-      return state.set(['current', 'focused'], id).assign(['current'], [id]);
+      return state
+        .assign(['current'], [id])
+        .set(['current', 'focused'], id)
+        .exec('terminal:focus');
     });
 
-    execCommand('terminal:focus').then(() => execCommand('app:modal', null));
+    return this;
   },
 
   onData(data: string) {
@@ -73,7 +76,7 @@ export default (set: AlphaSet) => ({
 
       const children = origin ? terms[origin] : [];
 
-      children.forEach(id => execCommand('process:write', { id, data }));
+      children.forEach(id => state.exec('process:write', { id, data }));
 
       return state;
     });
@@ -83,17 +86,24 @@ export default (set: AlphaSet) => ({
     set(state => {
       let {
         context,
+        instances,
         current: { origin },
       } = state;
 
       if (kill) {
+        state = state.set('session', {});
+
         const children = getCurrentChildren(state, true, id);
 
         children.forEach(id => {
-          state = state.without(['instances', id]);
+          state = state
+            .concat(['session', 'instances'], instances[id])
+            .without(['instances', id]);
 
-          execCommand('process:action', 'kill', id);
+          emitDispose(id);
         });
+
+        state = state.set(['session', 'group'], context[id]);
       }
 
       const tabs = Object.keys(context);
@@ -120,19 +130,23 @@ export default (set: AlphaSet) => ({
     set(state => state.set('options', options));
   },
 
-  setModal(modal: string | null) {
-    set(state => state.set('modal', modal));
-
-    return this;
-  },
-
   setProfile(profile: IProfile | null) {
     set(state => state.set('profile', profile));
+  },
+
+  setWorkspace(workspace: IWorkspace | null) {
+    set(state => state.set('workspace', workspace));
+  },
+
+  setModal(modal: string | null) {
+    set(state => state.set('modal', modal));
+    return this;
   },
 
   setProperty(property: keyof AlphaState, value: AlphaState[typeof property]) {
     set(state => state.set(property, value));
   },
 
-  ...actions(set),
+  ...tabsActions(set),
+  ...termsActions(set),
 });

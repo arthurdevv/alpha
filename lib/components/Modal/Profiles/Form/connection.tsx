@@ -1,5 +1,5 @@
-import { h } from 'preact';
 import { Fragment, memo, useEffect, useRef, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { SpinnerDownIcon } from 'components/Icons';
 import { FormOption } from '.';
@@ -20,8 +20,6 @@ import {
   Warning,
 } from './styles';
 
-let property: Record<string, string | number> = {};
-
 const ConnectionForm: React.FC<ConnectionFormProps> = (
   props: ConnectionFormProps,
 ) => {
@@ -33,52 +31,57 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
     return authType || 'password';
   });
 
-  const [propertyType, setPropertyType] = useState<string>('');
+  const [input, setInput] = useState({
+    type: section === 'ports' ? 'local' : 'exact',
+  });
+
+  const [inputType, setInputType] = useState<string>('local');
 
   const form = useRef<HTMLDivElement | null>(null);
 
-  const handleSelector = (value: string) => {
-    value = value.toLowerCase();
+  const { t } = useTranslation();
 
-    setPropertyType(() => {
-      property.type = value;
+  const handleSelector = ({ currentTarget }) => {
+    const value = currentTarget.value.toLowerCase();
 
-      return value;
-    });
-
-    if (section === 'ports') property = { ...schema.value[value] };
+    setInputType(value);
   };
 
   const handleProperty = ({ currentTarget }) => {
-    let {
-      type,
+    const {
       value,
       tagName,
       placeholder,
       dataset: { key, index },
+      type,
     } = currentTarget;
 
     if (tagName === 'INPUT') {
-      key = key || placeholder.toLowerCase();
+      const prop = key || placeholder.toLowerCase();
 
-      property[key] = type === 'number' ? Number(value) : value;
+      setInput({ ...input, [prop]: type === 'number' ? Number(value) : value });
     } else {
       const target = profile.options[schema.key];
 
       if (tagName === 'SPAN') {
         target.splice(index, 1);
       } else {
-        const values = Object.values(property).filter(value => value !== '');
+        const values = Object.values(input);
 
         if (
-          (section === 'scripts' && values.length === 3) ||
-          (section === 'ports' &&
-            ((propertyType === 'dynamic' && values.length === 3) ||
-              (propertyType !== 'dynamic' && values.length === 5)))
+          !(values.findIndex(value => value === '') !== -1) &&
+          ((section === 'scripts' && values.length === 3) ||
+            (section === 'ports' && values.length === 5))
         ) {
-          target.push(property);
+          target.push(input);
 
-          clearFormValues();
+          setInput(() => {
+            form.current?.childNodes.forEach(input => {
+              (input as HTMLInputElement).value = '';
+            });
+
+            return { type: inputType };
+          });
         }
       }
 
@@ -86,23 +89,14 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
     }
   };
 
-  const clearFormValues = () => {
-    form.current?.childNodes.forEach(element => {
-      (element as HTMLInputElement).value = '';
-    });
+  useEffect(() => setInput({ ...input, type: inputType }), [inputType]);
 
-    property = {};
-  };
-
-  useEffect(() => {
-    clearFormValues();
-
-    if (section === 'ports') {
-      handleSelector('local');
-    } else if (section === 'scripts') {
-      handleSelector('exact');
-    }
-  }, [section]);
+  useEffect(
+    () => () => {
+      setInputType(section === 'ports' ? 'local' : 'exact');
+    },
+    [schema],
+  );
 
   return (
     <Fragment>
@@ -144,27 +138,31 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
               (input, index) => {
                 const { key, label, type } = input;
 
-                if (propertyType === 'dynamic' && index > 2) return;
+                if (inputType === 'dynamic' && index > 2) return;
+
+                const value =
+                  key in input
+                    ? input[key]
+                    : section === 'ports' && inputType in schema.value
+                      ? schema.value[inputType][key]
+                      : undefined;
 
                 return type !== 'selector' ? (
                   <PropertyInput
                     type={type}
-                    value={key in property ? property[key] : undefined}
-                    placeholder={label}
+                    value={value}
+                    title={t(label || '')}
+                    placeholder={t(label || '')}
                     data-key={key}
                     onChange={handleProperty}
                   />
                 ) : (
                   <Entry>
-                    <Selector
-                      onChange={event =>
-                        handleSelector(event.currentTarget.value)
-                      }
-                    >
+                    <Selector onChange={handleSelector}>
                       {(schema as ProfileFormSchemaProperty).selectors.map(
                         option => (
                           <option value={option} key={option}>
-                            {option}
+                            {t(option)}
                           </option>
                         ),
                       )}
@@ -176,7 +174,7 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
                 );
               },
             )}
-            <PropertyAdd onClick={handleProperty}>Add</PropertyAdd>
+            <PropertyAdd onClick={handleProperty}>{t('Add')}</PropertyAdd>
           </PropertyForm>
           <PropertyList>
             {properties && properties.length > 0 ? (
@@ -212,7 +210,7 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
                                       margin: ' 0 0.3125rem',
                                     }}
                                   >
-                                    send
+                                    {t('send')}
                                   </span>
                                 )}
                               </Fragment>
@@ -220,31 +218,22 @@ const ConnectionForm: React.FC<ConnectionFormProps> = (
                       </PropertyName>
                       <PropertyValues $capitalize>
                         <PropertyValue>
-                          {type !== 'exact' && type !== 'regex' ? (
-                            <Fragment>{type}</Fragment>
-                          ) : (
-                            <Fragment>
-                              {type === 'exact' ? (
-                                <Fragment>
-                                  {type}
-                                  <span> match</span>
-                                </Fragment>
-                              ) : (
-                                type
-                              )}
-                            </Fragment>
-                          )}
+                          {type !== 'exact' && type !== 'regex'
+                            ? t(`${type} forwarding`)
+                            : type === 'exact'
+                              ? t(`${type} match`)
+                              : type}
                         </PropertyValue>
                       </PropertyValues>
                     </PropertyInfo>
                     <PropertyAction data-index={index} onClick={handleProperty}>
-                      Remove
+                      {t('Remove')}
                     </PropertyAction>
                   </Property>
                 );
               })
             ) : (
-              <Warning>{schema.placeholder}</Warning>
+              <Warning>{t(schema.placeholder)}</Warning>
             )}
           </PropertyList>
         </Fragment>

@@ -1,22 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
 
-export const Group = styled.div<{ $isCurrent: boolean }>`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: none;
-
-  ${({ $isCurrent }) =>
-    $isCurrent &&
-    css`
-      display: block;
-    `}
-
-  &:has([role="presentation"].expanded) *[role="presentation"]:not(.expanded) {
-    opacity: 0;
-  }
-`;
-
 export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
   position: relative;
   width: 100%;
@@ -33,7 +16,7 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
           flex-direction: row;
 
           & > span {
-            width: 6px;
+            width: 0.3125rem;
             height: 100%;
             cursor: ${$cursor};
           }
@@ -43,7 +26,7 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
 
           & > span {
             width: 100%;
-            height: 6px;
+            height: 0.3125rem;
             cursor: ${$cursor};
           }
         `}
@@ -60,16 +43,15 @@ export const Pane = styled.div<{ $isCurrent?: boolean }>`
   width: 100%;
   height: 100%;
   display: flex;
-  opacity: 0.7;
+  opacity: ${({ $isCurrent }) => ($isCurrent ? 1 : 0.7)};
   pointer-events: all;
   transition: 0.2s ease 0s;
   transition-property: opacity, background;
-
-  ${({ $isCurrent }) =>
-    $isCurrent &&
-    css`
-      opacity: 1;
-    `}
+  animation: ${keyframes`
+      0% {
+        opacity: 0;
+      }
+  `} 0.4s ease 0s;
 
   &.expanded {
     position: fixed;
@@ -97,32 +79,26 @@ export const SplitPane = styled.div`
 
 export const Content = styled.div`
   position: relative;
-  margin: 0.875rem;
+  margin: 0.5rem 0.75rem 0.75rem 1rem;
   flex: auto;
   display: block;
   overflow: hidden;
 
-  .xterm .xterm-viewport {
+  .xterm .xterm-viewport,
+  .xterm .xterm-scrollable-element {
     background: #00000000 !important;
   }
 
-  *::-webkit-scrollbar {
-    width: 0.25rem;
-    height: 0.25rem;
-    display: block;
-  }
-
-  *::-webkit-scrollbar-corner,
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.scrollbarThumb};
+  .xterm .slider {
+    width: 0.25rem !important;
+    right: 0 !important;
+    left: unset !important;
+    background: ${props => props.theme.scrollbarThumb} !important;
     border-radius: 4px;
+    transition: background 0.2s ease 0s;
 
     &:hover {
-      background: ${props => props.theme.scrollbarHover};
+      background: ${props => props.theme.scrollbarHover} !important;
     }
   }
 `;
@@ -131,15 +107,42 @@ export const Divider = styled.span`
   z-index: 1;
   flex-shrink: 0;
   pointer-events: all;
-  background: ${props => props.theme.divider};
+  background: var(--header, ${props => props.theme.divider});
   transition: background 0.2s ease 0s;
 
   &.dragging {
-    background: ${props => props.theme.dividerHover};
+    background: var(--indicator, ${props => props.theme.dividerHover});
   }
 
   &:hover {
-    background: ${props => props.theme.dividerHover};
+    background: var(--indicator, ${props => props.theme.dividerHover});
     transition: background 0.2s ease-in-out 0.3s;
+  }
+`;
+
+export const Group = styled.div<{ $isCurrent: boolean }>`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none;
+
+  ${({ $isCurrent }) =>
+    $isCurrent &&
+    css`
+      display: block;
+    `}
+
+  &:has(${Pane}.expanded) {
+    ${Pane}.expanded {
+      opacity: 1 !important;
+      animation: none !important;
+      pointer-events: all;
+    }
+
+    ${Pane}:not(.expanded) {
+      opacity: 0 !important;
+      animation: none !important;
+      pointer-events: none;
+    }
   }
 `;

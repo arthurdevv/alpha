@@ -4,7 +4,11 @@ export function sortArray(array: any[]) {
   return array.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function onSearch({ currentTarget }) {
+export function onSearch(
+  { currentTarget },
+  display: string = 'block',
+  callback?: Function,
+) {
   const {
     value,
     parentElement: { parentElement },
@@ -27,8 +31,19 @@ export function onSearch({ currentTarget }) {
       if (isVisible) count += 1;
     });
 
-    element.style.display = count > 0 ? 'block' : 'none';
+    element.style.display = count > 0 ? display : 'none';
+    element.classList[count > 0 ? 'remove' : 'add']('empty');
+    element.classList[count > 0 ? 'add' : 'remove']('visible');
   });
+
+  const wrapper = parentElement.querySelector('.w');
+  const emptyLists = parentElement.querySelectorAll('ul.empty');
+
+  wrapper.classList[lists.length === emptyLists.length ? 'add' : 'remove'](
+    'blank',
+  );
+
+  callback && callback(value);
 }
 
 export function isNonEmptyObject(target: any): boolean {
@@ -79,4 +94,12 @@ export function sanitizeObject(target: any): any {
         ? sanitizeObject(value)
         : value;
   });
+}
+
+export function getDateFormatted(language: string): string {
+  return new Intl.DateTimeFormat(language, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date());
 }

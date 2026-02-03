@@ -1,14 +1,18 @@
 import yaml from 'js-yaml';
-import { isEqual } from 'lodash';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { settingsPath, userSettingsPath } from './constants';
+import {
+  appVersion,
+  settingsPath,
+  userSettingsPath,
+} from 'app/settings/constants';
+import { reportError } from 'shared/error-reporter';
 
-function loadSettings(initial?: boolean, raw = false): IRawSettings {
+function loadSettings(defaults?: boolean, raw = false): IRawSettings {
   let settings = <IRawSettings>{};
 
   try {
     const content = readFileSync(
-      initial ? settingsPath : userSettingsPath,
+      defaults ? settingsPath : userSettingsPath,
       'utf-8',
     );
 
@@ -16,7 +20,7 @@ function loadSettings(initial?: boolean, raw = false): IRawSettings {
 
     settings = yaml.load(content) as typeof settings;
   } catch (error) {
-    console.error(error);
+    reportError(error);
   }
 
   return settings;
@@ -30,27 +34,25 @@ function writeSettings(
     settings = <IRawSettings>yaml.load(settings);
   }
 
-  const validation = validateSettings(settings, loadSettings(true));
+  const validation = validateSettings(settings, defaultSettings);
 
-  if (validation) {
-    try {
-      const content = yaml.dump(settings, { indent: 2 });
-
-      writeFileSync(userSettingsPath, content, 'utf-8');
-    } catch (error) {
-      console.error(error);
-    }
-
-    callback && callback();
-  } else {
-    console.error(
-      'Invalid config detected. Ensure that all properties are properly defined.',
-    );
+  if (!validation) {
+    settings = mergeMissingSettings(defaultSettings, settings);
   }
+
+  try {
+    const content = yaml.dump(settings, { indent: 2 });
+
+    writeFileSync(userSettingsPath, content, 'utf-8');
+  } catch (error) {
+    reportError(error);
+  }
+
+  callback && callback();
 }
 
-function getSettings(initial?: boolean): ISettings {
-  const content = loadSettings(initial);
+function getSettings(defaults?: boolean): ISettings {
+  const content = loadSettings(defaults);
 
   const settings = <ISettings>{};
 
@@ -73,10 +75,8 @@ function setSettings(key: keyof ISettings, value: any, callback?: Function) {
   if (key in settings) {
     settings[key] = value;
   } else {
-    Object.entries(settings).forEach(([context, schema]) => {
-      if (key in schema) {
-        settings[context][key] = value;
-      }
+    Object.entries(settings).forEach(([tag, schema]) => {
+      if (key in schema) settings[tag][key] = value;
     });
   }
 
@@ -85,57 +85,63 @@ function setSettings(key: keyof ISettings, value: any, callback?: Function) {
   callback && callback();
 }
 
-function mergeSettings(current: IRawSettings, initial: IRawSettings) {
-  const result = <IRawSettings>{ ...current };
-
-  Object.keys(initial).forEach(key => {
-    const hasProperty = Object.prototype.hasOwnProperty.call(current, key);
-
-    if (!hasProperty || current[key] === undefined) {
-      result[key] = initial[key];
-    } else if (
-      typeof current[key] === 'object' &&
-      !Array.isArray(current[key])
-    ) {
-      result[key] = mergeSettings(current[key], initial[key]);
-    }
-  });
-
-  return result;
+function validateSettings(defaults: IRawSettings, current: IRawSettings) {
+  return Object.entries(defaults).some(([key, value]) =>
+    Object.keys(value).some(subkey => !(subkey in current[key])),
+  );
 }
 
-function validateSettings(target: IRawSettings, source: IRawSettings): boolean {
-  let validation: boolean = true;
+function mergeMissingSettings(
+  defaults: IRawSettings,
+  current: IRawSettings,
+): IRawSettings {
+  return Object.keys(defaults).reduce(
+    (result, key) => {
+      const defaultValue = defaults[key];
+      const userValue = current?.[key];
 
-  Object.keys(source).forEach(key => {
-    if (Array.isArray(source[key]) || !target) return;
+      if (userValue === undefined) {
+        result[key] = defaultValue;
 
-    if (typeof source[key] === 'object' && source[key] !== null) {
+        return result;
+      }
+
       if (
-        !Object.prototype.hasOwnProperty.call(target, key) ||
-        typeof target[key] !== 'object'
+        typeof defaultValue === 'object' &&
+        defaultValue !== null &&
+        !Array.isArray(defaultValue)
       ) {
-        validation = false;
-      }
-      if (!validateSettings(target[key], source[key])) {
-        validation = false;
-      }
-    } else if (!Object.prototype.hasOwnProperty.call(target, key)) {
-      validation = false;
-    }
-  });
+        result[key] = mergeMissingSettings(defaultValue, userValue);
 
-  return validation;
+        return result;
+      }
+
+      result[key] = userValue;
+
+      return result;
+    },
+    { ...current },
+  );
 }
 
-if (!existsSync(userSettingsPath)) {
-  writeSettings(loadSettings(true));
-} else {
-  const [initial, current] = [loadSettings(true), loadSettings()];
+const [defaultSettings, currentSettings] = [loadSettings(true), loadSettings()];
 
-  const mergedSettings = mergeSettings(current, initial);
+if (!existsSync(userSettingsPath)) writeSettings(defaultSettings);
+else if (currentSettings.application.version !== appVersion) {
+  const validation = validateSettings(currentSettings, defaultSettings);
 
-  if (!isEqual(current, mergedSettings)) writeSettings(mergedSettings);
+  if (!validation) {
+    const migratedSettings = mergeMissingSettings(
+      defaultSettings,
+      currentSettings,
+    );
+
+    migratedSettings.application.version = appVersion;
+
+    writeSettings(migratedSettings);
+  }
 }
 
 export { getSettings, setSettings, loadSettings, writeSettings };
+
+export default getSettings();

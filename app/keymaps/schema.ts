@@ -1,61 +1,86 @@
 import listeners from 'app/settings/listeners';
 import { getKeymaps } from '.';
 
-const schema: Record<string, string> = {
-  'terminal:create': 'New terminal',
-  'terminal:clear': 'Clear terminal',
-  'terminal:close': 'Close terminal',
-  'terminal:search': 'Search',
+export const schema: Record<string, string> = {
   'app:profiles': 'Profiles',
   'app:settings': 'Settings',
-  'app:commands': 'Command palette',
+  'app:commands': 'Show all commands',
+  'app:keymaps': 'Show all keymaps',
+  'terminal:create': 'New terminal',
+  'terminal:clear': 'Clear terminal',
+  'terminal:search': 'Search',
+  'terminal:history': 'History',
   'terminal:copy': 'Copy',
   'terminal:paste': 'Paste',
-  'terminal:selectAll': 'Select all',
-  'pane:broadcast': 'Broadcast',
-  'pane:expand': 'Expand/collapse pane',
-  'pane:next': 'Move to next pane',
-  'pane:previous': 'Move to previous pane',
-  'pane:close': 'Close pane',
-  'pane:split-horizontal': 'Split horizontal',
-  'pane:split-vertical': 'Split vertical',
+  'terminal:select-all': 'Select all',
   'process:reconnect': 'Reconnect client',
   'process:disconnect': 'Disconnect client',
+  'pane:split-horizontal': 'Split horizontal',
+  'pane:split-vertical': 'Split vertical',
+  'pane:broadcast': 'Broadcast',
+  'pane:expand': 'Expand pane',
+  'pane:collapse': 'Collapse pane',
+  'pane:focus-next': 'Focus next pane',
+  'pane:focus-previous': 'Focus previous pane',
+  'pane:focus-by-number': 'Focus pane by number',
+  'pane:resize-up': 'Resize pane up',
+  'pane:resize-right': 'Resize pane right',
+  'pane:resize-down': 'Resize pane down',
+  'pane:resize-left': 'Resize pane left',
+  'pane:close': 'Close pane',
   'tab:next': 'Next tab',
   'tab:previous': 'Previous tab',
+  'tab:select-by-number': 'Select tab by number',
+  'tab:rename': 'Rename tab',
+  'tab:close': 'Close tab',
+  'tab:reopen-closed': 'Reopen closed tab',
   'window:create': 'New window',
   'window:fullscreen': 'Toggle fullscreen',
   'window:devtools': 'Toggle developer tools',
+  'window:toggle-visibility': 'Toggle window visibility',
 };
 
-const boundCommands: Record<string, Record<string, string[]>> = {
-  tab: {
-    move: ['next', 'previous'],
-  },
-  pane: {
-    move: ['next', 'previous'],
-    split: ['vertical', 'horizontal'],
-    action: ['expand', 'broadcast'],
+export const boundCommands: Record<string, Record<string, any>> = {
+  app: {
+    modal: ['commands', 'profiles', 'keymaps'],
   },
   terminal: {
-    action: ['copy', 'paste', 'selectAll', 'clear', 'focus'],
+    action: ['copy', 'paste', 'select-all', 'clear', 'focus', 'connected'],
+    modal: ['search', 'history'],
+  },
+  pane: {
+    action: ['expand', 'collapse', 'broadcast'],
+    layout: [
+      'vertical',
+      'horizontal',
+      'next',
+      'previous',
+      'up',
+      'right',
+      'down',
+      'left',
+    ],
+  },
+  tab: {
+    action: [
+      'rename',
+      'duplicate',
+      'reopen-closed',
+      'close',
+      'close-others',
+      'close-right',
+    ],
+    layout: ['next', 'previous'],
   },
   process: {
     action: ['clear', 'kill', 'disconnect', 'reconnect'],
   },
-  app: {
-    modal: ['commands', 'profiles'],
-  },
-};
-
-const paletteCommands: Record<string, string[]> = {
-  Terminal: ['New terminal', 'Profiles', 'Settings'],
-  Window: ['New window'],
-  Help: ['Toggle developer tools'],
 };
 
 function parseKeys(command: string, initial?: boolean) {
-  let keys: string[] | string[][] = getKeymaps(initial)[command];
+  const keymaps = getKeymaps(initial);
+
+  let keys: string[] | string[][] = command in keymaps ? keymaps[command] : [];
 
   if (keys.length > 0) {
     keys = keys.map(value => value.split('+'));
@@ -78,11 +103,24 @@ function formatKeys(command: string, initial?: boolean) {
         case 'enter':
           return '↵';
 
+        case ' ':
+          return 'space';
+
         default:
           return key;
       }
     }),
   );
+}
+
+function resolveCommand(command: string) {
+  if (command in schema) {
+    const [keys] = formatKeys(command);
+
+    return { label: schema[command], keys };
+  }
+
+  return { label: command, keys: [] };
 }
 
 function watchKeys(command: string, callback: Function, format = true) {
@@ -101,25 +139,21 @@ function watchKeymaps(callback: (keymaps: Set<string>) => void) {
   });
 }
 
-function getPaletteSchema(label: string) {
-  const command = Object.keys(schema).find(value => schema[value] === label);
+function watchCommand(command: string, callback: (keymaps: string[]) => void) {
+  if (command !== 'window:toggle-visibility') return; // workaround
 
-  if (command) {
-    const keys = formatKeys(command);
+  listeners.subscribe('keymaps', () => {
+    const keymaps = getKeymaps()[command];
 
-    return { command, keys };
-  }
-
-  return { command: '', keys: [] };
+    callback(keymaps);
+  });
 }
 
 export {
-  schema,
-  boundCommands,
-  paletteCommands,
   parseKeys,
   formatKeys,
+  resolveCommand,
   watchKeys,
   watchKeymaps,
-  getPaletteSchema,
+  watchCommand,
 };

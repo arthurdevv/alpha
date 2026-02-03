@@ -6,11 +6,12 @@ import crypto from 'crypto';
 import { readFileSync } from 'fs';
 import executeScripts, { getUnique } from 'app/connections/scripts';
 import Logger from 'app/common/logger';
+import { reportError } from 'shared/error-reporter';
 import getAgent from './agent';
 import algorithms from './algorithms';
 
 export const defaultOptions = <ISSHOptions>{
-  host: '127.0.0.1',
+  host: '0.0.0.0',
   port: 22,
   username: 'root',
   authType: 'password',
@@ -94,7 +95,7 @@ class SSH extends Logger {
   connect() {
     this.client = new Client();
 
-    this.info(`${this.options.host} ⇌  ${this.options.port}`).startSpinner(
+    this.info(`${this.options.host}:${this.options.port}`).startSpinner(
       `Connecting...`,
     );
 
@@ -300,8 +301,8 @@ class SSH extends Logger {
 
     try {
       this.client.end();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      reportError(error);
     }
 
     this.connected = false;

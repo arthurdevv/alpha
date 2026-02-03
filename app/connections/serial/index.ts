@@ -1,8 +1,9 @@
 import { ReadlineParser, SerialPort } from 'serialport';
 import { SerialPortStream } from '@serialport/stream';
 import { autoDetect } from '@serialport/bindings-cpp';
-import executeScripts from 'app/connections/scripts';
 import Logger from 'app/common/logger';
+import executeScripts from 'app/connections/scripts';
+import { reportError } from 'shared/error-reporter';
 import HexParser from './hex';
 
 export const defaultOptions = <Partial<ISerialOptions>>{
@@ -32,6 +33,8 @@ class Serial extends Logger {
   port!: SerialPortStream;
 
   options: ISerialOptions;
+
+  private connected: boolean = false;
 
   constructor(
     options: Partial<ISerialOptions>,
@@ -80,24 +83,25 @@ class Serial extends Logger {
 
     this.port
       .on('open', () => {
-        this.exec(this.port.isOpen, 'connected').info(
-          `Connected to ${this.options.path} [${this.options.baudRate}]`,
-        );
-      })
-      .on('readable', () => {
-        this.exec(this.port.read());
+        this.connected = true;
+
+        this.exec(this.connected, 'connected');
       })
       .on('error', error => {
         this.error(error.message);
       })
       .on('close', () => {
         this.port.destroy();
+
+        this.exec(this.connected, 'connected').info(
+          `Disconnected from ${this.options.path} (${this.options.baudRate})`,
+        );
       })
       .open();
   }
 
   write(chunk: any): void {
-    if (!this.port.isOpen) return;
+    if (!this.connected) return;
 
     const { outputBehavior } = this.options;
 
@@ -109,28 +113,25 @@ class Serial extends Logger {
       }
     }
 
-    this.exec(chunk.toString());
     this.port.write(chunk, outputBehavior);
   }
 
   reconnect(): void {
-    if (this.port.isOpen) this.disconnect();
+    if (this.connected) this.disconnect();
 
     this.connect();
   }
 
   disconnect(): void {
-    if (!this.port.isOpen) return;
+    if (!this.connected) return;
 
     try {
       this.port.close();
     } catch (error) {
-      console.log(error);
+      reportError(error);
     }
 
-    this.exec(this.port.isOpen, 'connected').info(
-      `Disconnected from ${this.options.path}`,
-    );
+    this.connected = false;
   }
 }
 

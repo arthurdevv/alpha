@@ -47,6 +47,7 @@ export const Version = styled.div`
 `;
 
 export const CheckForUpdates = styled.div`
+  margin-left: 0.75rem;
   font-size: 0.8125rem;
   cursor: pointer;
   transition: opacity 0.2s ease 1s;

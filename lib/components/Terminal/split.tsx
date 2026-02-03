@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
 import { throttle } from 'lodash';
 

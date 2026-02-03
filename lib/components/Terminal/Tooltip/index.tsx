@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
 
 import { BadgeItem, Badges, Container, Wrapper } from './styles';
@@ -10,7 +10,9 @@ const Tooltip: React.FC<TermProps> = (props: TermProps) => {
   const { profile, isConnected, isExpanded } = props;
 
   const content = (() => {
-    const { type, options } = profile as any;
+    const { type, options } = profile;
+
+    if (type === 'shell') return { label: '', badge: '' };
 
     return type === 'serial'
       ? { label: options.path, badge: options.baudRate }

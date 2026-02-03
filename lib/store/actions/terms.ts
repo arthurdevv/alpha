@@ -13,6 +13,7 @@ function createGroup(pid: string, term = true): IGroup {
     ratios: [],
     children: [],
     orientation: null,
+    title: null,
   };
 }
 
@@ -73,17 +74,34 @@ function equalizeRatios(
   return new Array<number>(length).fill(1 / length);
 }
 
-export default (set: AlphaSet) => ({
-  requestTerm(instance: IInstance, term = true, position?: 'current' | 'end') {
-    set(state => {
-      const group = createGroup(instance.id, term);
+export function emitDispose(id: string) {
+  const events = [
+    ['process', 'kill'],
+    ['terminal', 'dispose'],
+  ];
 
-      if (position === 'current') {
+  events.forEach(([channel, action]) => {
+    execCommand(`${channel}:action`, action, id);
+  });
+}
+
+export default (set: AlphaSet) => ({
+  requestTerm(instance: IInstance, term = true, group?: IGroup) {
+    set(state => {
+      group = group ?? createGroup(instance.id, term);
+
+      if (state.options.newTabPosition === 'current') {
         const { origin } = state.current;
 
         state = state.insert('context', group, origin);
       } else {
         state = state.set(['context', group.id], group);
+      }
+
+      if (instance.title && instance.hasCustomTitle) {
+        const { title } = instance;
+
+        state = state.set(['context', group.id, 'title'], title.trim());
       }
 
       return state
@@ -130,26 +148,26 @@ export default (set: AlphaSet) => ({
     });
   },
 
-  switchTerm(id: string, direction: 'next' | 'previous' | number, pane = true) {
+  switchTerm(id: string, order: 'next' | 'previous' | number, pane = true) {
     set(state => {
       const children = getCurrentChildren(state, pane);
 
       let index = children.indexOf(id);
 
-      if (direction === 'next') {
+      if (order === 'next') {
         index += 1;
 
         if (index > children.length - 1) {
           index = 0;
         }
-      } else if (direction === 'previous') {
+      } else if (order === 'previous') {
         index -= 1;
 
         if (index < 0) {
           index = children.length - 1;
         }
-      } else if (direction < children.length) {
-        index = direction;
+      } else if (order < children.length) {
+        index = order;
       }
 
       id = children[index];
@@ -170,15 +188,131 @@ export default (set: AlphaSet) => ({
     return this;
   },
 
+  resizeTerm(id: string, direction: 'up' | 'right' | 'down' | 'left') {
+    set(state => {
+      const { relativeGroup } = getGroupNode(state, id);
+
+      if (relativeGroup) {
+        const { orientation, ratios: _ratios, children } = relativeGroup;
+
+        if (orientation && _ratios.length) {
+          const ratios = [..._ratios];
+
+          const index = children.findIndex(child => child.pid === id);
+
+          if (orientation === 'vertical') {
+            if (['up', 'down'].includes(direction)) return state;
+
+            switch (index) {
+              case 0: {
+                if (direction === 'right') {
+                  ratios[index] += 0.05;
+                  ratios[index + 1] -= 0.05;
+                } else {
+                  ratios[index] -= 0.05;
+                  ratios[index + 1] += 0.05;
+                }
+
+                break;
+              }
+
+              case children.length - 1: {
+                if (direction === 'right') {
+                  ratios[index] -= 0.05;
+                  ratios[index - 1] += 0.05;
+                } else {
+                  ratios[index] += 0.05;
+                  ratios[index - 1] -= 0.05;
+                }
+
+                break;
+              }
+
+              default: {
+                if (direction === 'right') {
+                  ratios[index] += 0.05;
+                  ratios[index + 1] -= 0.05;
+                } else {
+                  ratios[index] += 0.05;
+                  ratios[index - 1] -= 0.05;
+                }
+
+                break;
+              }
+            }
+          } else {
+            if (['right', 'left'].includes(direction)) return state;
+
+            switch (index) {
+              case 0: {
+                if (direction === 'down') {
+                  ratios[index] += 0.05;
+                  ratios[index + 1] -= 0.05;
+                } else {
+                  ratios[index] -= 0.05;
+                  ratios[index + 1] += 0.05;
+                }
+
+                break;
+              }
+
+              case children.length - 1: {
+                if (direction === 'down') {
+                  ratios[index] -= 0.05;
+                  ratios[index - 1] += 0.05;
+                } else {
+                  ratios[index] += 0.05;
+                  ratios[index - 1] -= 0.05;
+                }
+
+                break;
+              }
+
+              default: {
+                if (direction === 'down') {
+                  ratios[index] += 0.05;
+                  ratios[index + 1] -= 0.05;
+                } else {
+                  ratios[index] += 0.05;
+                  ratios[index - 1] -= 0.05;
+                }
+
+                break;
+              }
+            }
+          }
+
+          if (ratios.find(ratio => ratio < 0.1)) return state;
+
+          state = state.update(['context', relativeGroup.id], { ratios });
+        }
+      }
+
+      return state;
+    });
+
+    return this;
+  },
+
   disposeTerm(id: string, origin: string) {
     set(state => {
-      const group = state.context[origin];
+      const { context, instances } = state;
+
+      const group = context[origin];
+
+      const children = getCurrentChildren(state, true);
+
+      if (children.length === 1) {
+        group.pid = id;
+
+        state = state.set('session', { group, instances: [instances[id]] });
+      }
 
       removeChild(id, group);
 
       return state.set(['context', origin], group).without(['instances', id]);
     });
 
-    execCommand('process:action', 'kill', id);
+    emitDispose(id);
   },
 });

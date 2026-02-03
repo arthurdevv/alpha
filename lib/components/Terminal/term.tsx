@@ -1,9 +1,9 @@
-import { h } from 'preact';
 import { memo, useCallback, useEffect, useRef } from 'preact/compat';
 
 import Terminal, { terms } from 'app/common/terminal';
-import { execCommand } from 'app/keymaps/commands';
 import { getSettings } from 'app/settings';
+import { loadTheme } from 'app/common/themes';
+import { changeOpacity } from 'app/utils/color-utils';
 
 import { Content, Pane } from './styles';
 import Tooltip from './Tooltip';
@@ -11,8 +11,10 @@ import Tooltip from './Tooltip';
 const Term: React.FC<TermProps> = (props: TermProps) => {
   const parent = useRef<HTMLElement | null>(null);
 
-  const onContextMenu = useCallback((event: MouseEvent) => {
+  const onContextMenu = (event: MouseEvent) => {
     const term = terms[props.id];
+
+    event.preventDefault();
 
     if (term) {
       const { rightClick } = getSettings();
@@ -20,50 +22,54 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
       if (rightClick === 'clipboard') {
         term.handleClipboard();
       } else if (rightClick === 'contextmenu') {
-        global.menu = { top: event.clientY, left: event.clientX };
+        props.onFocus(false);
 
-        execCommand('app:modal', 'ContextMenu');
+        global.menu = { top: event.clientY, left: event.clientX };
+        global.handleModal(undefined, 'TerminalContextMenu', { on: 1, off: 1 });
       }
 
       global.id = props.id;
     }
-  }, []);
+  };
 
-  const onMouseEnter = useCallback(() => {
+  const onMouseEnter = () => {
     const { focusOnHover } = getSettings();
 
     if (focusOnHover) props.onFocus();
-  }, []);
+  };
 
-  const onMouseDown = useCallback((event: MouseEvent) => {
+  const onMouseDown = (event: MouseEvent) => {
     if (event.button !== 2) props.onFocus();
-  }, []);
+  };
 
-  const onRef = useCallback((element: HTMLElement | null) => {
-    parent.current = element;
+  const onRef = useCallback(
+    (element: HTMLElement | null) => {
+      parent.current = element;
 
-    let observer: ResizeObserver;
+      let observer: ResizeObserver;
 
-    if (element) {
-      let timeout: NodeJS.Timeout;
+      if (element) {
+        let timeout: NodeJS.Timeout;
 
-      observer = new ResizeObserver(() => {
-        clearTimeout(timeout);
+        observer = new ResizeObserver(() => {
+          clearTimeout(timeout);
 
-        timeout = setTimeout(() => {
-          const term = terms[props.id];
+          timeout = setTimeout(() => {
+            const term = terms[props.id];
 
-          if (term) term.fit();
-        }, 200);
-      });
+            if (term) term.fit();
+          }, 200);
+        });
 
-      observer.observe(element);
-    }
+        observer.observe(element);
+      }
 
-    return () => {
-      if (observer) observer.disconnect();
-    };
-  }, []);
+      return () => {
+        if (observer) observer.disconnect();
+      };
+    },
+    [props.id],
+  );
 
   useEffect(() => {
     const { current } = parent;
@@ -97,6 +103,16 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     }
   }, [props]);
 
+  const backgroundColor = (() => {
+    const { theme, preserveBackground, acrylic } = props.options;
+
+    if (!preserveBackground) {
+      const { background } = loadTheme(theme);
+
+      return acrylic ? changeOpacity(background, 0.7) : background;
+    }
+  })();
+
   return (
     <Pane
       role="presentation"
@@ -105,6 +121,7 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onContextMenu={onContextMenu}
+      style={{ backgroundColor }}
     >
       <Content ref={onRef} />
       <Tooltip {...props} />

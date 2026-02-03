@@ -22,9 +22,10 @@ export const Wrapper = styled.div<{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border: 1px solid ${props => props.theme.border};
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
+  backdrop-filter: ${props => props.theme.modalBackdrop};
   transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   transition-property: opacity, right;
   border-radius: 4px;

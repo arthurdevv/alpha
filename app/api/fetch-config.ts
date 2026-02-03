@@ -1,21 +1,25 @@
-export default async (gist: string | null): Promise<string | null> => {
+import { reportError } from 'shared/error-reporter';
+
+export default async (
+  gist: string | null,
+): Promise<Record<string, string> | null> => {
   if (!gist || !/^[a-f0-9]{32}$/i.test(gist)) {
-    console.error(`Invalid Gist: ${gist}`);
+    reportError(new Error(`Invalid Gist: ${gist}`));
 
     return null;
   }
 
   const response = await fetch(`https://api.github.com/gists/${gist}`);
 
-  if (response.ok) {
-    const { files } = await response.json();
+  try {
+    if (response.ok) {
+      const { files } = await response.json();
 
-    const [{ content }] = Object.values<Record<string, string>>(files);
-
-    return content;
+      return Object.values<Record<string, string>>(files)[0];
+    }
+  } catch (error) {
+    reportError(new Error(`GitHub API error: ${response.statusText}`));
   }
-
-  console.error(`GitHub API error: ${response.statusText}`);
 
   return null;
 };

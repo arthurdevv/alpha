@@ -9,7 +9,7 @@ import {
 
 args.command('<default>', 'Initialize Alpha');
 
-(() => {
+const main = async () => {
   args.parse(process.argv, {
     name: 'alpha',
     version: false,
@@ -26,11 +26,12 @@ args.command('<default>', 'Initialize Alpha');
     return cwd;
   });
 
-  const env: NodeJS.ProcessEnv = Object.assign(process.env, {
-    ALPHA_CLI: 'true',
-  });
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    ALPHA_CLI: '1',
+  };
 
-  delete env.ELECTRON_RUN_AS_NODE;
+  delete env['ELECTRON_RUN_AS_NODE'];
 
   const options: SpawnOptionsWithoutStdio = {
     env,
@@ -42,7 +43,11 @@ args.command('<default>', 'Initialize Alpha');
 
   child.unref();
 
-  return Promise.resolve();
-})().then(() => {
-  setTimeout(() => process.exit(0), 100);
-});
+  await new Promise(resolve => {
+    setTimeout(resolve, 100);
+  });
+};
+
+main()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));

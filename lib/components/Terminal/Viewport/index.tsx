@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
 import { countTrueProperties } from 'lib/utils';

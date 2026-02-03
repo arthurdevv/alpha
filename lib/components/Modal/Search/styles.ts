@@ -36,13 +36,28 @@ export const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background: ${props => props.theme.background};
   border: 1px solid ${props => props.theme.border};
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   border-radius: 4px;
+
+  & > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: ${props => props.theme.modal};
+    backdrop-filter: ${props => props.theme.modalBackdrop};
+  }
 `;
 
 export const Count = styled.span`
+  position: relative;
+  top: 0.0625rem;
   font-size: 0.75rem;
   white-space: nowrap;
   display: flex;
@@ -62,7 +77,6 @@ export const Control = styled.div`
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
-  background: ${props => props.theme.background};
 
   & svg {
     color: ${props => props.theme.disabled};
@@ -85,7 +99,7 @@ export const Control = styled.div`
   }
 `;
 
-export const Label = styled.div`
+export const Label = styled.div<{ $hasKeys?: boolean }>`
   position: fixed;
   width: max-content;
   height: 1.875rem;
@@ -97,21 +111,33 @@ export const Label = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: opacity 0.2s ease 0s;
+  backdrop-filter: ${props => props.theme.modalBackdrop};
 
   & span {
     font-size: 0.75rem;
     color: ${props => props.theme.foreground};
   }
+
+  ${({ $hasKeys }) =>
+    $hasKeys &&
+    css`
+      padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+
+      & > span {
+        display: flex;
+        align-items: center;
+      }
+    `}
 `;
 
 export const Arrow = styled.div`
   position: absolute;
-  top: -0.6875rem;
+  top: -0.75rem;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -125,6 +151,6 @@ export const Arrow = styled.div`
     position: absolute;
     top: -0.3125rem;
     border: 7px solid transparent;
-    border-bottom-color: ${props => props.theme.background};
+    border-bottom-color: ${props => props.theme.transparent};
   }
 `;

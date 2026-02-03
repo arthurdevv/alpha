@@ -1,14 +1,16 @@
-import { h } from 'preact';
-import { Fragment, memo, useState } from 'preact/compat';
+import { Fragment, memo, useRef, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { clipboard } from '@electron/remote';
 
+import { EyeClosedIcon, EyeIcon } from 'components/Icons';
 import { FormOption } from '.';
 import {
   Copied,
   Property,
   PropertyAction,
   PropertyAdd,
+  PropertyButton,
   PropertyForm,
   PropertyInfo,
   PropertyInput,
@@ -20,39 +22,68 @@ import {
   Warning,
 } from './styles';
 
-const property: Record<string, string> = {};
-
 const EnvironmentForm: React.FC<EnvironmentFormProps> = (
   props: EnvironmentFormProps,
 ) => {
   const { schema, profile, properties } = props;
 
+  const property = useRef<Record<string, string>>({});
+
   const [copied, setCopied] = useState<boolean>(false);
 
+  const [valueHidden, setValueHidden] = useState<boolean>(false);
+
+  const { t } = useTranslation();
+
   const handleProperty = ({ currentTarget }) => {
-    const { tagName, value, placeholder, ariaLabel } = currentTarget;
+    const {
+      tagName,
+      value,
+      ariaLabel,
+      dataset: { key },
+    } = currentTarget;
 
     if (tagName === 'INPUT') {
-      property[placeholder.toLowerCase()] = value;
+      property.current[key.toLowerCase()] = value;
     } else {
       const target = profile.options[schema.key];
 
       if (tagName === 'SPAN') {
         delete target[ariaLabel];
       } else {
-        const { name, value } = property;
+        const { name, value } = property.current;
 
-        if (name && value) target[name] = value;
+        if (name && value) {
+          target[name] = { value, hidden: Boolean(target.hidden) };
+        }
       }
 
       props.setProfile({ ...profile });
     }
   };
 
-  const handleCopy = ({ currentTarget }) => {
-    const { innerText } = currentTarget;
+  const handleVisibility = ({ currentTarget }) => {
+    const { name } = currentTarget.dataset;
 
-    clipboard.writeText(innerText);
+    const target = profile.options[schema.key][name];
+
+    target.hidden = !target.hidden;
+
+    const value = currentTarget.parentElement.querySelector('span');
+
+    value.innerText = !target.hidden ? target.value : '•••••••••••••••';
+
+    setValueHidden(!valueHidden);
+
+    props.handleSave(false);
+  };
+
+  const handleCopy = ({ currentTarget }) => {
+    const { name } = currentTarget.dataset;
+
+    const { value } = profile.options[schema.key][name];
+
+    clipboard.writeText(value);
 
     setCopied(true);
 
@@ -79,23 +110,37 @@ const EnvironmentForm: React.FC<EnvironmentFormProps> = (
                 <PropertyInput
                   key={label}
                   type={type}
-                  placeholder={label}
+                  title={t(label || '')}
+                  placeholder={t(label || '')}
+                  data-key={label}
                   onChange={handleProperty}
                 />
               );
             })}
-            <PropertyAdd onClick={handleProperty}>Add</PropertyAdd>
+            <PropertyAdd onClick={handleProperty} data-key={'add'}>
+              {t('Add')}
+            </PropertyAdd>
           </PropertyForm>
           <PropertyList>
             {properties && properties.length > 0 ? (
-              properties.map(([name, value]) => (
+              properties.map(([name, { value, hidden }]) => (
                 <Property key={name}>
                   <PropertyInfo>
                     <PropertyName>{name}</PropertyName>
                     <PropertyValues>
-                      <PropertyValue $select onClick={handleCopy}>
-                        {value}
+                      <PropertyValue
+                        $select
+                        data-name={name}
+                        onClick={handleCopy}
+                      >
+                        {hidden ? '•••••••••••••••' : value}
                       </PropertyValue>
+                      <PropertyButton
+                        data-name={name}
+                        onClick={event => handleVisibility(event)}
+                      >
+                        {hidden ? <EyeClosedIcon /> : <EyeIcon />}
+                      </PropertyButton>
                       <PropertyTooltip>
                         <div />
                         <span>Click to copy</span>
@@ -103,17 +148,17 @@ const EnvironmentForm: React.FC<EnvironmentFormProps> = (
                     </PropertyValues>
                   </PropertyInfo>
                   <PropertyAction aria-label={name} onClick={handleProperty}>
-                    Remove
+                    {t('Remove')}
                   </PropertyAction>
                 </Property>
               ))
             ) : (
-              <Warning>{schema.placeholder}</Warning>
+              <Warning>{t(schema.placeholder)}</Warning>
             )}
           </PropertyList>
         </Fragment>
       )}
-      <Copied $hasCopied={copied}>Copied to clipboard</Copied>
+      <Copied $hasCopied={copied}>{t('Copied to clipboard')}</Copied>
     </Fragment>
   );
 };

@@ -1,3 +1,5 @@
+import { reportError } from 'shared/error-reporter';
+
 function createItem(key: string, value?: any): any {
   const item = localStorage.getItem(key);
 
@@ -5,27 +7,29 @@ function createItem(key: string, value?: any): any {
     localStorage.setItem(key, value ?? '{}');
   }
 
-  return typeof value !== 'object' ? value : {};
+  return value && typeof value !== 'object' ? value : {};
 }
 
 function parseItem(key: string, value?: any): any {
-  let item = localStorage.getItem(key);
+  const item = localStorage.getItem(key);
 
   if (item) {
     try {
-      item = JSON.parse(item);
+      return /[{}[\]]/.test(item) ? JSON.parse(item) : item;
     } catch (error) {
-      return item;
+      reportError(error);
     }
   }
 
-  return item ?? createItem(key, value);
+  return createItem(key, value);
 }
 
 function updateItem(key: string, value: any, spread?: boolean): void {
   const item = parseItem(key);
 
-  value = JSON.stringify(spread ? { ...item, ...value } : value);
+  if (typeof value !== 'string') {
+    value = JSON.stringify(spread ? { ...item, ...value } : value);
+  }
 
   localStorage.setItem(key, value);
 }

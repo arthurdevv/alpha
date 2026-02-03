@@ -1,0 +1,48 @@
+export default {
+  Application: {
+    'app:profiles': 'Profiles',
+    'app:settings': 'Settings',
+    'app:commands': 'Show all commands',
+    'app:keymaps': 'Show all keymaps',
+  },
+  Terminal: {
+    'terminal:create': 'New terminal',
+    'terminal:clear': 'Clear terminal',
+    'terminal:search': 'Search',
+    'terminal:history': 'History',
+    'terminal:copy': 'Copy',
+    'terminal:paste': 'Paste',
+    'terminal:select-all': 'Select all',
+  },
+  Connections: {
+    'process:reconnect': 'Reconnect client',
+    'process:disconnect': 'Disconnect client',
+  },
+  Panes: {
+    'pane:split-horizontal': 'Split horizontal',
+    'pane:split-vertical': 'Split vertical',
+    'pane:broadcast': 'Broadcast',
+    'pane:expand': 'Expand pane',
+    'pane:collapse': 'Collapse pane',
+    'pane:focus-next': 'Focus next pane',
+    'pane:focus-previous': 'Focus previous pane',
+    'pane:resize-up': 'Resize pane up',
+    'pane:resize-right': 'Resize pane right',
+    'pane:resize-down': 'Resize pane down',
+    'pane:resize-left': 'Resize pane left',
+    'pane:close': 'Close pane',
+  },
+  Tabs: {
+    'tab:next': 'Next tab',
+    'tab:previous': 'Previous tab',
+    'tab:rename': 'Rename tab',
+    'tab:close': 'Close tab',
+    'tab:reopen-closed': 'Reopen closed tab',
+  },
+  Window: {
+    'window:create': 'New window',
+    'window:fullscreen': 'Toggle fullscreen',
+    'window:devtools': 'Toggle developer tools',
+    'window:toggle-visibility': 'Toggle window visibility',
+  },
+};

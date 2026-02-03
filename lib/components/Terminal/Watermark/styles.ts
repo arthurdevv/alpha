@@ -113,7 +113,7 @@ export const KeyItem = styled.div`
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.badge};
   color: ${props => props.theme.popoverForeground};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
@@ -146,7 +146,7 @@ export const Version = styled.div`
       opacity: 1;
       pointer-events: all;
     }
-  `} 1s ease 2.3s forwards;
+  `} 1s ease 2.85s forwards;
 
   &:hover {
     color: ${props => props.theme.foreground};

@@ -6,14 +6,12 @@ import methods from './methods';
 const initialState = <AlphaState>{
   context: {},
   instances: {},
-  current: {
-    origin: null,
-    focused: '',
-    terms: {},
-  },
+  current: { origin: null, focused: '', terms: {} },
   options: {},
   profile: {},
+  session: {},
   viewport: {},
+  workspace: {},
   modal: null,
 };
 

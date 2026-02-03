@@ -1,4 +1,5 @@
 import { JSX } from 'preact';
+import type { TFunction } from 'i18next';
 import type Terminal from 'app/common/terminal';
 import type actions from 'lib/store/actions';
 
@@ -12,8 +13,13 @@ declare global {
       terms: Record<string, string[]>;
     };
     options: Partial<ISettings>;
-    viewport: Partial<IViewport>;
     profile: IProfile;
+    session: {
+      group: IGroup;
+      instances: IInstance[];
+    };
+    viewport: Partial<IViewport>;
+    workspace: IWorkspace;
     modal: string | null;
   };
 
@@ -25,6 +31,8 @@ declare global {
     without(path: string[]): AlphaStore;
     insert(path: string, value: any, origin: string | null): AlphaStore;
     merge<T extends object>(target: T, partial: NestedPartial<T>): T;
+    concat(path: string[], value: any): AlphaStore;
+    exec(command: string, ...args: any[]);
     getStore(): AlphaStore;
   } & ReturnType<typeof actions>;
 
@@ -41,6 +49,7 @@ declare global {
     ratios: number[];
     children: IGroup[];
     orientation: 'vertical' | 'horizontal' | null;
+    title: string | null;
   };
 
   type IInstance = {
@@ -48,18 +57,13 @@ declare global {
     title: string;
     isExpanded: boolean;
     isConnected: boolean;
+    hasCustomTitle: boolean;
     profile: IProfile;
   };
 
   type IViewport = {
     cols: number;
     rows: number;
-  };
-
-  type IPaletteCommand = {
-    name: string;
-    keys: string[];
-    action: () => Promise<boolean>;
   };
 
   type ISearchControls = {
@@ -74,6 +78,8 @@ declare global {
     label: string;
     command: string;
     icon: JSX.Element;
+    type?: string;
+    submenu?: any;
   };
 
   type IProfileFormProp = {
@@ -89,6 +95,13 @@ declare global {
     warning: string;
   };
 
+  type ICommand = {
+    buffer: string;
+    where: string;
+    executedAt: string;
+    executionTime: number;
+  };
+
   type ISession = Pick<AlphaState, 'context' | 'instances' | 'current'> & {
     instances?: IInstance[];
     snapshot: ISnapshot[];
@@ -101,9 +114,11 @@ declare global {
     | 'Profiles'
     | 'Keymaps'
     | 'Window'
-    | 'Config';
+    | 'Workspaces'
+    | 'Config file';
 
   interface TabProps {
+    id: string;
     title: string;
     tabWidth: 'auto' | 'fixed' | undefined;
     isCurrent: boolean;
@@ -145,10 +160,11 @@ declare global {
   }
 
   interface ModalProps {
+    store: AlphaStore;
     modal: string | null;
     isVisible: boolean;
     setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    handleModal(_?: any, modal?: string | null): Promise<boolean>;
+    handleModal(_?: any, modal?: string | null): void;
   }
 
   interface ViewportProps {
@@ -165,12 +181,14 @@ declare global {
 
   interface SearchProps {
     isVisible: boolean;
-    handleModal(_?: any, modal?: string | undefined): Promise<boolean>;
+    handleModal(_?: any, modal?: string | undefined): void;
   }
 
   interface SectionProps {
     section: Section;
     options: JSX.Element[];
+    store: AlphaStore;
+    t: TFunction;
   }
 
   interface SettingsProps {
@@ -189,6 +207,7 @@ declare global {
     profile: IProfile;
     section: string;
     setProfile(profile: IProfile): void;
+    handleSave: (modal?: boolean) => void;
   }
 
   type ProfileFormSchemaOption = {
@@ -219,8 +238,9 @@ declare global {
   interface EnvironmentFormProps {
     schema: any;
     profile: IProfile<'shell'>;
-    properties: [string, string][];
+    properties: [string, { value: string; hidden: boolean }][];
     setProfile(profile: IProfile): void;
+    handleSave: (modal?: boolean) => void;
   }
 
   interface ConnectionFormProps {
@@ -230,6 +250,17 @@ declare global {
     properties: string[];
     setProfile(profile: IProfile): void;
   }
+
+  interface WelcomeProps {
+    setIsFirstRun: React.Dispatch<SetStateAction<boolean>>;
+    setModal(modal: string | null): void;
+  }
+
+  type WorkspaceContext = {
+    tabs: Record<string, number>;
+    commands: Record<string, string>;
+    prompt: string | undefined;
+  };
 
   type NestedPartial<T> = { [K in keyof T]?: NestedPartial<T[K]> };
 

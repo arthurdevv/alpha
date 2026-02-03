@@ -1,5 +1,7 @@
 app:commands:
   - ctrl+shift+p
+app:keymaps:
+  - ctrl+/
 app:profiles:
   - ctrl+shift+e
 app:settings:
@@ -10,10 +12,20 @@ pane:close:
   - ctrl+w
 pane:expand:
   - ctrl+alt+enter
-pane:next:
+pane:collapse:
+  - ctrl+alt+enter
+pane:focus-next:
   - ctrl+alt+right
-pane:previous:
+pane:focus-previous:
   - ctrl+alt+left
+pane:resize-down:
+  - alt+shift+down
+pane:resize-left:
+  - alt+shift+left
+pane:resize-right:
+  - alt+shift+right
+pane:resize-up:
+  - alt+shift+up
 pane:split-horizontal:
   - ctrl+shift+s
 pane:split-vertical:
@@ -22,23 +34,29 @@ process:disconnect:
   - ctrl+c
 process:reconnect:
   - ctrl+r
+tab:close:
+  - ctrl+shift+w
 tab:next:
   - ctrl+tab
 tab:previous:
   - ctrl+shift+tab
+tab:rename:
+  - ctrl+shift+r
+tab:reopen-closed:
+  - ctrl+shift+z
 terminal:clear:
   - ctrl+shift+k
-terminal:close:
-  - ctrl+shift+w
 terminal:copy:
   - ctrl+shift+c
 terminal:create:
   - ctrl+shift+t
+terminal:history:
+  - ctrl+shift+h
 terminal:paste:
   - ctrl+shift+v
 terminal:search:
   - ctrl+shift+f
-terminal:selectAll:
+terminal:select-all:
   - ctrl+shift+a
 window:create:
   - ctrl+shift+n
@@ -46,3 +64,5 @@ window:devtools:
   - ctrl+shift+i
 window:fullscreen:
   - f11
+window:toggle-visibility:
+  - ctrl+space

@@ -1,3 +1,5 @@
+import { execCommand } from 'app/keymaps/commands';
+
 function getNestedObject(target: object, path: string | string[], value: any) {
   if (typeof path === 'string') {
     return { ...target, [path]: value };
@@ -130,5 +132,29 @@ export default {
     const value = path.reduce((id, key) => id[key], this);
 
     return this.set(path, !value);
+  },
+
+  concat(path: string[], value: any): AlphaStore {
+    const [head, array] = path;
+
+    const target = this[head];
+
+    let result: any[] = [];
+
+    if (array in target) {
+      result.concat(target[array]);
+    } else {
+      this.set(head, { ...target, [array]: result });
+    }
+
+    result.push(value);
+
+    return this.set(path, result);
+  },
+
+  exec(command: string, ...args: any[]) {
+    execCommand(command, ...args);
+
+    return this;
   },
 };
