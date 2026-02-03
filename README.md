@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="900" height="900" src="https://github.com/user-attachments/assets/f6a286ce-e88d-4c17-a575-73bc2eb9c086" alt="Alpha">
+  <img width="900" height="900" src="https://github.com/user-attachments/assets/b21301ca-8614-49a6-9b5a-828996cb11b0" alt="Alpha">
 </p>
 
 <div align="center">
@@ -33,18 +33,18 @@ Alpha will **automatically** update when a new release is available.
 ## Features
 
 <div align="center">
-  <img width="900" height="900" src="https://github.com/user-attachments/assets/57962141-cc1f-4b90-9176-3b618ffcf218" alt="Custom terminal profiles" />
+  <img width="900" height="900" src="https://github.com/user-attachments/assets/eefd5395-8e6d-4e2a-bbb9-0d947b014a6a" alt="Custom terminal profiles" />
 </div>
 </br>
 <div align="center">
-  <img width="900" height="900" src="https://github.com/user-attachments/assets/020bc90a-e0b4-4c60-bbf6-417a46df54f2" alt="Acrylic background and color themes" />
+  <img width="900" height="900" src="https://github.com/user-attachments/assets/9176b8f7-099f-47b9-8b24-ca7cd7f01151" alt="Acrylic background and color themes" />
 </div>
 </br>
 <div align="center">
-  <img width="900" height="900" src="https://github.com/user-attachments/assets/433696cb-68cd-4d28-a319-7efa930aca49" alt="Split panes and font ligatures" />
+  <img width="900" height="900" src="https://github.com/user-attachments/assets/6cc1a137-456f-41f1-8883-c1a284ba3dbd" alt="Split panes and font ligatures" />
 </div>
 <div align="center">
-  <img width="900" height="900" src="https://github.com/user-attachments/assets/f112f2a3-1660-48bb-850f-0fcde33f74fd" alt="Workspaces and per-profile command history"  />
+  <img width="900" height="900" src="https://github.com/user-attachments/assets/f1d0eb86-0962-44f3-ace3-647f7110edbe" alt="Workspaces and per-profile command history"  />
 </div>
 
 - Unicode support
