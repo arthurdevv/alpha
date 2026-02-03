@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="400" src="https://github.com/user-attachments/assets/aed04cfb-dc2e-4a67-8d1f-88b19f596df9" alt="Alpha's Logo">
+  <img width="400" src="https://github.com/user-attachments/assets/a6b393d8-4dcf-4a80-8dac-8f3e147ed5e2" alt="Alpha's Logo">
 </p>
 
 # Contributing to Alpha
