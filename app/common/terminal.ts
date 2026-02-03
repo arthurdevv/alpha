@@ -3,17 +3,15 @@ import { clipboard } from '@electron/remote';
 import { getSettings } from 'app/settings';
 import { handleCustomKeys } from 'app/keymaps';
 import { execCommand } from 'app/keymaps/commands';
-import Addons from 'app/common/addons';
-import { theme } from 'lib/styles/theme';
 import { watchKeymaps } from 'app/keymaps/schema';
+import { loadTheme } from 'app/common/themes';
+import Addons from 'app/common/addons';
 
 export const terms: Record<string, Terminal | null> = {};
 
 const defaultOptions: xterm.ITerminalOptions = {
-  overviewRulerWidth: 20,
   allowProposedApi: true,
   allowTransparency: true,
-  theme,
 };
 
 class Terminal {
@@ -23,7 +21,7 @@ class Terminal {
 
   addons: Addons;
 
-  constructor(props: TermProps) {
+  constructor(private props: TermProps) {
     this.options = Object.assign(props.options, defaultOptions);
 
     this.term = new xterm.Terminal(this.options);
@@ -42,10 +40,34 @@ class Terminal {
       if (copyOnSelect) this.copy();
     });
 
+    let buffer: string = '';
+
     watchKeymaps(keymaps => {
-      this.term.attachCustomKeyEventHandler(
-        (event: KeyboardEvent) => !keymaps.has(handleCustomKeys(event)),
-      );
+      this.term.attachCustomKeyEventHandler((event: KeyboardEvent) => {
+        const isKeyDown = event.type === 'keydown';
+
+        const key = event.key.toLowerCase();
+
+        if (props.profile.type === 'shell' && event.ctrlKey && key === 'c') {
+          return true;
+        }
+
+        if (isKeyDown) {
+          if (key.length === 1) buffer += event.key;
+
+          if (key === 'backspace') buffer = buffer.slice(0, -1);
+
+          if (key === 'enter' && buffer !== '') {
+            execCommand('terminal:prepare-history', { id: props.id, buffer });
+
+            buffer = '';
+          }
+
+          if (key === 'escape') global.handleModal();
+        }
+
+        return !keymaps.has(handleCustomKeys(event));
+      });
     });
 
     terms[props.id] = this;
@@ -90,10 +112,12 @@ class Terminal {
       execCommand('app:modal', 'Warning');
     } else {
       this.term.paste(text);
+
+      this.term.scrollToBottom();
     }
   }
 
-  selectAll(): void {
+  'select-all'(): void {
     this.term.selectAll();
   }
 
@@ -101,12 +125,19 @@ class Terminal {
     return this.term.hasSelection();
   }
 
+  get hasClipboard(): boolean {
+    return Boolean(clipboard.readText());
+  }
+
   handleClipboard(): void {
     this.hasSelection ? this.copy() : this.paste();
   }
 
   setOptions(options: Partial<ISettings>): void {
-    this.term.options = options;
+    this.term.options = {
+      ...options,
+      theme: loadTheme(options.theme ?? 'Default'),
+    };
 
     const shouldReloadAddons = ['linkHandlerKey', 'renderer'].some(
       key => this.options[key] !== options[key],
@@ -117,6 +148,12 @@ class Terminal {
 
       this.options = options;
     }
+  }
+
+  dispose(): void {
+    this.term.dispose();
+
+    delete terms[this.props.id];
   }
 }
 

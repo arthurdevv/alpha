@@ -61,7 +61,7 @@ export const Keys = styled.div<{ $hidden?: boolean }>`
   display: ${props => props.$hidden && 'none'};
 `;
 
-export const KeyItem = styled.div`
+export const KeyItem = styled.div<{ $isHint?: boolean }>`
   height: 1.25rem;
   min-width: 1.25rem;
   padding: 0 0.25rem;
@@ -71,8 +71,17 @@ export const KeyItem = styled.div`
   justify-content: center;
   text-transform: uppercase;
   color: ${props => props.theme.popoverForeground};
+  background: ${props => props.theme.codeAcrylic};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
+
+  ${({ $isHint }) =>
+    $isHint &&
+    css`
+      height: 1rem;
+      padding: 0 0.1875rem;
+      font-size: 0.625rem;
+    `}
 `;
 
 export const Arrow = styled.span`

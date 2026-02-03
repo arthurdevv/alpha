@@ -28,6 +28,9 @@ const externals: RendererOptions['resolve'] = {
   '@serialport/bindings-cpp': { type: 'cjs' },
   '@luminati-io/socksv5': { type: 'cjs' },
   socksv5: { type: 'cjs' },
+  '@sentry/electron': { type: 'cjs' },
+  '@sentry/electron/main': { type: 'cjs' },
+  '@sentry/electron/renderer': { type: 'cjs' },
 };
 
 export default defineConfig({
@@ -87,11 +90,11 @@ export default defineConfig({
     ]),
     viteStaticCopy({
       targets: [
-        { src: './*.json', dest: '.' },
-        { src: './lib/styles/fonts', dest: './lib/styles' },
-        { src: './app/settings/default.yaml', dest: './app/settings' },
-        { src: './app/keymaps/default.yaml', dest: './app/keymaps' },
-        { src: './resources/clink', dest: './resources' },
+        { src: './app/settings/default.yaml', dest: 'app/settings' },
+        { src: './app/keymaps/default.yaml', dest: 'app/keymaps' },
+        { src: './lib/styles/fonts', dest: 'lib/styles' },
+        { src: './locales/*', dest: 'locales' },
+        { src: './*.json', dest: '' },
       ],
     }),
   ],

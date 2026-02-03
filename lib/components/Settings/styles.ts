@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Container = styled.div<{ $origin: string | null }>`
   position: absolute;
@@ -8,6 +8,15 @@ export const Container = styled.div<{ $origin: string | null }>`
   z-index: 1;
   display: ${({ $origin }) => ($origin === 'Settings' ? 'flex' : 'none')};
   overflow: hidden;
+  animation: ${keyframes`
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    `} 0.4s ease 0s forwards;
 `;
 
 export const Navigation = styled.nav`
@@ -45,8 +54,7 @@ export const Section = styled.section<{
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: ${({ $section }) =>
-    $section === 'Application' ? 'space-evenly' : 'normal'};
+  justify-content: flex-start;
   transition: opacity 0.1s linear 0s;
 
   ${({ $transition }) =>
@@ -63,23 +71,17 @@ export const Section = styled.section<{
   }
 `;
 
-export const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  &:first-of-type > :first-child {
-    margin: 0 0 1rem 0;
-  }
-`;
-
 export const Title = styled.span`
   margin: 2rem 0 1rem 0;
+  gap: 0.375rem;
+  display: flex;
+  align-items: center;
   font-size: 1.125rem;
 `;
 
 export const Separator = styled.hr`
   height: 1px;
-  margin: 0.75rem 0px;
+  margin: 0.75rem 0;
   border: none;
   outline: none;
 `;
@@ -89,8 +91,17 @@ export const Option = styled.div`
   display: flex;
   flex-direction: column;
 
-  &:first-of-type hr {
+  &:first-of-type ${Separator} {
     margin: 0.125rem 0;
+  }
+`;
+
+export const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  &:first-of-type > span:first-of-type {
+    margin: 0 0 1rem 0;
   }
 `;
 
@@ -129,6 +140,7 @@ export const Badges = styled.div`
   transition: 0.2s ease 0s;
   transition-property: opacity, scale;
   transform: scale(0.99);
+  background: ${props => props.theme.overlay};
 
   &.visible {
     opacity: 1;
@@ -148,22 +160,6 @@ export const BadgeItem = styled.span`
   color: ${props => props.theme.popoverForeground};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
-`;
-
-export const Entry = styled.div<{ $flex?: boolean }>`
-  position: relative;
-
-  ${props =>
-    props.$flex &&
-    css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `}
-
-  &:hover [type="number"] svg {
-    color: ${props => props.theme.foreground};
-  }
 `;
 
 export const Input = styled.input<{ $width?: string }>`
@@ -283,6 +279,8 @@ export const Spinner = styled.div<{ $input: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+  pointer-events: none;
 
   &:hover svg {
     color: ${props => props.theme.foreground};
@@ -291,7 +289,7 @@ export const Spinner = styled.div<{ $input: string }>`
   ${props =>
     props.$input === 'text'
       ? css`
-          z-index: 10;
+          z-index: 999;
           top: 0.0625rem;
 
           & svg path {
@@ -299,12 +297,142 @@ export const Spinner = styled.div<{ $input: string }>`
           }
         `
       : css`
-          z-index: 1;
           top: -0.0625rem;
         `}
 
   & svg {
     color: ${props => props.theme.icon};
     transition: color 0.2s ease 0s;
+  }
+`;
+
+export const Entry = styled.div<{ $flex?: boolean }>`
+  position: relative;
+
+  ${props =>
+    props.$flex &&
+    css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `}
+
+  &:hover {
+    ${Selector} {
+      color: ${props => props.theme.foreground};
+    }
+
+    ${Spinner} svg {
+      color: ${props => props.theme.foreground};
+    }
+
+    ${Input} {
+      color: ${props => props.theme.foreground};
+
+      & ~ div svg {
+        color: ${props => props.theme.foreground};
+      }
+    }
+  }
+
+  &:hover [type='number'] svg {
+    color: ${props => props.theme.foreground};
+  }
+`;
+
+export const Form = styled.div`
+  position: relative;
+  height: 1.5rem;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 1px solid ${props => props.theme.border};
+  border-radius: 4px;
+`;
+
+export const FormItem = styled.div`
+  position: relative;
+  height: 100%;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: ${props => props.theme.disabled};
+  transition: 0.2s ease 0s;
+  transition-property: color, width;
+
+  &:first-of-type {
+    padding: 0;
+    border-right: 1px solid ${props => props.theme.border};
+
+    & input {
+      height: 100%;
+      width: 100%;
+      padding: 0 0.5rem 0 1.625rem;
+      font: inherit;
+      text-transform: inherit;
+
+      & ~ svg {
+        position: absolute;
+        cursor: text;
+        width: 0.75rem;
+        height: 0.75rem;
+        left: 0.5rem;
+        color: ${props => props.theme.disabled};
+        transition: color 0.2s ease 0s;
+      }
+
+      &:focus ~ svg {
+        color: ${props => props.theme.foreground};
+      }
+    }
+  }
+
+  &:hover {
+    color: ${props => props.theme.foreground};
+  }
+`;
+
+export const Placeholder = styled.div`
+  margin-bottom: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  white-space: normal;
+  text-align: center;
+  text-overflow: ellipsis;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: ${props => props.theme.disabled};
+  animation: ${keyframes`
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    `} 0.4s ease 0s forwards;
+
+  & svg {
+    width: 1.625rem;
+    height: 1.625rem;
+    margin-bottom: 0.375rem;
+  }
+
+  & span:first-of-type {
+    font-weight: 600;
+  }
+
+  & span:last-of-type {
+    margin-top: 0.125rem;
+    font-weight: 400;
   }
 `;

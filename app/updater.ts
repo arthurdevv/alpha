@@ -1,10 +1,9 @@
 import { autoUpdater } from 'electron-updater';
 import { dialog } from 'electron';
+import { isPackaged } from 'app/settings/constants';
 
-const shouldCheckForUpdates = !process.env.ALPHA_CLI;
-
-export const checkForUpdates = () => {
-  if (!shouldCheckForUpdates) return;
+export function checkForUpdates(): void {
+  if (!isPackaged) return;
 
   autoUpdater.checkForUpdates();
 
@@ -19,10 +18,10 @@ export const checkForUpdates = () => {
       autoUpdater.removeAllListeners();
     });
   });
-};
+}
 
-export default (mainWindow: Alpha.BrowserWindow) => {
-  if (!shouldCheckForUpdates) return;
+export default (mainWindow: Alpha.BrowserWindow): void => {
+  if (!isPackaged) return;
 
   autoUpdater.checkForUpdates();
 
@@ -45,4 +44,15 @@ export default (mainWindow: Alpha.BrowserWindow) => {
   mainWindow.on('close', () => {
     autoUpdater.removeAllListeners();
   });
+
+  mainWindow.webContents.on(
+    'before-input-event',
+    (event, { control, shift, key }) => {
+      const isReloadKey = key.toLowerCase() === 'r';
+
+      if ((control && isReloadKey) || (control && shift && isReloadKey)) {
+        event.preventDefault();
+      }
+    },
+  );
 };

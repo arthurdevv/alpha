@@ -60,18 +60,22 @@ export const Keys = styled.div`
   margin-left: auto;
   padding: 0.25rem;
   display: flex;
+  cursor: pointer;
   align-items: center;
-  background: ${props => props.theme.transparent};
+  background: ${props => props.theme.keys};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transition: border 0.2s ease 0s;
+
+  &:hover > div {
+    color: ${props => props.theme.foreground};
+  }
 `;
 
 export const Key = styled.div`
   height: 1.25rem;
   min-width: 1.25rem;
   font-size: 0.688rem;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -81,10 +85,6 @@ export const Key = styled.div`
   & span {
     padding: 0 0.25rem;
     transition: color 0.2s ease 0s;
-  }
-
-  &:hover span {
-    color: ${props => props.theme.foreground};
   }
 `;
 
@@ -114,7 +114,7 @@ export const EditorTags = styled.div`
   }
 `;
 
-export const EditorTag = styled.div`
+export const EditorTag = styled.div<{ $isText?: boolean }>`
   max-width: 100%;
   height: 1.5rem;
   margin-bottom: 0.5rem;
@@ -125,14 +125,27 @@ export const EditorTag = styled.div`
   font-size: 0.6875rem;
   text-transform: uppercase;
   color: ${props => props.theme.disabled};
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border-radius: 4px;
   border: 1px solid ${props => props.theme.border};
   transition: color 0.2s ease 0s;
+  backdrop-filter: ${props => props.theme.modalBackdrop};
 
   &:hover {
     color: ${props => props.theme.foreground};
   }
+
+  ${({ $isText }) =>
+    $isText &&
+    css`
+      margin-right: auto;
+      margin-left: unset !important;
+      white-space: pre;
+      cursor: default;
+      pointer-events: none;
+      text-transform: none;
+      color: ${props => props.theme.foreground};
+    `}
 `;
 
 export const EditorContent = styled.div`
@@ -141,10 +154,11 @@ export const EditorContent = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border: 1px solid ${props => props.theme.border};
   border-radius: 4px;
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
+  backdrop-filter: ${props => props.theme.modalBackdrop};
 `;
 
 export const EditorTitle = styled.div`
@@ -153,6 +167,7 @@ export const EditorTitle = styled.div`
   font-size: 0.8125rem;
   line-height: 1.4;
   display: flex;
+  justify-content: center;
 `;
 
 export const EditorKeys = styled.div`
@@ -162,6 +177,11 @@ export const EditorKeys = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  & > div {
+    font-size: 0.8125rem;
+    color: ${props => props.theme.disabled};
+  }
 `;
 
 export const EditorKey = styled.span`

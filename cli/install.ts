@@ -1,11 +1,10 @@
 import * as Registry from 'native-reg';
-import { join } from 'path';
-import { appPath } from 'app/settings/constants';
+import { binPath, firstRunFlag } from 'app/settings/constants';
 import enableShellIntegration from 'app/utils/shell-integration';
 
-const binPath = join(appPath, '../../bin');
-
 function installCLI(): void {
+  if (!firstRunFlag) return;
+
   const { HKCU, Access, ValueType } = Registry;
 
   const envKey = Registry.openKey(HKCU, 'Environment', Access.ALL_ACCESS)!;

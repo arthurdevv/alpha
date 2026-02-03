@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import React, {
   createElement,
   Fragment,
@@ -7,6 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { getSettings, setSettings } from 'app/settings';
@@ -47,8 +47,10 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
 
   const [fade, setFade] = useState(false);
 
+  const { t } = useTranslation();
+
   const handleSection = (
-    { currentTarget: { innerText } },
+    { currentTarget: { ariaLabel } },
     value: string,
     toggle = false,
   ) => {
@@ -56,7 +58,7 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
       const section = value === 'advanced' ? 'general' : 'advanced';
 
       cachedSection =
-        section !== cachedSection ? section : innerText.toLowerCase();
+        section !== cachedSection ? section : ariaLabel.toLowerCase();
     }
 
     handleFade(toggle ? cachedSection : value);
@@ -69,6 +71,8 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   };
 
   const handleChange = (key: string, { currentTarget: { value } }) => {
+    if (!value) return;
+
     const target = key in profile.options ? profile.options : profile;
 
     target[key] = value;
@@ -76,7 +80,15 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
     handleIsFilled();
   };
 
-  const handleSave = () => {
+  const handleBlur = (key: string, { currentTarget }) => {
+    const { value } = currentTarget;
+
+    if (!value)
+      currentTarget.value =
+        key in profile ? profile[key] : profile.options[key];
+  };
+
+  const handleSave = (modal = true) => {
     const { profiles } = getSettings();
 
     const [localProfile] = profiles.filter(({ id }) => id === profile.id);
@@ -89,7 +101,7 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
       profiles.push(profile);
     }
 
-    setSettings('profiles', profiles, handleModal);
+    setSettings('profiles', profiles, modal ? handleModal : undefined);
   };
 
   const handleFade = (value: string) => {
@@ -163,38 +175,46 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   return (
     <Container $width={45} $isVisible={isVisible}>
       <Tags>
-        <Tag $isTitle>Profile</Tag>
+        <Tag $isTitle>{t('Profile')}</Tag>
         {tags.length <= 2 ? (
-          <Tag onClick={handleSingleSection}>
-            {tags[1 - tags.indexOf(section)]}
+          <Tag aria-label={cachedSection} onClick={handleSingleSection}>
+            {t(tags[1 - tags.indexOf(section)])}
           </Tag>
         ) : (
           <Fragment>
-            <Tag onClick={event => handleSection(event, section, true)}>
-              {cachedSection === 'general' ? 'advanced' : 'general'}
+            <Tag
+              aria-label={cachedSection}
+              onClick={event => handleSection(event, section, true)}
+            >
+              {t(cachedSection === 'general' ? 'advanced' : 'general')}
             </Tag>
             {tags.slice(2).map((section, index) => (
-              <Tag onClick={event => handleSection(event, section)} key={index}>
-                {section}
+              <Tag
+                aria-label={cachedSection}
+                onClick={event => handleSection(event, section)}
+                key={index}
+              >
+                {t(section)}
               </Tag>
             ))}
           </Fragment>
         )}
-        <Tag onClick={handleModal}>Cancel</Tag>
         <Tag
-          onClick={isFilled ? handleSave : undefined}
+          onClick={isFilled ? () => handleSave(true) : undefined}
           style={{ cursor: isFilled === false ? 'not-allowed' : 'pointer' }}
         >
-          Save
+          {t('Save')}
         </Tag>
+        <Tag onClick={handleModal}>{t('Cancel')}</Tag>
       </Tags>
       <Content $maxHeight={20.4} style={{ overflow: 'auto' }}>
         {section === 'general' && (
           <Search $fade={fade}>
             <SearchInput
-              placeholder="Name"
+              placeholder={profile.name}
               value={profile.name}
               onChange={event => handleChange('name', event)}
+              onBlur={event => handleBlur('name', event)}
             />
           </Search>
         )}
@@ -204,6 +224,7 @@ const Form: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
             section,
             profile,
             setProfile,
+            handleSave,
           } as ProfileFormProps)}
         </Wrapper>
       </Content>
@@ -215,6 +236,8 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
   props: ProfileFormOptionProps,
 ) => {
   const { option, profile, value } = props;
+
+  const { t } = useTranslation();
 
   const handleSpinner = (key: string, action: -1 | 1, { currentTarget }) => {
     const input = currentTarget.closest('.number').querySelector('input');
@@ -228,6 +251,8 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
     key: string,
     { currentTarget: { value, type, dataset } },
   ) => {
+    if (type === 'text' && !value) return;
+
     const target = key in profile.options ? profile.options : profile;
 
     if (!type) {
@@ -235,6 +260,8 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
 
       props.setProfile({ ...profile });
     } else {
+      if (key === 'cwd' || key === 'file') value = String.raw`${value}`;
+
       target[key] =
         type === 'number' || options?.every(value => typeof value === 'number')
           ? Number(value)
@@ -244,11 +271,23 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
     if (dataset.auth) props.setAuthType && props.setAuthType(value);
   };
 
+  const handleBlur = (
+    key: string,
+    type: string | undefined,
+    { currentTarget },
+  ) => {
+    const { value } = currentTarget;
+
+    if (type === 'text' && !value)
+      currentTarget.value =
+        key in profile ? profile[key] : profile.options[key];
+  };
+
   const handleDialog = (key: string) => {
     dialog
       .showOpenDialog(getCurrentWindow(), {
         properties: ['openFile'],
-        buttonLabel: 'Select private key file',
+        buttonLabel: t('Select private key file'),
       })
       .then(({ filePaths: [path], canceled }) => {
         if (!canceled) {
@@ -261,16 +300,17 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
 
   const { key, label, description, type, options, values } = option;
 
-  const handleChange = handleOption.bind(null, key);
+  const onChange = handleOption.bind(null, key);
+  const onBlur = handleBlur.bind(null, key, type);
 
   return (
     <Option>
       <Separator />
       <OptionContent>
-        <span>{label}</span>
+        <span>{t(label || '')}</span>
         {options ? (
           <Entry>
-            <Selector data-auth={key === 'authType'} onChange={handleChange}>
+            <Selector data-auth={key === 'authType'} onChange={onChange}>
               {options.map((option, index) => {
                 const selected = values ? values[index] === value : false;
 
@@ -280,7 +320,7 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
                     value={values && values[index]}
                     selected={selected}
                   >
-                    {option}
+                    {t(`${option}`)}
                   </option>
                 );
               })}
@@ -292,7 +332,7 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
         ) : type === 'checkbox' ? (
           <Switch
             className={value ? 'checked' : undefined}
-            onClick={handleChange as any}
+            onClick={onChange as any}
           >
             <SwitchSlider />
           </Switch>
@@ -300,9 +340,14 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
           <Entry $flex={true} className={type}>
             <Input
               type={type}
-              value={value}
-              placeholder={type === 'password' ? 'Enter password' : '...'}
-              onChange={handleChange}
+              value={
+                key === 'group' && value === 'Ungrouped'
+                  ? t('Ungrouped')
+                  : value
+              }
+              placeholder={type === 'password' ? t('Enter password') : value}
+              onChange={onChange}
+              onBlur={onBlur}
               $width="calc(25ch + 0.125rem)"
             />
             {type === 'number' && (
@@ -317,17 +362,19 @@ export const FormOption: React.FC<ProfileFormOptionProps> = (
         ) : (
           <Fragment>
             <Dialog title={value} onClick={() => handleDialog(key)}>
-              {value || 'Upload key...'}
+              {value || t('Upload key...')}
             </Dialog>
           </Fragment>
         )}
       </OptionContent>
       <Description>
-        {type === 'password'
-          ? 'Password used for authentication.'
-          : type === 'dialog'
-            ? 'Private key file used for authentication.'
-            : description}
+        {t(
+          type === 'password'
+            ? 'Password used for authentication.'
+            : type === 'dialog'
+              ? 'Private key file used for authentication.'
+              : description!,
+        )}
       </Description>
     </Option>
   );

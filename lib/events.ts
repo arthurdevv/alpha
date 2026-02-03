@@ -1,20 +1,24 @@
+import { getCurrentWindow, globalShortcut } from '@electron/remote';
 import { getSettings } from 'app/settings';
 import { bindKeymaps } from 'app/keymaps';
-import { getDefaultProfile } from 'app/common/profiles';
 import { terms } from 'app/common/terminal';
+import { watchCommand } from 'app/keymaps/schema';
+import { formatCommand } from 'app/keymaps/commands';
+import { getDefaultProfile } from 'app/common/profiles';
+import { loadTheme, setThemeVariables } from 'app/common/themes';
 import { appDir } from 'app/settings/constants';
 import listeners from 'app/settings/listeners';
 import storage from 'app/utils/local-storage';
-import ipc from 'shared/renderer';
+import ipc from 'shared/ipc/renderer';
 import { isNonEmptyObject } from './utils';
 
-export default ({ getStore }: AlphaStore) => {
+let rendererIsReady: boolean = false;
+
+export default (getStore: () => AlphaStore) => {
   const store = getStore();
 
   ipc.on('terminal:request', ({ instance }) => {
-    const { newTabPosition } = getCurrent();
-
-    store.requestTerm(instance, true, newTabPosition);
+    store.requestTerm(instance, true);
   });
 
   ipc.on('terminal:write', ({ id, data }) => {
@@ -23,30 +27,16 @@ export default ({ getStore }: AlphaStore) => {
     if (term) term.write(data);
   });
 
-  ipc.on('terminal:close', () => {
-    const { origin } = getCurrent();
+  ipc.on('terminal:action', (action: any, dispose?: string) => {
+    let { id } = getCurrent();
 
-    if (origin) store.onClose(origin);
-  });
+    id = dispose || id;
 
-  ipc.on('terminal:search', () => {
-    const { id } = getCurrent();
+    if (action.includes('connected')) {
+      const [, value] = action;
 
-    if (id) {
-      global.id = id;
-
-      store.setModal('Search');
+      return store.onConnect(id, value);
     }
-  });
-
-  ipc.on('terminal:connected', value => {
-    const { id } = getCurrent();
-
-    store.onConnect(id, value);
-  });
-
-  ipc.on('terminal:action', action => {
-    const { id } = getCurrent();
 
     if (id) {
       const term = terms[id];
@@ -59,7 +49,39 @@ export default ({ getStore }: AlphaStore) => {
     }
   });
 
-  ipc.on('process:action', (action, id) => {
+  ipc.on('terminal:modal', (modal: string) => {
+    const { id, instance } = getCurrent();
+
+    if (
+      id === 'Settings' ||
+      (modal === 'history' && instance && instance.profile.type !== 'shell')
+    )
+      return;
+
+    if (id) {
+      global.id = id;
+
+      ipc.emit('app:modal', modal);
+    }
+  });
+
+  ipc.on('terminal:save-history', ({ id, where, buffer, executedAt, ...t }) => {
+    const history: Record<string, ICommand[]> = storage.parseItem('history');
+
+    const command: ICommand = {
+      buffer,
+      where,
+      executedAt,
+      executionTime: Math.abs(Math.round(t.executionTime - t.entryTime)),
+    };
+
+    history[id] ??= [];
+    history[id].unshift(command);
+
+    storage.updateItem('history', history);
+  });
+
+  ipc.on('process:action', (action: string, id: string) => {
     const { id: focused } = getCurrent();
 
     id = id || focused;
@@ -71,36 +93,40 @@ export default ({ getStore }: AlphaStore) => {
     store.splitTerm(id, instance, orientation);
   });
 
-  ipc.on('pane:split', orientation => {
-    const { id, instances } = getCurrent();
-
-    if (id) {
-      const { profile, isExpanded } = instances[id];
-
-      if (!isExpanded) ipc.send('pane:create', { id, profile, orientation });
-    }
-  });
-
-  ipc.on('pane:move', direction => {
-    const { id, instances } = getCurrent();
-
-    if (id) {
-      const { isExpanded } = instances[id];
-
-      if (!isExpanded) store.switchTerm(id, direction);
-    }
-  });
-
-  ipc.on('pane:action', action => {
+  ipc.on('pane:action', (action: string) => {
     const { id, children, instances, modal } = getCurrent();
 
     if (children.length > 1) {
-      if (action === 'expand' && (!modal || modal === 'ContextMenu')) {
-        store.onExpand(id);
+      if (
+        ['expand', 'collapse'].includes(action) &&
+        (!modal || modal === 'TerminalContextMenu')
+      ) {
+        store.onFocus(id, false).onExpand(id);
       } else {
         const { isExpanded } = instances[id];
 
         if (!isExpanded) store.onFocus(id, true);
+      }
+    }
+  });
+
+  ipc.on('pane:layout', (action: string, orientation: any) => {
+    const { id, focused, instances } = getCurrent();
+
+    if (id) {
+      const { profile, isExpanded } = instances[id];
+
+      if (!isExpanded) {
+        switch (action) {
+          case 'split':
+            return ipc.send('pane:create', { id, profile, orientation });
+
+          case 'focus':
+            return store.switchTerm(id, orientation);
+
+          case 'resize':
+            return store.resizeTerm(focused, orientation);
+        }
       }
     }
   });
@@ -117,39 +143,85 @@ export default ({ getStore }: AlphaStore) => {
     }
   });
 
-  ipc.on('tab:move', direction => {
+  ipc.on('tab:layout', (order: any) => {
     const { origin } = getCurrent();
 
-    if (origin) store.switchTerm(origin, direction, false);
+    if (origin) store.switchTerm(origin, order, false);
   });
 
-  ipc.on('app:settings', section => {
-    const { modal, newTabPosition } = getCurrent();
+  ipc.on('tab:action', (action: string) => {
+    const { origin, tabs, session } = getCurrent();
+
+    const id = global.id || origin;
+
+    switch (action) {
+      case 'close-others':
+      case 'close-right': {
+        if (id) {
+          const index = tabs.indexOf(id);
+
+          tabs
+            .filter((_, i) =>
+              /others/i.test(action) ? i !== index : i > index,
+            )
+            .forEach(id => store.onClose(id));
+        }
+
+        break;
+      }
+
+      case 'reopen-closed': {
+        if (session.group) store.reopenClosedTab();
+        break;
+      }
+
+      case 'rename': {
+        if (id) store.setModal('Rename');
+        break;
+      }
+
+      case 'close': {
+        if (id) store.onClose(id);
+        break;
+      }
+
+      default: {
+        if (id) {
+          action = formatCommand(`tab:${action}`);
+          store[action](id);
+        }
+      }
+    }
+  });
+
+  ipc.on('app:settings', (section: string) => {
+    const { modal } = getCurrent();
 
     if (modal) store.setModal(null);
 
-    if (section) storage.updateItem('section', section);
+    if (section) {
+      storage.updateItem('section', section);
 
-    store.requestTerm(
-      <IInstance>{ id: 'Settings', title: 'Settings' },
-      false,
-      newTabPosition,
-    );
+      global.handleSection && global.handleSection(section);
+    }
+
+    store.requestTerm(<IInstance>{ id: 'Settings', title: 'Settings' }, false);
   });
 
-  ipc.on('app:modal', value => {
+  ipc.on('app:modal', (value: string) => {
     const { modal } = getStore();
 
     if (typeof value === 'string') {
       value = `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
     }
 
-    if (modal === value && modal !== 'ContextMenu') return;
+    if (modal === value) {
+      if (value === 'Keymaps') global.handleModal(undefined, null);
+      return;
+    }
 
     if (modal) {
-      store.setModal(null);
-
-      setTimeout(() => store.setModal(value), 100);
+      global.handleModal(undefined, value);
     } else {
       store.setModal(value);
     }
@@ -158,33 +230,69 @@ export default ({ getStore }: AlphaStore) => {
   ipc.on('app:update-session', ({ snapshot }) => {
     const { context, instances, current } = getStore();
 
-    if ('Settings' in context) delete context['Settings'];
-
     storage.updateItem('session', { context, instances, current, snapshot });
   });
 
   ipc.on('app:second-instance', ({ cwd }) => {
     const profile = getDefaultProfile();
 
-    if (profile.type === 'shell' && cwd !== appDir) profile.options.cwd = cwd;
+    if (profile.type === 'shell') profile.options.cwd = cwd;
 
-    ipc.send('terminal:create', profile);
+    ipc.send('terminal:create', { profile });
   });
 
   ipc.on('app:renderer-ready', () => {
-    const { openOnStart, restoreOnStart } = getSettings();
+    if (rendererIsReady) return;
+
+    const { openOnStart, restoreOnStart, workspaces, workspace } =
+      getSettings();
 
     listeners
       .subscribe('options', () => {
+        const {
+          options,
+          current: { origin },
+        } = getStore();
+
         const settings = getSettings();
 
-        ['opacity', 'alwaysOnTop'].forEach(option => {
-          ipc.send(`window:${option}`, settings[option]);
-        });
-
         store.setOptions(settings);
+
+        if (
+          settings.theme !== options.theme ||
+          settings.preserveBackground !== options.preserveBackground
+        ) {
+          if (origin && origin !== 'Settings') {
+            const theme = loadTheme(settings.theme);
+
+            setThemeVariables(theme, settings);
+          }
+        }
+
+        ['opacity', 'alwaysOnTop'].forEach(option => {
+          if (options[option] !== settings[option]) {
+            ipc.send(`window:${option}`, settings[option]);
+          }
+        });
       })
       .subscribe('keymaps', bindKeymaps);
+
+    watchCommand('window:toggle-visibility', keymaps => {
+      globalShortcut.unregisterAll();
+
+      keymaps.forEach(keys => {
+        globalShortcut.register(keys, () => {
+          const currentWindow = getCurrentWindow();
+
+          if (currentWindow.isVisible()) {
+            currentWindow.hide();
+          } else {
+            currentWindow.show();
+            currentWindow.focus();
+          }
+        });
+      });
+    });
 
     if (restoreOnStart) {
       const session: ISession | undefined = storage.parseItem('session');
@@ -200,9 +308,15 @@ export default ({ getStore }: AlphaStore) => {
       }
     }
 
+    const startupWorkspace = workspaces.find(w => w.id === workspace);
+
+    if (startupWorkspace) ipc.send('app:run-workspace', startupWorkspace);
+
     if (openOnStart || process.env.ALPHA_CLI || process.cwd() !== appDir) {
-      ipc.send('terminal:create');
+      ipc.send('terminal:create', {});
     }
+
+    rendererIsReady = true;
   });
 
   function getCurrent() {
@@ -210,19 +324,29 @@ export default ({ getStore }: AlphaStore) => {
 
     const {
       context,
+      instances,
       current: { origin, focused, terms },
       modal,
       options,
     } = store;
 
-    const { children } = origin ? context[origin] : { children: [] };
+    const { children = [] } = (origin && context[origin]) || {};
 
     let [id] = origin ? terms[origin] : focused;
 
-    if (modal === 'ContextMenu') {
+    if (modal && modal.includes('ContextMenu')) {
       id = global.id || id;
     }
 
-    return { origin, id, children, ...store, ...options };
+    return {
+      id,
+      origin,
+      focused,
+      children,
+      tabs: Object.keys(context),
+      instance: instances[focused],
+      ...store,
+      ...options,
+    };
   }
 };

@@ -1,8 +1,10 @@
-import { h } from 'preact';
+import { Fragment } from 'preact';
 import React, { memo, useEffect, useState } from 'preact/compat';
 
 import { BrowserWindow } from '@electron/remote';
 import { execCommand } from 'app/keymaps/commands';
+import { removeThemeVariables, setThemeVariables } from 'app/common/themes';
+import useStore from 'lib/store';
 
 import {
   CloseIcon,
@@ -13,32 +15,28 @@ import {
   RestoreIcon,
   SettingsIcon,
 } from 'lib/components/Icons';
-import { ActionItem, Actions, Container, DragRegion } from './styles';
 import TabGroup from './Tab';
 import Popover from './Popover';
+import { ActionItem, Actions, Container, DragRegion } from './styles';
 
-const getFocusedWindow = () => BrowserWindow.getFocusedWindow()!;
+const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
+  const {
+    current: { origin },
+    options: { theme, preserveBackground, acrylic },
+  } = useStore();
 
-const Header: React.FC = () => {
   const [isMaximized, setMaximized] = useState<boolean>(false);
 
   const handleAction = (action: string) => {
-    switch (action) {
-      case 'maximize':
-      case 'restore':
-        setMaximized(!isMaximized);
-        break;
+    const focusedWindow = BrowserWindow.getFocusedWindow()!;
 
-      case 'close':
-        execCommand('app:save-session');
-        break;
-    }
+    if (['maximize', 'restore'].includes(action)) setMaximized(!isMaximized);
 
-    getFocusedWindow()[action]();
+    focusedWindow[action]();
   };
 
   useEffect(() => {
-    const focusedWindow = getFocusedWindow();
+    const focusedWindow = BrowserWindow.getFocusedWindow();
 
     if (focusedWindow) {
       ['maximize', 'unmaximize', 'restore', 'minimize'].forEach(eventName => {
@@ -51,25 +49,44 @@ const Header: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if ((theme as any) === 'default') return;
+
+    if (!origin || origin === 'Settings' || preserveBackground) {
+      removeThemeVariables();
+    } else {
+      setThemeVariables(theme, { preserveBackground, acrylic } as ISettings);
+    }
+  }, [origin, preserveBackground]);
+
   return (
-    <Container onClick={() => execCommand('terminal:focus')}>
-      <TabGroup />
-      <Actions>
-        <ActionItem onClick={() => execCommand('terminal:create')}>
-          <PlusIcon />
-          <Popover label="New terminal" />
-        </ActionItem>
-        <ActionItem onClick={() => execCommand('app:profiles')}>
-          <ProfilesIcon />
-          <Popover label="Profiles" />
-        </ActionItem>
-      </Actions>
+    <Container
+      onClick={() => execCommand('terminal:focus')}
+      $preserveBackground={(theme as any) === 'default' || preserveBackground}
+    >
+      {!welcome && (
+        <Fragment>
+          <TabGroup />
+          <Actions>
+            <ActionItem onClick={() => execCommand('terminal:create', {})}>
+              <PlusIcon />
+              <Popover label="New terminal" />
+            </ActionItem>
+            <ActionItem onClick={() => execCommand('app:profiles')}>
+              <ProfilesIcon />
+              <Popover label="Profiles" />
+            </ActionItem>
+          </Actions>
+        </Fragment>
+      )}
       <DragRegion />
       <Actions>
-        <ActionItem onClick={() => execCommand('app:settings')}>
-          <SettingsIcon />
-          <Popover label="Settings" />
-        </ActionItem>
+        {!welcome && (
+          <ActionItem onClick={() => execCommand('app:settings')}>
+            <SettingsIcon />
+            <Popover label="Settings" />
+          </ActionItem>
+        )}
         <ActionItem onClick={() => handleAction('minimize')}>
           <MinimizeIcon />
           <Popover label="Minimize" />

@@ -1,13 +1,18 @@
-import { h } from 'preact';
 import { memo } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { clipboard } from '@electron/remote';
+import { useSettings } from 'app/settings/listeners';
 
 import { Preview, Title, Wrapper } from './styles';
 import { Container, Content, Tag, Tags } from '../styles';
 
 const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
+  const [settings] = useSettings();
+
   const data = clipboard.readText('clipboard');
+
+  const { t } = useTranslation();
 
   const handlePaste = () => {
     document.execCommand('paste');
@@ -18,17 +23,18 @@ const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   return (
     <Container $width={34} $isVisible={isVisible}>
       <Tags>
-        <Tag $isTitle>Warning</Tag>
-        <Tag onClick={handleModal}>Cancel</Tag>
-        <Tag onClick={handlePaste}>Paste anyway</Tag>
+        <Tag $isTitle>{t('Warning')}</Tag>
+        <Tag onClick={handleModal}>{t('Cancel')}</Tag>
+        <Tag onClick={handlePaste}>{t('Paste anyway')}</Tag>
       </Tags>
       <Content>
         <Wrapper>
           <Title>
-            The clipboard text has multiple lines, which might lead to
-            unexpected execution.
+            {t(
+              'The clipboard text has multiple lines, which might lead to unexpected execution.',
+            )}
           </Title>
-          <Preview>{data}</Preview>
+          <Preview style={{ fontFamily: settings.fontFamily }}>{data}</Preview>
         </Wrapper>
       </Content>
     </Container>

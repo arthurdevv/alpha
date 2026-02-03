@@ -1,6 +1,6 @@
-import type { FontWeight, ITheme } from '@xterm/xterm';
+import type { ITheme as _ITheme, FontWeight } from '@xterm/xterm';
 import type { AuthenticationType, ConnectConfig } from 'ssh2';
-import type IPCMain from 'shared/main';
+import type IPCMain from 'shared/ipc/main';
 
 declare global {
   type IRawSettings = Record<Lowercase<Section>, ISettings>;
@@ -11,9 +11,10 @@ declare global {
     IWindowOptions;
 
   type IAppOptions = {
+    version: string;
     autoUpdates: boolean;
-    gpu: boolean;
-    language: string;
+    enableAnalytics: boolean;
+    language: 'auto' | 'en-US' | 'pt-BR' | 'es-ES' | 'fr-FR' | 'de-DE';
   };
 
   type IAppearanceOptions = {
@@ -30,6 +31,7 @@ declare global {
     minimumContrastRatio: number;
     scrollback: number;
     theme: ITheme;
+    preserveBackground: boolean;
   } & {
     allowProposedApi?: boolean;
     allowTransparency?: boolean;
@@ -50,6 +52,8 @@ declare global {
     scrollOnUserInput: boolean;
     trimSelection: boolean;
     wordSeparators: string;
+    workspace: string;
+    workspaces: IWorkspace[];
   };
 
   type IWindowOptions = {
@@ -57,6 +61,7 @@ declare global {
     alwaysOnTop: boolean;
     autoHideOnBlur: boolean;
     centerOnLaunch: boolean;
+    contextMenuStyle: 'minimal' | 'detailed';
     launchMode: 'default' | 'maximized' | 'fullscreen';
     newTabPosition: 'current' | 'end';
     opacity: number;
@@ -81,9 +86,9 @@ declare global {
 
   type IShellOptions = {
     file: string;
+    cwd: string;
     args: string[];
-    env: NodeJS.ProcessEnv;
-    cwd?: string | null;
+    env: Record<string, { value: string; hidden: boolean }>;
   };
 
   type ISerialOptions = {
@@ -162,15 +167,48 @@ declare global {
     profile: IProfile;
   };
 
+  type ITheme = _ITheme & {
+    name?: string;
+  };
+
+  type IWorkspace = {
+    id: string;
+    name: string;
+    tabs: IWorkspaceTab[];
+  };
+
+  type IWorkspaceTab = {
+    title: string;
+    profile: string;
+    commands: string[];
+    overrideTitle: boolean;
+  };
+
+  type IAnalyticsConfig = {
+    dsn: string;
+    tracesSampleRate: number;
+  };
+
+  type ErrorReporter = (
+    process: 'Main' | 'Renderer',
+    error: unknown,
+    context?: string,
+  ) => void;
+
   type IPC = IPCMain;
 
-  interface InstanceAttrs {
+  interface InstanceArgs {
     profile: IProfile;
     origin?: string;
     id?: string;
+    title?: string;
+    commands?: string[];
+    overrideTitle?: boolean;
   }
 
   var id: string | null;
 
   var menu: { top: number; left: number } | null;
+
+  var tabIndex: number;
 }

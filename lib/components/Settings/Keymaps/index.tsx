@@ -1,11 +1,19 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
 import { getKeymaps, mousetrap, writeKeymaps } from 'app/keymaps';
-import { parseKeys, schema } from 'app/keymaps/schema';
+import { parseKeys, schema, watchKeys } from 'app/keymaps/schema';
 
 import { Overlay } from 'lib/components/Modal/styles';
 import { KeyItem as KeyBadge } from 'lib/components/Header/Popover/styles';
+import {
+  Wrapper as Warning,
+  Label as WarningLabel,
+} from 'lib/components/Settings/Config/styles';
+import {
+  KeyItem as WarningKey,
+  Keys as WarningKeys,
+} from 'lib/components/Terminal/Watermark/styles';
 import { Title } from '../styles';
 import {
   Action,
@@ -27,18 +35,22 @@ import {
 
 let combination: string[] = [];
 
-const Keymaps: React.FC = () => {
-  const [command, setCommand] = useState({ value: '', index: -1 });
+const Keymaps: React.FC<SectionProps> = ({ t }) => {
+  const [command, setCommand] = useState({ label: '', value: '', index: -1 });
 
   const [pressedKeys, setPressedKeys] = useState<string[]>([]);
 
   const [shouldReset, setShouldReset] = useState<boolean>(false);
+
+  const [paneKeys, setPaneKeys] = useState<string[]>([]);
 
   const getEventKey = ({ key }: KeyboardEvent) => {
     if (key.includes('Arrow')) {
       key = key.replace('Arrow', '');
     } else if (key === 'Control') {
       key = 'Ctrl';
+    } else if (key === ' ') {
+      key = 'Space';
     }
 
     return key.toLowerCase();
@@ -105,7 +117,7 @@ const Keymaps: React.FC = () => {
   };
 
   const resetState = () => {
-    setCommand({ value: '', index: -1 });
+    setCommand({ label: '', value: '', index: -1 });
     setPressedKeys([]);
     setShouldReset(false);
   };
@@ -144,28 +156,61 @@ const Keymaps: React.FC = () => {
     };
   }, [command]);
 
+  useEffect(() => watchKeys('app:keymaps', setPaneKeys, false), []);
+
   return (
     <Fragment>
-      <Title style={{ marginTop: 0 }}>Keymaps</Title>
+      <Title style={{ marginTop: 0 }}>
+        {t('Keymaps')}
+        <Warning $element="Keymaps" style={{ marginLeft: 'auto' }}>
+          <WarningLabel>{t('Use')}</WarningLabel>
+          <WarningKeys>
+            {paneKeys.map((key, index) => (
+              <WarningKey key={index}>{key}</WarningKey>
+            ))}
+          </WarningKeys>
+          <WarningLabel>
+            {t('to view all keymaps in the side panel')}
+          </WarningLabel>
+        </Warning>
+      </Title>
       <List>
         {Object.keys(schema).map((command, index) => {
           const label = schema[command];
 
-          const keys = parseKeys(command);
+          let keys = parseKeys(command);
+
+          let readonly = false;
+
+          if (command.includes('by-number')) {
+            const [scope] = command.split(':');
+
+            keys = [[scope === 'tab' ? 'ctrl' : 'alt', '1 — 9']];
+            readonly = true;
+          }
 
           return (
             <Item key={index}>
               <Separator />
-              <Label>{label}</Label>
+              <Label>{t(label)}</Label>
               <Wrapper>
                 <Action
-                  onClick={() => setCommand({ value: command, index: -1 })}
+                  style={{ display: readonly ? 'none' : undefined }}
+                  onClick={() =>
+                    setCommand({ label, value: command, index: -1 })
+                  }
                 >
-                  Add keys...
+                  {t('Add keys...')}
                 </Action>
                 {keys.map((keys, index) => (
-                  <Keys key={index}>
-                    <Key onClick={() => setCommand({ value: command, index })}>
+                  <Keys
+                    key={index}
+                    style={{ cursor: readonly ? 'default' : undefined }}
+                    onClick={() =>
+                      !readonly && setCommand({ label, value: command, index })
+                    }
+                  >
+                    <Key>
                       {keys.map((key, index) => (
                         <span key={index}>{key}</span>
                       ))}
@@ -180,15 +225,33 @@ const Keymaps: React.FC = () => {
       <Overlay $isVisible={Boolean(command.value)} onClick={handleOverlay}>
         <Editor $isVisible={Boolean(command.value)}>
           <EditorTags>
+            <EditorTag $isText>{`${t('Keymaps')}: ${command.label}`}</EditorTag>
+            <EditorTag
+              $isText
+              style={{
+                marginRight: 'unset',
+                color: 'rgba(128, 128, 128, 1.0)',
+              }}
+            >
+              {`${t('Use')} `}
+              <KeyBadge $isHint>ESC</KeyBadge>
+              {` ${t('to cancel')}`}
+            </EditorTag>
             {command.index !== -1 && (
-              <EditorTag onClick={handleDelete}>Delete</EditorTag>
+              <Fragment>
+                <EditorTag onClick={handleDelete}>{t('Delete')}</EditorTag>
+              </Fragment>
             )}
           </EditorTags>
           <EditorContent>
             <EditorTitle>
-              Press key combination and then press <KeyBadge>ENTER</KeyBadge>
+              {t('Press key combination and then press')}{' '}
+              <KeyBadge>ENTER</KeyBadge>
             </EditorTitle>
             <EditorKeys>
+              {!pressedKeys.length && (
+                <div>{t('Listening for key combination…')}</div>
+              )}
               {pressedKeys.map((value, index) => (
                 <EditorKey key={index}>{value}</EditorKey>
               ))}

@@ -1,5 +1,6 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { app } from '@electron/remote';
 import { watchKeys } from 'app/keymaps/schema';
@@ -25,6 +26,8 @@ const Watermark: React.FC = () => {
 
   const [keys, setKeys] = useState<string[]>([]);
 
+  const { t } = useTranslation();
+
   useEffect(() => watchKeys('app:commands', setKeys, false), []);
 
   return (
@@ -36,13 +39,13 @@ const Watermark: React.FC = () => {
       <Wrapper>
         {keys.length > 0 && (
           <Fragment>
-            Press
+            {t('Press')}
             <Keys>
               {keys.map((key, index) => (
                 <KeyItem key={index}>{key}</KeyItem>
               ))}
             </Keys>
-            to show all commands
+            {t('to show all commands')}
           </Fragment>
         )}
       </Wrapper>

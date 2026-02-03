@@ -1,17 +1,12 @@
 import { existsSync } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { getSettings } from 'app/settings';
-import { appExec, appPath } from 'app/settings/constants';
+import { HOMEDIR, resourcesPath } from 'app/settings/constants';
 import { defaultOptions as sshOptions } from 'app/connections/ssh';
 import { defaultOptions as serialOptions } from 'app/connections/serial';
 import getRegistryPath from 'app/utils/registry-path';
 
-const { app }: typeof Electron =
-  process.type === 'browser'
-    ? require('electron')
-    : require('@electron/remote');
-
-const systemProfiles = [
+export const defaultProfiles = [
   {
     id: 'cmd',
     name: 'Command Prompt',
@@ -20,7 +15,7 @@ const systemProfiles = [
       file: 'C:\\Windows\\system32\\cmd.exe',
       args: [],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -28,18 +23,16 @@ const systemProfiles = [
   {
     id: 'clink',
     name: 'Clink',
-    group: 'System',
+    group: 'External',
     options: {
       file: 'C:\\Windows\\system32\\cmd.exe',
       args: [
         '/k',
-        `${
-          app.isPackaged ? appExec : appPath
-        }\\resources\\clink\\clink_${process.arch}.exe`,
+        `${resourcesPath}\\clink\\clink_${process.arch}.exe`,
         'inject',
       ],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -47,12 +40,12 @@ const systemProfiles = [
   {
     id: 'cygwin',
     name: 'Cygwin',
-    group: 'System',
+    group: 'External',
     options: {
       file: `${getRegistryPath('Cygwin\\setup', 'rootdir')}\\bin\\bash.exe`,
       args: ['--login', '-i'],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -60,12 +53,12 @@ const systemProfiles = [
   {
     id: 'git-bash',
     name: 'Git Bash',
-    group: 'System',
+    group: 'External',
     options: {
       file: `${getRegistryPath('GitForWindows', 'InstallPath')}\\bin\\bash.exe`,
       args: ['--login', '-i'],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -73,12 +66,12 @@ const systemProfiles = [
   {
     id: 'msys2',
     name: `MSYS2`,
-    group: 'System',
+    group: 'External',
     options: {
       file: `C:\\msys64\\msys2_shell.cmd`,
       args: ['-defterm', '-here', '-no-start'],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -91,7 +84,7 @@ const systemProfiles = [
       file: 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe',
       args: [],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
@@ -104,12 +97,16 @@ const systemProfiles = [
       file: 'C:\\Windows\\system32\\wsl.exe',
       args: [],
       env: {},
-      cwd: undefined,
+      cwd: HOMEDIR,
     },
     title: false,
     type: 'shell',
   },
-].filter(({ options }) => existsSync(options.file)) as IProfile[];
+]
+  .filter(({ options }) => existsSync(options.file))
+  .sort((a, b) =>
+    a.group.toLowerCase().localeCompare(b.group.toLowerCase()),
+  ) as IProfile<'shell'>[];
 
 const connectionsProfiles = [
   {
@@ -128,15 +125,15 @@ const connectionsProfiles = [
     title: false,
     type: 'ssh',
   },
-] as IProfile[];
+] as IProfile<'ssh' | 'serial'>[];
 
-function createProfile(template?: IProfile | null): IProfile {
-  template = template ?? systemProfiles[0];
+function createProfile(t: any, template?: IProfile | null): IProfile {
+  const profile = { ...(template ?? defaultProfiles[0]) };
 
   return {
-    ...template,
+    ...profile,
     id: uuidv4(),
-    name: `${template.name} copy`,
+    name: t('{{profile.name}} copy', { profile }),
     group: 'Ungrouped',
   };
 }
@@ -149,10 +146,10 @@ function getGroups(
 
   let { profiles } = getSettings();
 
-  profiles = profiles.concat(systemProfiles);
+  profiles = profiles.concat([...defaultProfiles]);
 
   if (connections) {
-    profiles = profiles.concat(connectionsProfiles);
+    profiles = profiles.concat([...connectionsProfiles]);
   }
 
   profiles.forEach(profile => {
@@ -169,13 +166,45 @@ function getProfileByKey(key: keyof IProfile, value: any): IProfile {
 
   const profile = groups.find(profile => profile[key] === value);
 
-  return profile as IProfile;
+  return getDefaultProfile(profile);
 }
 
 function getDefaultProfile(profile?: IProfile): IProfile {
+  if (profile) return profile;
+
   const { defaultProfile } = getSettings();
 
-  return profile ?? getProfileByKey('id', defaultProfile);
+  return getProfileByKey('id', defaultProfile);
 }
 
-export { systemProfiles, createProfile, getGroups, getDefaultProfile };
+function getAllProfiles(): IProfile[] {
+  const { profiles } = getSettings();
+
+  return profiles.concat(defaultProfiles);
+}
+
+function sortGroups(groups: any): string[] {
+  const weights = { Ungrouped: -1, External: 98, System: 99, Connections: 100 };
+
+  if (Array.isArray(groups)) {
+    return [...groups].sort((a, b) => {
+      const weightA = weights[a] ?? 0;
+      const weightB = weights[b] ?? 0;
+
+      if (weightA !== weightB) return weightA - weightB;
+
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
+  }
+
+  return [];
+}
+
+export {
+  createProfile,
+  getGroups,
+  getProfileByKey,
+  getDefaultProfile,
+  getAllProfiles,
+  sortGroups,
+};

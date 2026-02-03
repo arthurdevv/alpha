@@ -1,16 +1,23 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, globalShortcut, Menu } from 'electron';
 import { enable, initialize } from '@electron/remote/main';
 import * as glasstron from 'glasstron';
-import { getSettings } from 'app/settings';
+import settings, { getSettings } from 'app/settings';
+import { iconPath, isPackaged } from 'app/settings/constants';
 import checkForUpdates from 'app/updater';
+import initMainAnalytics from 'app/analytics';
 import invokeEvents from 'app/events';
 import installCLI from 'cli/install';
 import { getBounds, saveBounds } from './bounds';
 
+const { autoUpdates, enableAnalytics, acrylic, launchMode, centerOnLaunch } =
+  settings;
+
+if (isPackaged) initMainAnalytics(enableAnalytics);
+
 let isSingleInstance: boolean = true;
 
 function handleInitialization(): void {
-  const { onSecondInstance } = getSettings();
+  const { onSecondInstance } = settings;
 
   if (onSecondInstance === 'attach') {
     isSingleInstance = app.requestSingleInstanceLock();
@@ -34,36 +41,38 @@ function handleInitialization(): void {
 let mainWindow: Alpha.BrowserWindow | null = null;
 
 function createWindow(): void {
-  mainWindow = new glasstron.BrowserWindow({
+  mainWindow = new (acrylic ? glasstron.BrowserWindow : BrowserWindow)({
     width: 1050,
     height: 560,
     minWidth: 400,
     minHeight: 300,
+    show: false,
     frame: false,
     title: 'Alpha',
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     backgroundColor: '#00000000',
-    blurType: 'acrylic',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
     },
     ...settings,
     ...getBounds(centerOnLaunch),
-  });
+  }) as Alpha.BrowserWindow;
 
   enable(mainWindow.webContents);
 
+  if (!isPackaged) mainWindow.setIcon(iconPath);
+
   mainWindow.loadURL(
-    app.isPackaged ? `file://${__dirname}/index.html` : 'http://localhost:4000',
+    isPackaged ? `file://${__dirname}/index.html` : 'http://localhost:4000',
   );
 
   mainWindow.on('ready-to-show', () => {
     if (mainWindow) {
       mainWindow.show();
 
-      !app.isPackaged && mainWindow.webContents.openDevTools();
+      if (!isPackaged) mainWindow.webContents.openDevTools();
     }
   });
 
@@ -83,7 +92,11 @@ function createWindow(): void {
     }
   });
 
-  if (acrylic) mainWindow.setBlur(acrylic);
+  if (acrylic) {
+    mainWindow.blurType = 'acrylic';
+
+    mainWindow.setBlur(acrylic);
+  }
 
   if (autoUpdates) checkForUpdates(mainWindow);
 
@@ -102,33 +115,29 @@ function createWindow(): void {
 
 handleInitialization();
 
-const { autoUpdates, gpu, acrylic, launchMode, centerOnLaunch, ...settings } =
-  getSettings();
-
-if (!gpu) {
-  app.disableHardwareAcceleration();
-}
+app.commandLine.appendSwitch(
+  'disable-features',
+  'WidgetLayering,CalculateNativeWinOcclusion',
+);
 
 app.whenReady().then(() => {
   isSingleInstance && createWindow();
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  if (app.isPackaged) installCLI();
+  if (isPackaged) installCLI();
+
+  Menu.setApplicationMenu(null);
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  if (process.platform !== 'darwin') app.quit();
 });
 
-app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
-
-Menu.setApplicationMenu(null);
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+});
 
 export { createWindow };

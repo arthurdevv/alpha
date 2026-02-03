@@ -2,6 +2,7 @@ import yaml from 'js-yaml';
 import { screen } from 'electron';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { boundsPath } from 'app/settings/constants';
+import { reportError } from 'shared/error-reporter';
 
 function getBounds(
   center?: boolean,
@@ -13,7 +14,7 @@ function getBounds(
 
     bounds = yaml.load(content) as typeof bounds;
   } catch (error) {
-    console.error(error);
+    reportError(error);
 
     return bounds;
   }
@@ -40,7 +41,7 @@ function saveBounds(bounds: Partial<Electron.Rectangle>): void {
 
     writeFileSync(boundsPath, content, 'utf-8');
   } catch (error) {
-    console.error(error);
+    reportError(error);
   }
 }
 

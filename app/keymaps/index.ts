@@ -3,6 +3,7 @@ import Mousetrap, { MousetrapInstance } from 'mousetrap';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { commands, execCommand } from 'app/keymaps/commands';
 import { keymapsPath, userKeymapsPath } from 'app/settings/constants';
+import { reportError } from 'shared/error-reporter';
 
 export const mousetrap: MousetrapInstance = new (Mousetrap as any)(window);
 
@@ -15,13 +16,13 @@ function getNumericKeys(): Record<string, string[]> {
     keys[`tab:${i}`] = [`ctrl+${i}`];
 
     commands[`tab:${i}`] = () => {
-      execCommand(`tab:move`, index);
+      execCommand(`tab:layout`, index);
     };
 
     keys[`pane:${i}`] = [`alt+${i}`];
 
     commands[`pane:${i}`] = () => {
-      execCommand(`pane:move`, index);
+      execCommand(`pane:layout`, 'focus', index);
     };
   }
 
@@ -43,7 +44,7 @@ function getKeymaps(initial?: boolean, flat = false): Record<string, string[]> {
 
     if (!existsFile) writeKeymaps(keymaps);
   } catch (error) {
-    console.error(error);
+    reportError(error);
   }
 
   keymaps = Object.assign(keymaps, getNumericKeys());
@@ -57,7 +58,7 @@ function writeKeymaps(keymaps: Record<string, string[]>): void {
 
     writeFileSync(userKeymapsPath, content, 'utf-8');
   } catch (error) {
-    console.error(error);
+    reportError(error);
   }
 }
 

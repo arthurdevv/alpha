@@ -1,10 +1,11 @@
 application:
-  language: en-US
+  version: 0.9.0
+  language: auto
   autoUpdates: true
-  gpu: false
+  enableAnalytics: true
 appearance:
   fontSize: 16
-  fontFamily: Menlo, Consolas, Lucida Console, monospace
+  fontFamily: Cascadia Code, Consolas, Courier New, monospace
   fontWeight: 400
   fontWeightBold: 600
   fontLigatures: true
@@ -14,6 +15,8 @@ appearance:
   minimumContrastRatio: 1
   cursorStyle: block
   cursorBlink: true
+  theme: default
+  preserveBackground: true
 terminal:
   defaultProfile: cmd
   renderer: default
@@ -28,14 +31,17 @@ terminal:
   preserveCWD: true
   openOnStart: false
   restoreOnStart: true
+  workspace: false
 window:
   acrylic: false
   opacity: 1
   tabWidth: fixed
   newTabPosition: end
+  contextMenuStyle: minimal
   onSecondInstance: attach
   alwaysOnTop: false
   autoHideOnBlur: false
   launchMode: default
   centerOnLaunch: false
 profiles: []
+workspaces: []

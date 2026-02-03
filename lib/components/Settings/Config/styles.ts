@@ -1,8 +1,13 @@
 import styled, { css } from 'styled-components';
 
-export const Code = styled.textarea<{ $fontFamily: string }>`
+export const Code = styled.textarea<{
+  $fontFamily: string;
+  $transition: boolean;
+  $defaults: boolean;
+}>`
   height: 100%;
   flex: 1 0 1%;
+  padding: 0.5rem 0.75rem;
   margin-bottom: 1rem;
   font: 400 0.8125rem / 1.8
     ${({
@@ -11,11 +16,14 @@ export const Code = styled.textarea<{ $fontFamily: string }>`
     Consolas,
     sans-serif`};
   color: ${props => props.theme.disabled};
-  transition: color 0.2s ease 0s;
-  background: transparent;
+  background: ${props => props.theme.codeAcrylic};
+  border-radius: 4px;
+  border: 1px solid ${props => props.theme.border};
   outline: none;
-  border: none;
   resize: none;
+  transition-property: color, opacity;
+  transition-duration: 0.2s, 0.1s;
+  transition-timing-function: ease, linear;
 
   &:hover,
   &:focus {
@@ -40,13 +48,44 @@ export const Code = styled.textarea<{ $fontFamily: string }>`
       background: ${props => props.theme.scrollbarHover};
     }
   }
+
+  ${({ $transition }) =>
+    $transition
+      ? css`
+          opacity: 1;
+        `
+      : css`
+          opacity: 0;
+        `}
+
+  ${({ $defaults }) =>
+    $defaults &&
+    css`
+      user-select: none;
+      cursor: default;
+    `}
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ $element?: string }>`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+
+  ${({ $element }) =>
+    $element === 'Keymaps'
+      ? css`
+          @media screen and (max-width: 40.625rem) {
+            display: none;
+          }
+        `
+      : $element === 'Config'
+        ? css`
+            @media screen and (max-width: 34.0625rem) {
+              display: none;
+            }
+          `
+        : undefined}
 `;
 
 export const Action = styled.div`
@@ -80,4 +119,45 @@ export const Warning = styled.span<{ $visible: boolean }>`
     css`
       opacity: 1;
     `}
+`;
+
+export const Selectors = styled.div`
+  width: fit-content;
+  height: 1.5rem;
+  margin-left: auto;
+  padding: 0 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  background: ${props => props.theme.badge};
+  border: 1px solid ${props => props.theme.border};
+  border-radius: 4px;
+`;
+
+export const Selector = styled.span`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: ${props => props.theme.disabled};
+  transition: color 0.2s ease 0s;
+
+  &:hover {
+    color: ${props => props.theme.foreground};
+  }
+
+  &:first-of-type {
+    padding-right: 0.5rem;
+    border-right: 1px solid ${props => props.theme.border};
+  }
+
+  &:last-of-type {
+    padding-left: 0.5rem;
+  }
+
+  &.selected {
+    color: ${props => props.theme.foreground};
+  }
 `;

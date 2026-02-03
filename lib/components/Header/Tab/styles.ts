@@ -7,53 +7,85 @@ export const Group = styled.div`
   overflow: hidden;
 `;
 
+export const Mask = styled.div`
+  position: absolute;
+  width: 6.25rem;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--header, ${props => props.theme.background}),
+    var(--header, ${props => props.theme.background})
+  );
+  transition: 0.2s ease 0s;
+  pointer-events: none;
+`;
+
 export const Container = styled.div<{
   $isCurrent: boolean;
   $transition: boolean;
   $tabWidth: 'auto' | 'fixed' | undefined;
+  $before?: boolean;
 }>`
   position: relative;
   width: 12.5rem;
-  z-index: 100;
   padding: 0 1rem;
   cursor: pointer;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.theme.disabled};
-  transition: 0.2s ease 0s;
-  transition-property: width, color, opacity;
+  color: var(--foreground, ${props => props.theme.disabled});
+  background: var(--header, transparent);
+  transition: 0.2s linear 0s;
+  transition-property: color, opacity, width, padding;
   animation: ${keyframes`
     0% {
       width: 0;
       padding: 0;
     }
-  `} 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
 
   &:hover {
-    & span:first-of-type {
-      -webkit-mask-size:
-        calc(100% - 60px) auto,
-        60px auto;
-      -webkit-mask-repeat: no-repeat;
-      -webkit-mask-position: left, right;
-      -webkit-mask-image:
-        linear-gradient(#000 0 0),
-        linear-gradient(to left, transparent 0%, #000 100%);
+    ${Mask} {
+      opacity: 1;
     }
 
-    & div:last-of-type {
+    & div {
       opacity: 1;
       transition: all 0.2s ease 0s;
     }
   }
 
-  ${props =>
-    props.$isCurrent &&
+  ${({ $before }) =>
+    $before &&
+    css`
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 0.25rem;
+        top: 0;
+        opacity: 0;
+        background: var(--indicator, transparent);
+        transition: opacity 0.2s ease 0s;
+      }
+    `}
+
+  ${({ $isCurrent }) =>
+    $isCurrent &&
     css`
       cursor: default;
-      color: ${props => props.theme.foreground};
+      color: var(--foreground, ${props => props.theme.foreground});
+      background: var(--acrylic, var(--background, transparent));
+
+      &::before {
+        opacity: 1;
+      }
     `}
 
   ${({ $transition }) =>
@@ -82,14 +114,15 @@ export const Title = styled.span`
   font-size: 0.8125rem;
   overflow: hidden;
   white-space: nowrap;
+  opacity: 0;
   text-overflow: ellipsis;
   animation: ${keyframes`
-    from { opacity: 0; }
-    to { opacity: 1; }
-  `} 0.6s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+    from { opacity: 0; width: 0; }
+    to { opacity: 1; width: fit-content; }
+  `} 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0s;
 `;
 
-export const Close = styled.div`
+export const Action = styled.div`
   position: absolute;
   width: 1.5rem;
   height: 1.5rem;
@@ -105,8 +138,8 @@ export const Close = styled.div`
   transition: all 0.2s ease 0s;
 
   & svg {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.875rem;
+    height: 0.875rem;
     pointer-events: none;
   }
 

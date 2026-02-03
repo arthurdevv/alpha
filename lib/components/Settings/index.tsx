@@ -1,12 +1,15 @@
-import { createElement, h } from 'preact';
+import { createElement } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import { getSettings, setSettings } from 'app/settings';
 import { getGroups } from 'app/common/profiles';
 import listeners from 'app/settings/listeners';
-import schema from 'app/settings/schema';
 import storage from 'app/utils/local-storage';
+import useStore from 'lib/store';
+import { getAutomaticLanguage } from 'lib/i18n';
 
+import schema from './schema';
 import {
   BadgeItem,
   Badges,
@@ -30,29 +33,43 @@ import {
 } from './styles';
 import { SpinnerDownIcon, SpinnerIcon } from '../Icons';
 import Application from './Application';
+import Appearance from './Appearance';
 import Keymaps from './Keymaps';
 import Profiles from './Profiles';
+import Workspaces from './Workspaces';
 import Config from './Config';
 
 const initialSettings = getSettings();
 
-function getProfiles(): Record<string, string[]> {
-  const profiles = getGroups(true) as IProfile[];
+function getEntityOptions(entity?: string) {
+  let target: (IProfile | IWorkspace)[] = [];
+
+  if (!entity) return { options: [], values: [] };
+
+  if (entity === 'profiles') {
+    target = getGroups(true) as IProfile[];
+  } else {
+    const blankWorkspaces: any[] = [{ id: false, name: 'None', tabs: [] }];
+
+    target = blankWorkspaces.concat(getSettings().workspaces);
+  }
 
   return {
-    options: profiles.map(({ name }) => name),
-    values: profiles.map(({ id }) => id),
+    options: target.map(({ name }) => name),
+    values: target.map(({ id }) => id),
   };
 }
 
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
-  const [section, setSection] = useState<Section>(
-    () => storage.parseItem('section', 'Application') as Section,
+  const [section, setSection] = useState<Section>(() =>
+    storage.parseItem('section', 'Application'),
   );
 
-  const [profiles, setProfiles] = useState(getProfiles);
+  const [entityOptions, setEntityOptions] = useState(() => getEntityOptions());
 
   const [transition, setTransition] = useState<boolean>(true);
+
+  const { t } = useTranslation();
 
   const handleSection = (value: Section) => {
     if (value !== section) {
@@ -65,6 +82,10 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
       }, 125);
 
       storage.updateItem('section', value);
+
+      document
+        .querySelector('section')
+        ?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -97,14 +118,16 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         break;
     }
 
-    if (key === 'defaultProfile') {
-      [options, values] = [profiles.options, profiles.values];
+    if (key === 'defaultProfile' || key === 'workspace') {
+      [options, values] = [entityOptions.options, entityOptions.values];
     }
 
     if (options && values) {
       const index = options.indexOf(value);
 
       value = values[index];
+
+      if (key === 'language') value = getAutomaticLanguage(value);
     }
 
     setSettings(key as keyof ISettings, value);
@@ -125,15 +148,35 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
     }
   };
 
+  const handleEntityOptions = (section: string) => {
+    const entity = section.toLowerCase();
+
+    if (['profiles', 'workspaces'].includes(entity)) {
+      const entityOptions = getEntityOptions(entity);
+
+      setEntityOptions(entityOptions);
+    }
+  };
+
   useEffect(() => {
-    listeners.subscribe('options', () => setProfiles(getProfiles));
-  }, []);
+    const { unsubscribe } = listeners.subscribe('options', () =>
+      handleEntityOptions(section),
+    );
+
+    global.handleSection = handleSection;
+
+    return () => {
+      unsubscribe();
+    };
+  }, [section]);
+
+  const customSections = ['Application', 'Profiles', 'Workspaces'];
 
   const options = Object.entries(schema[section]).map(
     ([title, value], index) => (
       <Wrapper key={index}>
-        {section !== 'Application' && (
-          <Title>{title === 'Default' ? section : title}</Title>
+        {!customSections.includes(section) && (
+          <Title>{t(title === 'Default' ? section : title)}</Title>
         )}
         {Object.entries(value).map(([key, option], index) => {
           const { name, label, type, input, options, values, range, badges } =
@@ -148,11 +191,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
               <Separator />
               <Content>
                 <Label>
-                  {name}
+                  {t(name)}
                   {badges && (
                     <Badges className={handleBadgesClass(key, value)}>
                       {badges.map((text, index) => (
-                        <BadgeItem key={index}>{text}</BadgeItem>
+                        <BadgeItem key={index}>{t(text)}</BadgeItem>
                       ))}
                     </Badges>
                   )}
@@ -166,26 +209,28 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                   </Switch>
                 ) : input === 'select' ? (
                   <Entry>
-                    <Selector onChange={handleChange}>
-                      {(options || profiles.options)?.map((option, index) => {
-                        let selected = false;
+                    <Selector onChange={handleChange} id="mySelect">
+                      {(options || entityOptions.options)?.map(
+                        (option, index) => {
+                          let selected = false;
 
-                        if (values) {
-                          selected = (values[index] || option) === value;
-                        } else {
-                          selected = profiles.values[index] === value;
-                        }
+                          if (values) {
+                            selected = (values[index] || option) === value;
+                          } else {
+                            selected = entityOptions.values[index] === value;
+                          }
 
-                        return (
-                          <option
-                            key={index}
-                            value={option}
-                            selected={selected}
-                          >
-                            {option}
-                          </option>
-                        );
-                      })}
+                          return (
+                            <option
+                              key={index}
+                              value={option}
+                              selected={selected}
+                            >
+                              {t(`${option}`)}
+                            </option>
+                          );
+                        },
+                      )}
                     </Selector>
                     <Spinner $input={input}>
                       <SpinnerDownIcon />
@@ -211,7 +256,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                   </Entry>
                 )}
               </Content>
-              <Description>{label}</Description>
+              <Description>{t(label)}</Description>
             </Option>
           );
         })}
@@ -221,11 +266,15 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
   const children = (() => {
     const element = createElement(
-      { Application, Profiles, Keymaps, Config }[section],
       {
-        section,
-        options,
-      },
+        Application,
+        Appearance,
+        Profiles,
+        Keymaps,
+        Workspaces,
+        'Config file': Config,
+      }[section],
+      { section, options, store: useStore(), t },
     );
 
     return element.type ? element : null;
@@ -240,7 +289,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
             className={value === section ? 'selected' : undefined}
             onClick={() => handleSection(value as Section)}
           >
-            {value}
+            {t(value)}
           </NavigationItem>
         ))}
       </Navigation>

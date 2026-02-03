@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { memo } from 'preact/compat';
 
 import { app } from '@electron/remote';
@@ -7,7 +7,7 @@ import { execCommand } from 'app/keymaps/commands';
 import { AlphaIcon } from 'lib/components/Icons';
 import { CheckForUpdates, Container, Logo, LogoText, Version } from './styles';
 
-const Application: React.FC<SectionProps> = ({ options }) => (
+const Application: React.FC<SectionProps> = ({ options, t }) => (
   <Fragment>
     <Container>
       <Logo>
@@ -18,7 +18,7 @@ const Application: React.FC<SectionProps> = ({ options }) => (
         </Version>
       </Logo>
       <CheckForUpdates onClick={() => execCommand('app:check-for-updates')}>
-        Check for Updates
+        {t('Check for Updates')}
       </CheckForUpdates>
     </Container>
     {options}

@@ -17,6 +17,8 @@ export const Info = styled.div`
   justify-content: space-between;
 
   & span {
+    background: ${props => props.theme.codeAcrylic};
+    backdrop-filter: ${props => props.theme.modalBackdrop};
     cursor: text;
     user-select: text;
   }
@@ -38,10 +40,11 @@ export const Copied = styled.div<{ $hasCopied: boolean }>`
   align-items: center;
   pointer-events: none;
   color: ${props => props.theme.foreground};
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border: 1px solid ${props => props.theme.border};
   border-radius: 3px;
   transform: translate(-50%);
   transition: opacity 0.2s ease 0s;
   opacity: ${({ $hasCopied }) => ($hasCopied ? 1 : 0)};
+  backdrop-filter: ${props => props.theme.modalBackdrop};
 `;

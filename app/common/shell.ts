@@ -1,34 +1,48 @@
 import * as pty from 'node-pty';
-import { homedir } from 'os';
 import { existsSync } from 'fs';
-import { isAbsolute, resolve } from 'path';
-import { appDir } from 'app/settings/constants';
+import { isAbsolute, normalize } from 'path';
+import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
+import { HOMEDIR } from 'app/settings/constants';
 import Logger from 'app/common/logger';
+import Performance from 'app/utils/performance';
+import { reportError } from 'shared/error-reporter';
+
+export function getExternalLaunch(): string | null {
+  const workingDirectory = process.argv[1];
+
+  if (!workingDirectory || workingDirectory.startsWith('-')) return null;
+
+  process.argv.splice(1, 1);
+
+  return workingDirectory;
+}
 
 function resolveCWD(path: string | null | undefined): string {
-  const cwd = process.cwd();
+  if (path && isAbsolute(path) && existsSync(path)) return normalize(path);
 
-  if (path && isAbsolute(path) && existsSync(path)) {
-    return resolve(path);
-  }
-
-  if (process.env.ALPHA_CLI || cwd !== appDir) {
-    return cwd;
-  }
-
-  return process.env.USERPROFILE || homedir();
+  return HOMEDIR;
 }
 
 class Shell extends Logger {
   pty!: pty.IPty;
 
+  private options: IShellOptions;
+
+  private timestamp: any = {};
+
   constructor(options: IShellOptions, { id, profile }: IInstance, ipc: IPC) {
     super(id, profile, ipc);
+
+    this.options = options;
 
     this.spawn(options);
   }
 
-  spawn({ file, args, env, cwd }: IShellOptions): void {
+  spawn({ file, args, env: _env, cwd }: IShellOptions): void {
+    const env = Object.fromEntries(
+      Object.entries(_env).map(([key, { value }]) => [key, value]),
+    );
+
     const defaultOptions: pty.IWindowsPtyForkOptions = {
       name: 'xterm-256color',
       cols: 80,
@@ -40,11 +54,25 @@ class Shell extends Logger {
 
     this.pty = pty.spawn(file, args, defaultOptions);
 
-    this.pty.onData(data => this.exec(data));
+    const watcher = new Performance(300, () => {
+      this.timestamp.executionTime = watcher.get();
+
+      if (this.timestamp.entryTime) {
+        this.exec(this.timestamp, 'save-history');
+
+        this.timestamp = {};
+      }
+    });
+
+    this.pty.onData(data => {
+      this.exec(data);
+
+      watcher.set(performance.now());
+    });
   }
 
-  write(data: string): void {
-    this.pty.write(data);
+  write(command: string) {
+    this.pty.write(command);
   }
 
   resize({ cols, rows }: IViewport): void {
@@ -55,11 +83,27 @@ class Shell extends Logger {
     this.pty.clear();
   }
 
+  setTimestamp(timestamp: any) {
+    let where: string | null = this.options.cwd;
+
+    try {
+      where = getWorkingDirectoryFromPID(this.pty.pid);
+    } catch (error) {
+      reportError(error);
+    }
+
+    this.timestamp = {
+      ...timestamp,
+      id: this.profile.id,
+      where: resolveCWD(where),
+    };
+  }
+
   kill(): void {
     try {
       process.kill(this.pty.pid);
     } catch (error) {
-      console.log(error);
+      reportError(error);
     }
   }
 }

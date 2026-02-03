@@ -1,0 +1,1127 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: alpha-app\n"
+"X-Crowdin-Project-ID: 813792\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: app.pot\n"
+"X-Crowdin-File-ID: 11\n"
+"Project-Id-Version: alpha-app\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"PO-Revision-Date: 2026-01-29 20:43\n"
+
+msgid "Profiles"
+msgstr "Profile"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Minimize"
+msgstr "Minimieren"
+
+msgid "Maximize"
+msgstr "Maximieren"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "About"
+msgstr "Über"
+
+msgid "Copy"
+msgstr "Kopieren"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "New profile"
+msgstr "Neues Profil"
+
+msgid "Manage profiles"
+msgstr "Profile verwalten"
+
+msgid "Select or type a profile"
+msgstr "Profil auswählen oder eingeben"
+
+msgid "Ungrouped"
+msgstr "Nicht gruppiert"
+
+msgid "System"
+msgstr "System"
+
+msgid "Connections"
+msgstr "Verbindungen"
+
+msgid "Select or type a profile to duplicate"
+msgstr "Profil zum Duplizieren auswählen oder eingeben"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Select or type a command"
+msgstr "Befehl auswählen oder eingeben"
+
+msgid "Window"
+msgstr "Fenster"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "New window"
+msgstr "Neues Fenster"
+
+msgid "Toggle developer tools"
+msgstr "Entwicklerwerkzeuge umschalten"
+
+msgid "Paste"
+msgstr "Einfügen"
+
+msgid "Select all"
+msgstr "Alles auswählen"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "See more"
+msgstr "Mehr ansehen"
+
+msgid "See less"
+msgstr "Weniger sehen"
+
+msgid "Expand pane"
+msgstr "Fenster erweitern"
+
+msgid "Broadcast"
+msgstr "Übertragen"
+
+msgid "Application"
+msgstr "Anwendung"
+
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+msgid "Keymaps"
+msgstr "Tastenkürzel"
+
+msgid "Config"
+msgstr "Konfigurationsdatei"
+
+msgid "Config file"
+msgstr "Konfigurationsdatei"
+
+msgid "Check for Updates"
+msgstr "Nach Updates suchen"
+
+msgid "Automatic updates"
+msgstr "Automatische Updates"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Whether the application should use the GPU for its rendering."
+msgstr "Legt fest, ob die Anwendung die GPU für das Rendering verwenden soll."
+
+msgid "Whether to automatically install an update when it is available."
+msgstr "Legt fest, ob ein Update automatisch installiert werden soll, wenn es verfügbar ist."
+
+msgid "Alpha will be displayed in this language."
+msgstr "Alpha wird in dieser Sprache angezeigt."
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+msgid "Font family"
+msgstr "Schriftfamilie"
+
+msgid "Font weight"
+msgstr "Schriftstärke (Normal)"
+
+msgid "Bold font weight"
+msgstr "Schriftstärke (Fett)"
+
+msgid "Bold text in bright colors"
+msgstr "Fetter Text in hellen Farben"
+
+msgid "Font ligatures"
+msgstr "Schriftligaturen"
+
+msgid "Line height"
+msgstr "Zeilenhöhe"
+
+msgid "Letter spacing"
+msgstr "Zeichenabstand"
+
+msgid "Minimum contrast ratio"
+msgstr "Mindestkontrastverhältnis"
+
+msgid "Cursor style"
+msgstr "Cursor-Stil"
+
+msgid "Cursor blinking"
+msgstr "Cursorblinken"
+
+msgid "Controls the font size in pixels."
+msgstr "Steuert die Schriftgröße in Pixeln."
+
+msgid "Controls the font family."
+msgstr "Steuert die Schriftfamilie."
+
+msgid "Controls the font weight."
+msgstr "Steuert die Schriftstärke."
+
+msgid "Controls the font weight used to render bold text."
+msgstr "Steuert die Schriftstärke für die Darstellung von fettem Text."
+
+msgid "Controls the minimum contrast ratio for text in the terminal."
+msgstr "Steuert das Mindestkontrastverhältnis für Text im Terminal."
+
+msgid "Controls the spacing in whole pixels between characters."
+msgstr "Steuert den Abstand in ganzen Pixeln zwischen den Zeichen."
+
+msgid "Controls whether to use font ligatures."
+msgstr "Steuert, ob Schriftligaturen verwendet werden sollen."
+
+msgid "Controls the line height."
+msgstr "Steuert die Zeilenhöhe."
+
+msgid "Controls whether to draw bold text in bright colors."
+msgstr "Steuert, ob fetter Text in hellen Farben gezeichnet werden soll."
+
+msgid "Controls the style of cursor."
+msgstr "Steuert den Stil des Cursors."
+
+msgid "Controls whether the cursor blinks."
+msgstr "Steuert, ob der Cursor blinkt."
+
+msgid "Rendering"
+msgstr "Darstellung"
+
+msgid "Renderer"
+msgstr "Renderer"
+
+msgid "Scrollback"
+msgstr "Rollback"
+
+msgid "Interaction"
+msgstr "Interaktion"
+
+msgid "Scroll on input"
+msgstr "Bei Eingabe scrollen"
+
+msgid "Right click"
+msgstr "Rechtsklick"
+
+msgid "Link modifier"
+msgstr "Link-Modifikator"
+
+msgid "Selection"
+msgstr "Auswahl"
+
+msgid "Copy on select"
+msgstr "Beim Auswählen kopieren"
+
+msgid "Trim whitespaces"
+msgstr "Leerzeichen am Ende entfernen"
+
+msgid "Word separators"
+msgstr "Worttrennzeichen"
+
+msgid "Panes"
+msgstr "Bereiche"
+
+msgid "Focus on hover"
+msgstr "Fokus bei Mausberührung"
+
+msgid "Preserve working directory"
+msgstr "Arbeitsverzeichnis beibehalten"
+
+msgid "Startup"
+msgstr "Start"
+
+msgid "Open a terminal on start"
+msgstr "Terminal beim Start öffnen"
+
+msgid "Restore previous session on start"
+msgstr "Vorherige Sitzung beim Start wiederherstellen"
+
+msgid "Controls the terminal-based rendering."
+msgstr "Steuert die terminalbasierte Darstellung."
+
+msgid "Controls the amount of rows beyond the initial viewport."
+msgstr "Steuert die Anzahl der Zeilen außerhalb des anfänglichen Ansichtsbereichs."
+
+msgid "Whether to scroll to the bottom on user input."
+msgstr "Legt fest, ob bei Benutzereingabe nach unten gescrollt werden soll."
+
+msgid "Controls the terminal action triggered by right click."
+msgstr "Steuert die durch einen Rechtsklick ausgelöste Terminal-Aktion."
+
+msgid "Controls the key modifier required to activate links."
+msgstr "Steuert die Modifikatortaste, die zum Aktivieren von Links erforderlich ist."
+
+msgid "Whether to copy the text when it is selected."
+msgstr "Legt fest, ob der Text beim Auswählen kopiert werden soll."
+
+msgid "Whether to remove trailing whitespaces from copied selection."
+msgstr "Legt fest, ob nachgestellte Leerzeichen aus der kopierten Auswahl entfernt werden sollen."
+
+msgid "Controls the separator symbols for double-click selection."
+msgstr "Steuert die Trennzeichen für die Auswahl per Doppelklick."
+
+msgid "Whether to automatically focus the pane when hovered."
+msgstr "Legt fest, ob der Bereich bei Mausberührung automatisch fokussiert werden soll."
+
+msgid "Whether to preserve current directory when creating splits."
+msgstr "Legt fest, ob das aktuelle Verzeichnis beim Erstellen von Teilungen beibehalten werden soll."
+
+msgid "Whether to automatically open the default profile."
+msgstr "Legt fest, ob das Standardprofil automatisch geöffnet werden soll."
+
+msgid "Whether to restore the closed terminal tabs."
+msgstr "Legt fest, ob die geschlossenen Terminal-Tabs wiederhergestellt werden sollen."
+
+msgid "Default profile"
+msgstr "Standardprofil"
+
+msgid "Controls the default profile for new terminals."
+msgstr "Steuert das Standardprofil für neue Terminals."
+
+msgid "Run"
+msgstr "Ausführen"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Are you sure you want to delete"
+msgstr "Sind Sie sicher, dass Sie löschen möchten"
+
+msgid "Press key combination and then press"
+msgstr "Tastenkombination drücken und dann drücken"
+
+msgid "Add keys..."
+msgstr "Schlüssel hinzufügen..."
+
+msgid "Clear terminal"
+msgstr "Terminal leeren"
+
+msgid "Close terminal"
+msgstr "Terminal schließen"
+
+msgid "Close settings"
+msgstr "Einstellungen schließen"
+
+msgid "Expand/collapse pane"
+msgstr "Bereich erweitern/reduzieren"
+
+msgid "Collapse pane"
+msgstr "Fenster einklappen"
+
+msgid "Move to next pane"
+msgstr "Zum nächsten Fenster verschieben"
+
+msgid "Move to previous pane"
+msgstr "Zum vorherigen Fenster verschieben"
+
+msgid "Close pane"
+msgstr "Bereich schließen"
+
+msgid "New terminal"
+msgstr "Neues Terminal"
+
+msgid "Split horizontal"
+msgstr "Horizontal teilen"
+
+msgid "Split vertical"
+msgstr "Vertikal teilen"
+
+msgid "Reconnect client"
+msgstr "Client neu verbinden"
+
+msgid "Disconnect client"
+msgstr "Client trennen"
+
+msgid "Reconnect"
+msgstr "Neu verbinden"
+
+msgid "Disconnect"
+msgstr "Trennen"
+
+msgid "Next tab"
+msgstr "Nächster Tab"
+
+msgid "Previous tab"
+msgstr "Vorheriger Tab"
+
+msgid "Toggle fullscreen"
+msgstr "Vollbild umschalten"
+
+msgid "Transparency"
+msgstr "Transparenz"
+
+msgid "Acrylic background"
+msgstr "Acryl-Hintergrund"
+
+msgid "Opacity"
+msgstr "Deckkraft"
+
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Tab width"
+msgstr "Tab-Breite"
+
+msgid "New tab position"
+msgstr "Position neuer Tabs"
+
+msgid "Behavior"
+msgstr "Verhalten"
+
+msgid "Instance behavior"
+msgstr "Instanzverhalten"
+
+msgid "Always on top"
+msgstr "Immer im Vordergrund"
+
+msgid "Automatically hide window"
+msgstr "Fenster automatisch ausblenden"
+
+msgid "Launch"
+msgstr "Start"
+
+msgid "Launch mode"
+msgstr "Startmodus"
+
+msgid "Center on launch"
+msgstr "Beim Start zentrieren"
+
+msgid "Whether to enable window translucent background."
+msgstr "Legt fest, ob der durchscheinende Fensterhintergrund aktiviert werden soll."
+
+msgid "Controls the opacity of the window."
+msgstr "Steuert die Deckkraft des Fensters."
+
+msgid "Controls the tabs width mode."
+msgstr "Steuert den Breitenmodus der Tabs."
+
+msgid "Controls where new tabs are added in the tab row."
+msgstr "Steuert, wo neue Tabs in der Tab-Leiste hinzugefügt werden."
+
+msgid "Controls the behavior of new instances of the application."
+msgstr "Steuert das Verhalten neuer Anwendungsinstanzen."
+
+msgid "Whether the window should stay on top of other windows."
+msgstr "Legt fest, ob das Fenster über anderen Fenstern bleiben soll."
+
+msgid "Whether to automatically hide window when switch to another window."
+msgstr "Legt fest, ob das Fenster beim Wechsel zu einem anderen Fenster automatisch ausgeblendet werden soll."
+
+msgid "Controls the initial display mode of the window."
+msgstr "Steuert den anfänglichen Anzeigemodus des Fensters."
+
+msgid "Whether to show window in the center of the screen."
+msgstr "Legt fest, ob das Fenster in der Mitte des Bildschirms angezeigt werden soll."
+
+msgid "Warning"
+msgstr "Warnung"
+
+msgid "Paste anyway"
+msgstr "Trotzdem einfügen"
+
+msgid "The clipboard text has multiple lines, which might lead to unexpected execution."
+msgstr "Der Text der Zwischenablage hat mehrere Zeilen, was zu unerwarteter Ausführung führen kann."
+
+msgid "Use"
+msgstr "Verwenden Sie"
+
+msgid "to save changes"
+msgstr "um Änderungen zu speichern"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Import from Gist"
+msgstr "Aus Gist importieren"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+msgid "Context menu"
+msgstr "Kontextmenü"
+
+msgid "Paste text from clipboard, otherwise copy selection"
+msgstr "Text aus der Zwischenablage einfügen, andernfalls Auswahl kopieren"
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Auto"
+msgstr "Automatisch"
+
+msgid "Fixed"
+msgstr "Fest"
+
+msgid "After current tab"
+msgstr "Nach dem aktuellen Tab"
+
+msgid "End of the row"
+msgstr "Am Ende der Zeile"
+
+msgid "Create new window"
+msgstr "Neues Fenster erstellen"
+
+msgid "Attach to existing window"
+msgstr "An vorhandenes Fenster anhängen"
+
+msgid "Maximized"
+msgstr "Maximiert"
+
+msgid "Full screen"
+msgstr "Vollbild"
+
+msgid "English (US)"
+msgstr "Englisch (US)"
+
+msgid "Previous match"
+msgstr "Vorheriges Spiel"
+
+msgid "Next match"
+msgstr "Nächstes Spiel"
+
+msgid "Case sensitive"
+msgstr "Groß-/Kleinschreibung"
+
+msgid "Whole word"
+msgstr "Ganzes Wort"
+
+msgid "Regular expression"
+msgstr "Regulärer Ausdruck"
+
+msgid "environment"
+msgstr "Umgebungsvariablen"
+
+msgid "copy"
+msgstr "kopieren"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Group"
+msgstr "Gruppe"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Executable file"
+msgstr "Ausführbare Datei"
+
+msgid "Working directory"
+msgstr "Arbeitsverzeichnis"
+
+msgid "Tab Title"
+msgstr "Tab-Titel"
+
+msgid "Value"
+msgstr "Wert"
+
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgid "general"
+msgstr "allgemein"
+
+msgid "advanced"
+msgstr "fortgeschrittene"
+
+msgid "Name of the group to appear in the profiles list."
+msgstr "Name der Gruppe, die in der Profilliste angezeigt werden soll."
+
+msgid "Path to the executable to be launched for the profile."
+msgstr "Pfad zur ausführbaren Datei, die für das Profil gestartet werden soll."
+
+msgid "Absolute path where the executable will be run."
+msgstr "Absoluter Pfad, in dem die ausführbare Datei ausgeführt wird."
+
+msgid "Sets the tab title to match the profile name."
+msgstr "Setzt den Tab-Titel so, dass er dem Profilnamen entspricht."
+
+msgid "Copied to clipboard"
+msgstr "In die Zwischenablage kopiert"
+
+msgid "Serial connection"
+msgstr "Serial-Verbindung"
+
+msgid "SSH connection"
+msgstr "SSH-Verbindung"
+
+msgid "ports"
+msgstr "ports"
+
+msgid "scripts"
+msgstr "scripts"
+
+msgid "Path"
+msgstr "Pfad"
+
+msgid "Baud rate"
+msgstr "Baudrate"
+
+msgid "Newline mode"
+msgstr "Zeilenumbruch-Modus"
+
+msgid "Input behavior"
+msgstr "Eingabeverhalten"
+
+msgid "Output behavior"
+msgstr "Ausgabeverhalten"
+
+msgid "System path of the serial port to open."
+msgstr "Systempfad des zu öffnenden seriellen Ports."
+
+msgid "Baud rate of the port to be opened."
+msgstr "Baudrate des zu öffnenden Ports."
+
+msgid "Line-ending characters appended to outgoing data."
+msgstr "Zeilenende-Zeichen, die an ausgehende Daten angehängt werden."
+
+msgid "Behavior of the parser for incoming serial data."
+msgstr "Verhalten des Parsers für eingehende serielle Daten."
+
+msgid "Behavior of the parser for outgoing serial data."
+msgstr "Verhalten des Parsers für ausgehende serielle Daten."
+
+msgid "Data bits"
+msgstr "Datenbits"
+
+msgid "Stop bits"
+msgstr "Stoppbits"
+
+msgid "Parity"
+msgstr "Parität"
+
+msgid "RTS / CTS"
+msgstr "RTS / CTS"
+
+msgid "XON"
+msgstr "XON"
+
+msgid "XOFF"
+msgstr "XOFF"
+
+msgid "XANY"
+msgstr "XANY"
+
+msgid "Line by line"
+msgstr "Zeile für Zeile"
+
+msgid "Even"
+msgstr "Gerade"
+
+msgid "Odd"
+msgstr "Ungerade"
+
+msgid "Whether enables hardware flow control using RTS/CTS signals."
+msgstr "Aktiviert die Hardware-Flusssteuerung mithilfe von RTS/CTS-Signalen."
+
+msgid "Number of stop bits signaling the end of a character."
+msgstr "Anzahl der Stoppbits, die das Ende eines Zeichens signalisieren."
+
+msgid "Number of data bits in each transmitted character."
+msgstr "Anzahl der Datenbits in jedem übertragenen Zeichen."
+
+msgid "Bit used to check data integrity during transmission."
+msgstr "Bit zur Überprüfung der Datenintegrität während der Übertragung."
+
+msgid "Whether enables XON signal to resume data flow."
+msgstr "Ermöglicht dem XON-Signal, den Datenfluss fortzusetzen."
+
+msgid "Whether enables XOFF signal to pause data flow."
+msgstr "Ermöglicht dem XOFF-Signal, den Datenfluss anzuhalten."
+
+msgid "Whether resumes data flow on any received character."
+msgstr "Setzt den Datenfluss bei jedem empfangenen Zeichen fort."
+
+msgid "Match"
+msgstr "Übereinstimmung"
+
+msgid "Execute"
+msgstr "Ausführen"
+
+msgid "send"
+msgstr "senden"
+
+msgid "exact match"
+msgstr "exakte Übereinstimmung"
+
+msgid "Exact"
+msgstr "Exakt"
+
+msgid "Regex"
+msgstr "Regex"
+
+msgid "No ports added"
+msgstr "Keine Ports hinzugefügt"
+
+msgid "No scripts added"
+msgstr "Keine Scripts hinzugefügt"
+
+msgid "No variables added"
+msgstr "Keine Variablen hinzugefügt"
+
+msgid "Username for authentication."
+msgstr "Benutzername für die Authentifizierung."
+
+msgid "Port number of the server."
+msgstr "Portnummer des Servers."
+
+msgid "Hostname or IP address of the server."
+msgstr "Hostname oder IP-Adresse des Servers."
+
+msgid "Host"
+msgstr "Host"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "Username"
+msgstr "Benutzername"
+
+msgid "Authentication method"
+msgstr "Authentifizierungsmethode"
+
+msgid "Private key"
+msgstr "Privater Schlüssel"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Interactive"
+msgstr "Interaktiv"
+
+msgid "Private key file used for authentication."
+msgstr "Datei des privaten Schlüssels, die zur Authentifizierung verwendet wird."
+
+msgid "Password used for authentication."
+msgstr "Passwort, das zur Authentifizierung verwendet wird."
+
+msgid "Method used to authenticate the connection."
+msgstr "Methode zur Authentifizierung der Verbindung."
+
+msgid "Enter password"
+msgstr "Passwort eingeben"
+
+msgid "Upload key..."
+msgstr "Schlüssel hochladen..."
+
+msgid "Select private key file"
+msgstr "Private Schlüsseldatei auswählen"
+
+msgid "Agent forward"
+msgstr "Agenten-Weiterleitung"
+
+msgid "X11"
+msgstr "X11"
+
+msgid "Ignore messages"
+msgstr "Nachrichten ignorieren"
+
+msgid "Keep alive interval"
+msgstr "Keep-Alive-Intervall"
+
+msgid "Keep alive count max"
+msgstr "Maximale Keep-Alive-Anzahl"
+
+msgid "Whether to use OpenSSH agent forwarding (auth-agent@openssh.com)."
+msgstr "Legt fest, ob die OpenSSH-Agenten-Weiterleitung (auth-agent@openssh.com) verwendet werden soll."
+
+msgid "Whether to enable x11 forwarding for remote graphical applications."
+msgstr "Legt fest, ob die X11-Weiterleitung für entfernte grafische Anwendungen aktiviert werden soll."
+
+msgid "Whether to ignore the connection banner and greeting messages."
+msgstr "Legt fest, ob das Verbindungsbanner und die Begrüßungsnachrichten ignoriert werden sollen."
+
+msgid "How often to send SSH-level keepalive packets to the server."
+msgstr "Wie oft Keep-Alive-Pakete auf SSH-Ebene an den Server gesendet werden sollen."
+
+msgid "Number of consecutive unanswered SSH keepalive packets before disconnection."
+msgstr "Anzahl aufeinanderfolgender unbeantworteter SSH-Keep-Alive-Pakete vor der Trennung der Verbindung."
+
+msgid "Local"
+msgstr "Lokal"
+
+msgid "Remote"
+msgstr "Entfernt"
+
+msgid "Dynamic"
+msgstr "Dynamisch"
+
+msgid "Forward host"
+msgstr "Weiterleitungs-Host"
+
+msgid "Forward port"
+msgstr "Weiterleitungs-Port"
+
+msgid "local forwarding"
+msgstr "lokale Weiterleitung"
+
+msgid "remote forwarding"
+msgstr "entfernte Weiterleitung"
+
+msgid "dynamic forwarding"
+msgstr "dynamische Weiterleitung"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Restart required"
+msgstr "Neustart erforderlich"
+
+msgid "Press"
+msgstr "Drücken Sie"
+
+msgid "to show all commands"
+msgstr "um alle Befehle anzuzeigen"
+
+msgid "Paste a valid Gist IDs"
+msgstr "Gültige Gist-ID einfügen"
+
+msgid "External"
+msgstr "Externe"
+
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+msgid "Tabs"
+msgstr "Tabs"
+
+msgid "Commands"
+msgstr "Befehle"
+
+msgid "History"
+msgstr "Verlauf"
+
+msgid "Clear history"
+msgstr "Verlauf löschen"
+
+msgid "No results found"
+msgstr "Keine Ergebnisse gefunden"
+
+msgid "No profiles found"
+msgstr "Keine Profile gefunden"
+
+msgid "No commands found"
+msgstr "Keine Befehle gefunden"
+
+msgid "from"
+msgstr "von"
+
+msgid "Help improve Alpha"
+msgstr "Hilf Alpha zu verbessern"
+
+msgid "Whether crash reports and error diagnostics are shared to help improve Alpha’s stability."
+msgstr "Ob Absturzberichte und Fehlerdiagnostik gemeinsam genutzt werden, um die Stabilität Alpha zu verbessern."
+
+msgid "Theme"
+msgstr "Thema"
+
+msgid "Controls the color theme of the terminal."
+msgstr "Steuert das Farbschema des Terminals."
+
+msgid "Preserve background"
+msgstr "Hintergrund beibehalten"
+
+msgid "Whether the terminal preserves Alpha's default background color."
+msgstr "Gibt an, ob das Terminal die Standardfarbe Alpha beibehält."
+
+msgid "Show colors"
+msgstr "Farben anzeigen"
+
+msgid "Hide colors"
+msgstr "Farben ausblenden"
+
+msgid "Foreground"
+msgstr "Vordergrund"
+
+msgid "Selection background"
+msgstr "Hintergrund der Auswahl"
+
+msgid "Background"
+msgstr "Hintergrund"
+
+msgid "Black"
+msgstr "Schwarz"
+
+msgid "Red"
+msgstr "Rot"
+
+msgid "Green"
+msgstr "Grün"
+
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Blue"
+msgstr "Blau"
+
+msgid "Purple"
+msgstr "Lila"
+
+msgid "Cyan"
+msgstr "Türkis"
+
+msgid "White"
+msgstr "Weiß"
+
+msgid "Bright black"
+msgstr "Helles Schwarz"
+
+msgid "Bright red"
+msgstr "Helles Rot"
+
+msgid "Bright green"
+msgstr "Helles Grün"
+
+msgid "Bright yellow"
+msgstr "Helles Gelb"
+
+msgid "Bright blue"
+msgstr "Helles Blau"
+
+msgid "Bright purple"
+msgstr "Helles lila"
+
+msgid "Bright cyan"
+msgstr "Heller Zyan"
+
+msgid "Bright white"
+msgstr "Helles Weiß"
+
+msgid "Colors"
+msgstr "Farben"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "to view all keymaps in the side panel"
+msgstr "um alle Tastenkürzel im Seitenfenster anzuzeigen"
+
+msgid "Resize pane up"
+msgstr "Fenster nach oben skalieren"
+
+msgid "Resize pane right"
+msgstr "Fenster rechts skalieren"
+
+msgid "Resize pane down"
+msgstr "Fenster nach unten skalieren"
+
+msgid "Resize pane left"
+msgstr "Fenster nach links skalieren"
+
+msgid "Focus next pane"
+msgstr "Nächstes Fenster fokussieren"
+
+msgid "Focus previous pane"
+msgstr "Vorheriges Fenster fokussieren"
+
+msgid "Toggle window visibility"
+msgstr "Fenstersichtlichkeit umschalten"
+
+msgid "Reopen closed tab"
+msgstr "Geschlossener Tab erneut öffnen"
+
+msgid "Show all keymaps"
+msgstr "Alle Keymaps anzeigen"
+
+msgid "Manage keymaps"
+msgstr "Tastenkürzel verwalten"
+
+msgid "Context menu style"
+msgstr "Kontextmenü-Stil"
+
+msgid "Controls the visual style of the context menu."
+msgstr "Steuert den visuellen Stil des Kontextmenüs."
+
+msgid "Minimal"
+msgstr "Minimal"
+
+msgid "Detailed"
+msgstr "Detailliert"
+
+msgid "Workspaces"
+msgstr "Arbeitsbereiche"
+
+msgid "Controls the workspace loaded at startup."
+msgstr "Steuert den beim Start geladenen Arbeitsbereich."
+
+msgid "Edit tab"
+msgstr "Tab bearbeiten"
+
+msgid "Run tab"
+msgstr "Tab ausführen"
+
+msgid "Run workspace"
+msgstr "Arbeitsbereich ausführen"
+
+msgid "Profile used as the base configuration for this tab."
+msgstr "Profil wird als Basiskonfiguration für diesen Tab verwendet."
+
+msgid "Override title"
+msgstr "Titel überschreiben"
+
+msgid "Whether the terminal title should be overridden by this tab title."
+msgstr "Gibt an, ob der Terminaltitel durch diesen Tab-Titel überschrieben werden soll."
+
+msgid "Type a command and press Enter to add another"
+msgstr "Geben Sie einen Befehl ein und drücken Sie die Eingabetaste, um einen weiteren hinzuzufügen"
+
+msgid "Listening for key combination…"
+msgstr "Abhören der Tastenkombination…"
+
+msgid "to cancel"
+msgstr "abbrechen"
+
+msgid "Command"
+msgstr "Befehl"
+
+msgid "Welcome to Alpha"
+msgstr "Willkommen bei Alpha"
+
+msgid "A modern terminal for modern workflows."
+msgstr "Ein modernes Terminal für moderne Workflows."
+
+msgid "to start using Alpha"
+msgstr "um Alpha zu verwenden"
+
+msgid "Confirm"
+msgstr "Bestätigen"
+
+msgid "No history yet"
+msgstr "Noch kein Verlauf"
+
+msgid "Rename tab"
+msgstr "Tab umbenennen"
+
+msgid "Duplicate tab"
+msgstr "Duplicate tab"
+
+msgid "Tab"
+msgstr "Tab"
+
+msgid "Rename"
+msgstr "Umbenennen"
+
+msgid "Close tab"
+msgstr "Tab schließen"
+
+msgid "Whether to draw bold text in bright colors."
+msgstr "Ob kühner Text in hellen Farben gezeichnet werden soll."
+
+msgid "Whether to use font ligatures."
+msgstr "Gibt an, ob Font-Ligaturen verwendet werden sollen."
+
+msgid "Whether the cursor blinks."
+msgstr "Ob der Cursor blinkt."
+
+msgid "New tab"
+msgstr "New tab"
+
+msgid "Workspace"
+msgstr "Arbeitsbereich"
+
+msgid "Show all commands"
+msgstr "Alle Befehle anzeigen"
+
+msgid "Use"
+msgstr "Benutzen"
+
+msgid "Navigate with"
+msgstr "Navigieren mit"
+
+msgid "Duplicate"
+msgstr "Duplicate"
+
+msgid "Profile name as tab title"
+msgstr "Profilname als Tabtitel"
+
+msgid "Whether the tab title should match the profile name."
+msgstr "Gibt an, ob der Tab-Titel mit dem Profilnamen übereinstimmt."
+
+msgid "Click to copy"
+msgstr "Zum Kopieren klicken"
+
+msgid "Close other tabs"
+msgstr "Andere Tabs schließen"
+
+msgid "Close tabs to the right"
+msgstr "Tabs rechts schließen"
+
+msgid "Open a terminal at startup"
+msgstr "Ein Terminal beim Start öffnen"
+
+msgid "Restore previous session at startup"
+msgstr "Vorherige Sitzung beim Start wiederherstellen"
+
+msgid "Whether to show window in the center of the screen on launch."
+msgstr "Gibt an, ob das Fenster in der Mitte des Bildschirms beim Start angezeigt werden soll."
+
+msgid "Defaults"
+msgstr "Standardwerte"
+
+msgid "Insert a valid Gist ID"
+msgstr "Gültige Gist ID einfügen"
+
+msgid "Last import: {{syncInfo.date}} from {{syncInfo.filename}}"
+msgstr "Letzter Import: {{syncInfo.date}} von {{syncInfo.filename}}"
+
+msgid "Env variable"
+msgstr "Env-Variable"
+
+msgid "Env variables"
+msgstr "Env-Variablen"
+
+msgid "Forwarded port"
+msgstr "Weitergeleiteter Port"
+
+msgid "Forwarded ports"
+msgstr "Weitergeleitete Ports"
+
+msgid "Forward Host"
+msgstr "Host weiterleiten"
+
+msgid "Forward Port"
+msgstr "Port weiterleiten"
+
+msgid "New workspace"
+msgstr "Neuer Arbeitsbereich"
+
+msgid "No workspaces yet"
+msgstr "Noch keine Workspaces"
+
+msgid "No workspaces found"
+msgstr "Keine Workspaces gefunden"
+
+msgid "Create a workspace to start organizing your sessions"
+msgstr "Erstellen Sie einen Workspace, um Ihre Sitzungen zu organisieren"
+
+msgid "Try a different search"
+msgstr "Versuchen Sie eine andere Suche"
+
+msgid "Search for a command"
+msgstr "Nach einem Befehl suchen"
+

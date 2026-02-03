@@ -14,9 +14,10 @@ export const Container = styled.div<{ $isVisible: boolean; $shift: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.theme.background};
+  background: ${props => props.theme.modal};
   border: 1px solid ${props => props.theme.border};
   border-radius: 4px;
+  backdrop-filter: ${props => props.theme.modalBackdrop};
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   transition-delay: 0.35s, 0s;

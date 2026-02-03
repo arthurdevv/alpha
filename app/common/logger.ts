@@ -1,5 +1,9 @@
 import colors from 'ansi-colors';
 
+export function errorLog(text: string): string {
+  return `${colors.bgRedBright.black(' X ')} ${colors.redBright(text)}\r\n`;
+}
+
 class Logger {
   private ipc: IPC;
 
@@ -14,9 +18,7 @@ class Logger {
   }
 
   info(text: string) {
-    this.exec(
-      `${colors.bgWhiteBright.black(` ${this.profile.type.toUpperCase()} `)} ${text}\r\n`,
-    );
+    this.exec(`${colors.bgWhiteBright.black(' INFO ')} ${text}\r\n`);
 
     return this;
   }
@@ -67,8 +69,6 @@ class Logger {
   }
 
   exec(data: any, command = 'write', focus = false) {
-    if (data === '\r') data += '\r\n';
-
     this.ipc.send(
       `terminal:${command}`,
       command === 'write' ? { id: this.id, data } : data,
