@@ -15,9 +15,8 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
   const { t } = useTranslation();
 
   const handleDelete = () => {
-    const [index] = data;
-
     if (target) {
+      const [index] = data;
       const _workspaces = [...workspaces];
 
       const { id, tabs } = _workspaces[index];
