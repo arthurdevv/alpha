@@ -79,7 +79,7 @@ export const LogoName = styled.div`
 
 export const Wrapper = styled.div`
   position: absolute;
-  top: calc(50% + 3.5rem);
+  top: calc(50% + 2.5rem);
   font-size: 0.8125rem;
   display: flex;
   align-items: center;
