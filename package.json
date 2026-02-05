@@ -17,7 +17,7 @@
     "dev": "vite",
     "build": "vite build",
     "package": "electron-builder",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "echo Skipping native rebuild - using prebuilds",
     "lint": "tsc --noEmit && eslint \"{lib,app}/**/*.{ts,tsx}\"",
     "clean": "rimraf target release test-results"
   },
@@ -78,7 +78,6 @@
     "electron": "^40.1.0",
     "electron-builder": "^26.7.0",
     "eslint": "^9.39.2",
-    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.5",
