@@ -1,24 +1,33 @@
 name: Test
-
 on: pull_request
-
 jobs:
   code:
     name: Test code
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install Node.js 16
-        uses: actions/setup-node@v3.2.0
+      - name: Install Node.js 20
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
 
       - name: Install dependencies
-        uses: bahmutov/npm-install@v1
+        run: yarn install --frozen-lockfile
 
-      - name: Run Jest
-        run: yarn test
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
