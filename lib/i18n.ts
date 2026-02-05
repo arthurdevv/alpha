@@ -7,10 +7,18 @@ import { app } from '@electron/remote';
 import { getSettings } from 'app/settings';
 import { appPath } from 'app/settings/constants';
 
-async function convertToJSON(language: string): Promise<NodeJS.Dict<string>> {
-  if (language === 'en-US') return {};
+const localeMap: Record<string, string> = {
+  de: 'de-DE',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  pt: 'pt-BR',
+};
 
-  const localesPath = join(appPath, `locales/${language}.po`);
+async function convertToJSON(language: string): Promise<NodeJS.Dict<string>> {
+  if (language === 'en-US' || language === 'en') return {};
+
+  const locale = localeMap[language] || language;
+  const localesPath = join(appPath, `locales/${locale}.po`);
 
   const content = await gettextToI18next(language, readFileSync(localesPath));
 
