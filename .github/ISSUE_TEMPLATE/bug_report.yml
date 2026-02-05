@@ -1,0 +1,35 @@
+name: Bug Report
+description: Report a bug or issue with Alpha
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting an issue! Please fill out the information below to help us investigate.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      description: Please describe the issue in detail
+    validations:
+      required: true
+  
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error
+    validations:
+      required: false
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional information
+      description: Any additional information that might be necessary to reproduce the issue (logs, screenshots, etc.)
+    validations:
+      required: false
