@@ -57,12 +57,12 @@ const Profiles: React.FC<SectionProps> = ({ options, store, t }) => {
       addBadge(length, 'Env variable');
     } else {
       if (profile.type === 'ssh') {
-        const { length } = profile.options.ports;
+        const { length } = profile.options.ports || [];
 
         addBadge(length, 'Forwarded port');
       }
 
-      const { length } = profile.options.scripts;
+      const { length } = profile.options.scripts || [];
 
       addBadge(length, 'script');
     }
