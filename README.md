@@ -61,6 +61,15 @@ Contributions are always welcome!
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on how to get started.
 
+**Alpha** keeps improving thanks to these awesome contributors ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.

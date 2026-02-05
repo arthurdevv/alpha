@@ -1,0 +1,16 @@
+{
+  "projectName": "alpha",
+  "projectOwner": "arthurdevv",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "none",
+  "contributors": [],
+  "contributorsPerLine": 7,
+  "skipCi": true
+}
