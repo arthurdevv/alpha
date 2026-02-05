@@ -22,22 +22,7 @@ import {
 } from 'components/Icons';
 import { Cursor, Flex, Preview } from 'components/Settings/Appearance/styles';
 import { Form, FormItem, Placeholder, Title as Section } from '../styles';
-import {
-  Action,
-  Arrow,
-  Button,
-  Header,
-  Label,
-  List,
-  Mask,
-  Name,
-  Tab,
-  Tabs,
-  Title,
-  Window,
-  Workspace,
-  Wrapper,
-} from './styles';
+import styles from './styles.module.css';
 import PromptExample from './example';
 
 const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
@@ -261,9 +246,9 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
         </Form>
       </Section>
       {options}
-      <Wrapper className={`w ${workspaces.length === 0 ? 'blank' : ''}`}>
+      <div className={`${styles.wrapper} w ${workspaces.length === 0 ? styles.blank : ''}`}>
         {workspaces.length ? (
-          <List role="list">
+          <ul className={styles.list} role="list">
             {workspaces
               .map((workspace, index, array) => {
                 const { id, name, tabs } = workspace;
@@ -282,67 +267,78 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
                 const i = array.toReversed().findIndex(w => w.id === id);
 
                 return (
-                  <Workspace
+                  <li
                     key={index}
+                    className={styles.workspace}
                     data-name={name}
                     style={{ animationDelay: `${i / 5}s` }}
                   >
-                    <Name
+                    <input
+                      className={styles.name}
                       value={name}
                       placeholder={name}
                       onBlur={e => handleName(e, id)}
                     />
-                    <Window data-role="window">
-                      <Header>
-                        <Tabs role="tablist">
-                          {tabs.map((tab, index) => (
-                            <Tab
-                              key={index}
-                              $tabWidth={tabWidth}
-                              $isCurrent={index === selected.tab}
-                              onClick={e => handleAction(workspace, index, e)}
-                            >
-                              <Mask />
-                              <Title title={tab.title}>{tab.title}</Title>
-                              <Button
-                                onClick={e => handleEdit(e, workspace, index)}
-                                style={{ right: '1.875rem' }}
+                    <div className={styles.window} data-role="window">
+                      <header className={styles.header}>
+                        <div className={styles.tabs} role="tablist">
+                          {tabs.map((tab, index) => {
+                            const tabClasses = [
+                              styles.tab,
+                              index === selected.tab ? styles.tabCurrent : '',
+                              tabWidth === 'fixed' ? styles.tabFixed : styles.tabFit,
+                            ].filter(Boolean).join(' ');
+
+                            return (
+                              <div
+                                key={index}
+                                className={tabClasses}
+                                onClick={e => handleAction(workspace, index, e)}
                               >
-                                <GearsIcon />
-                                <Label>
-                                  <Arrow />
-                                  <span>{t('Edit tab')}</span>
-                                </Label>
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  handleAction({ tabs: [tab] } as IWorkspace)
-                                }
-                              >
-                                <RunIcon w={'1rem'} />
-                                <Label>
-                                  <Arrow />
-                                  <span>{t('Run tab')}</span>
-                                </Label>
-                              </Button>
-                            </Tab>
-                          ))}
-                        </Tabs>
-                        <Action onClick={() => handleCreate(id)}>
+                                <div className={styles.mask} />
+                                <span className={styles.title} title={tab.title}>{tab.title}</span>
+                                <div
+                                  className={styles.button}
+                                  onClick={e => handleEdit(e, workspace, index)}
+                                  style={{ right: '1.875rem' }}
+                                >
+                                  <GearsIcon />
+                                  <div className={styles.label}>
+                                    <div className={styles.arrow} />
+                                    <span>{t('Edit tab')}</span>
+                                  </div>
+                                </div>
+                                <div
+                                  className={styles.button}
+                                  onClick={() =>
+                                    handleAction({ tabs: [tab] } as IWorkspace)
+                                  }
+                                >
+                                  <RunIcon w={'1rem'} />
+                                  <div className={styles.label}>
+                                    <div className={styles.arrow} />
+                                    <span>{t('Run tab')}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className={styles.action} onClick={() => handleCreate(id)}>
                           <PlusIcon />
-                          <Label>
-                            <Arrow />
+                          <div className={styles.label}>
+                            <div className={styles.arrow} />
                             <span>{t('New tab')}</span>
-                          </Label>
-                        </Action>
-                        <Action onClick={() => handleAction(workspace)}>
+                          </div>
+                        </div>
+                        <div className={styles.action} onClick={() => handleAction(workspace)}>
                           <RunIcon w={'1.5625rem'} />
-                          <Label>
-                            <Arrow />
+                          <div className={styles.label}>
+                            <div className={styles.arrow} />
                             <span>{t('Run workspace')}</span>
-                          </Label>
-                        </Action>
-                      </Header>
+                          </div>
+                        </div>
+                      </header>
                       <Preview
                         $code
                         data-role="code"
@@ -410,12 +406,12 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
                           `}
                         </style>
                       </Preview>
-                    </Window>
-                  </Workspace>
+                    </div>
+                  </li>
                 );
               })
               .toReversed()}
-          </List>
+          </ul>
         ) : (
           <Fragment>
             <Placeholder role="alert">
@@ -425,8 +421,8 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
                 {t('Create a workspace to start organizing your sessions')}
               </span>
             </Placeholder>
-            <Workspace $isExample>
-              <Window>
+            <li className={`${styles.workspace} ${styles.workspaceExample}`}>
+              <div className={styles.window}>
                 <Preview
                   $code
                   style={{
@@ -439,8 +435,8 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
                 >
                   <PromptExample theme={theme} />
                 </Preview>
-              </Window>
-            </Workspace>
+              </div>
+            </li>
           </Fragment>
         )}
         <Placeholder style={{ display: 'none' }} role="alert">
@@ -448,7 +444,7 @@ const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
           <span>{t('No workspaces found')}</span>
           <span>{t('Try a different search')}</span>
         </Placeholder>
-      </Wrapper>
+      </div>
     </Fragment>
   );
 };

@@ -1,0 +1,299 @@
+/* Settings/Workspaces Component Styles */
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  color: var(--theme-foreground);
+}
+
+.window {
+  position: relative;
+  width: 90%;
+  border-top: 1px solid var(--theme-borderWindow);
+  border-left: 1px solid var(--theme-borderWindow);
+  border-radius: 8px 0 0 0;
+}
+
+.window::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  top: 1.25rem;
+  left: -1px;
+  z-index: 999;
+  background: linear-gradient(0deg, rgb(7 7 7 / 85%), transparent 50%);
+}
+
+.window::after {
+  content: '';
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  top: -1px;
+  right: -4px;
+  z-index: 999;
+  background: linear-gradient(90deg, transparent 80%, rgb(7 7 7 / 85%));
+}
+
+.mask {
+  position: absolute;
+  width: 6.25rem;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--theme-background),
+    var(--theme-background)
+  );
+  transition: 0.2s ease 0s;
+  pointer-events: none;
+}
+
+.title {
+  font-size: 0.8125rem;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.button {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  right: 0.375rem;
+  z-index: 10;
+  opacity: 0;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-foreground);
+  border-radius: 3px;
+  transition: all 0.2s ease 0s;
+}
+
+.button svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  pointer-events: none;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button:hover div {
+  opacity: 1 !important;
+  transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.6s !important;
+}
+
+/* Label - extends from Modal/Search styles */
+.label {
+  position: fixed;
+  width: max-content;
+  height: 1.875rem;
+  padding: 0.25rem 0.5rem;
+  top: 4.375rem;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-modal);
+  border: 1px solid var(--theme-border);
+  border-radius: 3px;
+  box-shadow: var(--theme-boxShadow) 0px 2px 7px;
+  transition: opacity 0.2s ease 0s;
+  backdrop-filter: var(--theme-modalBackdrop);
+}
+
+.label span {
+  font-size: 0.75rem;
+  color: var(--theme-foreground);
+}
+
+/* Arrow - extends from Modal/Search styles */
+.arrow {
+  position: absolute;
+  top: -0.75rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid transparent;
+  border-bottom-color: var(--theme-border);
+  transition: opacity 0.2s ease 0s;
+}
+
+.arrow::before {
+  content: '';
+  position: absolute;
+  top: -0.3125rem;
+  border: 7px solid transparent;
+  border-bottom-color: var(--theme-transparent);
+}
+
+.action {
+  position: relative;
+  width: 2.5rem;
+  height: 2.375rem;
+  flex: 0 0 auto;
+  opacity: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease 0s;
+}
+
+.action svg {
+  color: var(--theme-disabled);
+  transition: color 0.2s ease 0s;
+}
+
+.action:hover svg {
+  color: var(--theme-foreground);
+}
+
+.action:hover .label {
+  opacity: 1;
+  transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.6s;
+}
+
+.header {
+  width: 100%;
+  height: 2.375rem;
+  z-index: 100;
+  display: flex;
+  overflow: hidden;
+}
+
+.tabs {
+  height: 100%;
+  flex: 0 1 auto;
+  display: flex;
+  overflow: hidden;
+}
+
+.list {
+  gap: 1.5625rem;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab {
+  position: relative;
+  width: 12.5rem;
+  padding: 0 1rem;
+  z-index: 100;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-disabled);
+  transition: color 0.2s ease 0s;
+}
+
+.tab:hover .button {
+  opacity: 1;
+}
+
+.tab:hover .mask {
+  opacity: 1;
+}
+
+/* Current tab state */
+.tabCurrent {
+  cursor: default;
+  color: var(--theme-foreground);
+}
+
+/* Fixed width tab */
+.tabFixed {
+  width: 12.5rem;
+}
+
+/* Fit content tab */
+.tabFit {
+  width: fit-content;
+}
+
+.tabFit div {
+  right: 0;
+}
+
+.wrapper {
+  gap: 0.25rem;
+  margin-top: 1.5625rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper.hidden {
+  display: none;
+}
+
+.wrapper.blank {
+  margin-top: 0;
+  height: 100%;
+  gap: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Show placeholder when wrapper is blank - targets styled-component Placeholder */
+.wrapper.blank > div:first-of-type {
+  display: flex !important;
+}
+
+/* Animation keyframes */
+@keyframes workspaceEnter {
+  0% {
+    opacity: 0;
+    scale: 0.98;
+    transform: translateY(-10px);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    transform: translateY(0);
+  }
+}
+
+.workspace {
+  gap: 0.625rem;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: workspaceEnter 0.35s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0s;
+}
+
+.workspace:hover .header > .action {
+  opacity: 1;
+}
+
+/* Example workspace state */
+.workspaceExample {
+  width: 50%;
+  height: 5rem;
+  pointer-events: none;
+}
+
+.workspaceExample .window {
+  width: 100%;
+  height: 100%;
+}

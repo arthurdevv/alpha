@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from 'preact/compat';
 import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 
-import { Overlay } from './styles';
+import styles from './styles.module.css';
 import Profiles from './Profiles';
 import Commands from './Commands';
 import About from './About';
@@ -113,13 +113,19 @@ const Modal: React.FC = () => {
     handleModal,
   };
 
+  const overlayClasses = [
+    styles.overlay,
+    isVisible ? styles.overlayVisible : styles.overlayHidden,
+    modal === 'Keymaps' ? styles.overlayKeymaps : '',
+  ].filter(Boolean).join(' ');
+
   return modal ? (
     modal in components ? (
       createElement(components[modal], props)
     ) : (
-      <Overlay $modal={modal} $isVisible={isVisible} onClick={handleOverlay}>
+      <div className={overlayClasses} onClick={handleOverlay}>
         {createElement(components.overlayed[modal], props)}
-      </Overlay>
+      </div>
     )
   ) : (
     <Fragment />

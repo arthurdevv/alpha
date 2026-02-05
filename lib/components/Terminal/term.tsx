@@ -5,7 +5,7 @@ import { getSettings } from 'app/settings';
 import { loadTheme } from 'app/common/themes';
 import { changeOpacity } from 'app/utils/color-utils';
 
-import { Content, Pane } from './styles';
+import styles from './styles.module.css';
 import Tooltip from './Tooltip';
 
 const Term: React.FC<TermProps> = (props: TermProps) => {
@@ -113,19 +113,24 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     }
   })();
 
+  const paneClasses = [
+    styles.pane,
+    props.isCurrent ? styles.paneCurrent : '',
+    props.isExpanded ? 'expanded' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <Pane
+    <div
       role="presentation"
-      className={props.isExpanded ? 'expanded' : undefined}
-      $isCurrent={props.isCurrent}
+      className={paneClasses}
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onContextMenu={onContextMenu}
       style={{ backgroundColor }}
     >
-      <Content ref={onRef} />
+      <div className={styles.content} ref={onRef} />
       <Tooltip {...props} />
-    </Pane>
+    </div>
   );
 };
 

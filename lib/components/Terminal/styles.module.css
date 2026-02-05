@@ -1,0 +1,161 @@
+/* Terminal Component Styles */
+
+/* Panes container */
+.panes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.panes:has(.expanded) > span {
+  opacity: 0;
+}
+
+/* Horizontal orientation (ew-resize cursor) */
+.panesHorizontal {
+  flex-direction: row;
+}
+
+.panesHorizontal > span {
+  width: 0.3125rem;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+/* Vertical orientation (ns-resize cursor) */
+.panesVertical {
+  flex-direction: column;
+}
+
+.panesVertical > span {
+  width: 100%;
+  height: 0.3125rem;
+  cursor: ns-resize;
+}
+
+/* Dragging states */
+.panesDraggingHorizontal {
+  cursor: ew-resize;
+}
+
+.panesDraggingVertical {
+  cursor: ns-resize;
+}
+
+/* Pane */
+.pane {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  opacity: 0.7;
+  pointer-events: all;
+  transition: 0.2s ease 0s;
+  transition-property: opacity, background;
+  animation: paneEnter 0.4s ease 0s;
+}
+
+.paneCurrent {
+  opacity: 1;
+}
+
+@keyframes paneEnter {
+  0% {
+    opacity: 0;
+  }
+}
+
+.pane.expanded {
+  position: fixed;
+  height: calc(100% - 2.375rem);
+  top: 2.375rem;
+  left: 0;
+  z-index: 10;
+  opacity: 0;
+  animation: paneExpand 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0.1s;
+}
+
+@keyframes paneExpand {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* SplitPane */
+.splitPane {
+  position: relative;
+  pointer-events: none;
+}
+
+/* Content */
+.content {
+  position: relative;
+  margin: 0.5rem 0.75rem 0.75rem 1rem;
+  flex: auto;
+  display: block;
+  overflow: hidden;
+}
+
+.content :global(.xterm .xterm-viewport),
+.content :global(.xterm .xterm-scrollable-element) {
+  background: #00000000 !important;
+}
+
+.content :global(.xterm .slider) {
+  width: 0.25rem !important;
+  right: 0 !important;
+  left: unset !important;
+  background: var(--theme-scrollbar-thumb) !important;
+  border-radius: 4px;
+  transition: background 0.2s ease 0s;
+}
+
+.content :global(.xterm .slider:hover) {
+  background: var(--theme-scrollbar-hover) !important;
+}
+
+/* Divider */
+.divider {
+  z-index: 1;
+  flex-shrink: 0;
+  pointer-events: all;
+  background: var(--header, var(--theme-divider));
+  transition: background 0.2s ease 0s;
+}
+
+.divider.dragging {
+  background: var(--indicator, var(--theme-divider-hover));
+}
+
+.divider:hover {
+  background: var(--indicator, var(--theme-divider-hover));
+  transition: background 0.2s ease-in-out 0.3s;
+}
+
+/* Group */
+.group {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.groupCurrent {
+  display: block;
+}
+
+.group:has(.pane.expanded) .pane.expanded {
+  opacity: 1 !important;
+  animation: none !important;
+  pointer-events: all;
+}
+
+.group:has(.pane.expanded) .pane:not(.expanded) {
+  opacity: 0 !important;
+  animation: none !important;
+  pointer-events: none;
+}

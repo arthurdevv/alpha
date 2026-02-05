@@ -76,9 +76,8 @@ class Terminal {
   open(parent: HTMLElement) {
     this.term.open(parent);
 
+    // Load critical addons synchronously, lazy-load the rest
     this.addons.load(this.term);
-
-    this.term.unicode.activeVersion = '11';
   }
 
   write(data: string): void {
@@ -144,6 +143,7 @@ class Terminal {
     );
 
     if (shouldReloadAddons) {
+      // Addon reload is now async but we don't need to await it
       this.addons.reload(this.term, options);
 
       this.options = options;

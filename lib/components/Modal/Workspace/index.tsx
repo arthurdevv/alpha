@@ -3,28 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import { setSettings } from 'app/settings';
 
-import {
-  Description,
-  Entry,
-  Label,
-  Option,
-  Content as OptionContent,
-  Selector,
-  Separator,
-  Spinner,
-  Switch,
-  SwitchSlider,
-} from 'components/Settings/styles';
+import settingsStyles from 'components/Settings/styles.module.css';
 import { SpinnerDownIcon } from 'components/Icons';
-import {
-  Container,
-  Content,
-  Search,
-  SearchInput,
-  Tag,
-  Tags,
-  Wrapper,
-} from '../styles';
+import styles from '../styles.module.css';
 import schema from './schema';
 
 const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
@@ -39,7 +20,7 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
     let { value, classList } = currentTarget;
 
     if (type === 'checkbox') {
-      value = classList.toggle('checked');
+      value = classList.toggle(settingsStyles.checked);
     } else if (!value) return;
 
     setTab(tab => {
@@ -77,22 +58,24 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
   const { t } = useTranslation();
 
   return (
-    <Container $isVisible={props.isVisible}>
-      <Tags>
-        <Tag $isTitle>{`${t('Workspaces')}: ${name}`}</Tag>
-        <Tag onClick={props.handleModal}>{t('Cancel')}</Tag>
-        <Tag onClick={() => handleSave(false)}>{t('Save')}</Tag>
-        <Tag onClick={() => handleSave(true)}>{t('Delete')}</Tag>
-      </Tags>
-      <Content>
-        <Search>
-          <SearchInput
+    <div className={`${styles.container} ${props.isVisible ? styles.containerVisible : styles.containerHidden}`}>
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{`${t('Workspaces')}: ${name}`}</div>
+        <div className={styles.tag} onClick={props.handleModal}>{t('Cancel')}</div>
+        <div className={styles.tag} onClick={() => handleSave(false)}>{t('Save')}</div>
+        <div className={styles.tag} onClick={() => handleSave(true)}>{t('Delete')}</div>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.search}>
+          <input
+            className={styles.searchInput}
             value={tab.title}
             placeholder={tab.title}
             onChange={event => handleOption('title', 'text', event)}
           />
-        </Search>
-        <Wrapper
+        </div>
+        <div
+          className={styles.wrapper}
           style={{
             paddingInline: '1rem',
             paddingBottom: '1rem',
@@ -106,22 +89,23 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
             const onChange = handleOption.bind(null, key, input);
 
             return (
-              <Option key={index}>
-                <Separator
+              <div className={settingsStyles.option} key={index}>
+                <hr
+                  className={settingsStyles.separator}
                   style={{ margin: index === 0 ? '0.125rem 0' : '0.75rem 0' }}
                 />
-                <OptionContent>
-                  <Label>{t(name)}</Label>
+                <div className={settingsStyles.content}>
+                  <div className={settingsStyles.label}>{t(name)}</div>
                   {input === 'checkbox' ? (
-                    <Switch
-                      className={tab[key] ? 'checked' : undefined}
+                    <div
+                      className={`${settingsStyles.switch} ${tab[key] ? settingsStyles.checked : ''}`}
                       onClick={onChange}
                     >
-                      <SwitchSlider />
-                    </Switch>
+                      <span className={settingsStyles.switchSlider} />
+                    </div>
                   ) : (
-                    <Entry $flex>
-                      <Selector onChange={onChange}>
+                    <div className={`${settingsStyles.entry} ${settingsStyles.entryFlex}`}>
+                      <select className={settingsStyles.selector} onChange={onChange}>
                         {options.map((option, index) => (
                           <option
                             key={index}
@@ -131,20 +115,20 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
                             {option.name}
                           </option>
                         ))}
-                      </Selector>
-                      <Spinner $input={input}>
+                      </select>
+                      <div className={`${settingsStyles.spinner} ${settingsStyles.spinnerSelect}`}>
                         <SpinnerDownIcon />
-                      </Spinner>
-                    </Entry>
+                      </div>
+                    </div>
                   )}
-                </OptionContent>
-                <Description>{t(label)}</Description>
-              </Option>
+                </div>
+                <span className={settingsStyles.description}>{t(label)}</span>
+              </div>
             );
           })}
-        </Wrapper>
-      </Content>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

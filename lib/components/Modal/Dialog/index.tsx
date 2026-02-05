@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getSettings, setSettings } from 'app/settings';
 
-import { Container, Content, Tag, Tags } from '../styles';
+import styles from '../styles.module.css';
 import { Title } from './styles';
 
 const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
@@ -52,13 +52,13 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
   const { source, target, from, data } = global.dialog || {};
 
   return (
-    <Container $isVisible={isVisible}>
-      <Tags>
-        <Tag $isTitle>{t(source || 'Profiles')}</Tag>
-        <Tag onClick={handleModal}>{t('Cancel')}</Tag>
-        <Tag onClick={handleDelete}>{t('Delete')}</Tag>
-      </Tags>
-      <Content>
+    <div className={`${styles.container} ${isVisible ? styles.containerVisible : styles.containerHidden}`}>
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{t(source || 'Profiles')}</div>
+        <div className={styles.tag} onClick={handleModal}>{t('Cancel')}</div>
+        <div className={styles.tag} onClick={handleDelete}>{t('Delete')}</div>
+      </div>
+      <div className={styles.content}>
         <Title>
           {t('Are you sure you want to delete')}&nbsp;
           {target ? (
@@ -72,8 +72,8 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
           )}
           ?
         </Title>
-      </Content>
-    </Container>
+      </div>
+    </div>
   );
 };
 

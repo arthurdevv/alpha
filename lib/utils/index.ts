@@ -1,4 +1,6 @@
-import { cloneDeepWith, isPlainObject, transform } from 'lodash';
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return value?.constructor === Object;
+}
 
 export function sortArray(array: any[]) {
   return array.sort((a, b) => a.name.localeCompare(b.name));
@@ -68,32 +70,60 @@ export function countTrueProperties<T extends object>(
 }
 
 export function serialize<T extends object>(target: T): T {
-  return cloneDeepWith(target, val =>
-    typeof val === 'function' ||
-    typeof val === 'symbol' ||
-    val === undefined ||
-    Buffer?.isBuffer?.(val)
-      ? undefined
-      : undefined,
-  );
+  function deepClone(value: unknown): unknown {
+    if (
+      value === null ||
+      typeof value === 'function' ||
+      typeof value === 'symbol' ||
+      value === undefined ||
+      Buffer?.isBuffer?.(value)
+    ) {
+      return undefined;
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(item => deepClone(item));
+    }
+
+    if (isPlainObject(value)) {
+      const result: Record<string, unknown> = {};
+      for (const key of Object.keys(value)) {
+        result[key] = deepClone(value[key]);
+      }
+      return result;
+    }
+
+    return value;
+  }
+
+  return deepClone(target) as T;
 }
 
 export function sanitizeObject(target: any): any {
-  return transform(target, (result, value, key) => {
+  const isArray = Array.isArray(target);
+  const result: any = isArray ? [] : {};
+
+  const entries = isArray
+    ? target.map((value: any, index: number) => [index, value])
+    : Object.entries(target);
+
+  for (const [key, value] of entries) {
     if (
       value === undefined ||
       typeof value === 'function' ||
       typeof value === 'symbol' ||
       Buffer?.isBuffer?.(value)
     ) {
-      return;
+      continue;
     }
 
     result[key] =
       isPlainObject(value) || Array.isArray(value)
         ? sanitizeObject(value)
         : value;
-  });
+  }
+
+  return result;
 }
 
 export function getDateFormatted(language: string): string {

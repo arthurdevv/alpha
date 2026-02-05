@@ -6,15 +6,7 @@ import storage from 'app/utils/local-storage';
 import { onSearch } from 'lib/utils';
 import { useKeyboardIndex } from 'lib/utils/hooks';
 
-import {
-  BadgeItem,
-  Container,
-  Content,
-  Search,
-  SearchInput,
-  Tag,
-  Tags,
-} from '../styles';
+import styles from '../styles.module.css';
 import {
   Action,
   Command,
@@ -129,22 +121,26 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
   }, [selectedIndex, commands]);
 
   return (
-    <Container $isVisible={isVisible} $width={20} onClick={handleFocus}>
-      <Tags>
-        <Tag $isTitle>
+    <div
+      className={`${styles.container} ${isVisible ? styles.containerVisible : styles.containerHidden}`}
+      style={{ maxWidth: '20rem' }}
+      onClick={handleFocus}
+    >
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>
           {t('History')}: {profile.name}
-        </Tag>
+        </div>
         {commands.length ? (
           <Fragment>
-            <Tag onClick={() => handleClearHistory(confimation === 0 ? 1 : 2)}>
+            <div className={styles.tag} onClick={() => handleClearHistory(confimation === 0 ? 1 : 2)}>
               {confimation === 0 ? t('Clear history') : t('Confirm')}
-            </Tag>
+            </div>
           </Fragment>
         ) : (
           <Fragment />
         )}
-      </Tags>
-      <Content>
+      </div>
+      <div className={styles.content}>
         <Wrapper
           style={{
             padding: commands.length ? '0 1rem .875rem' : '.875rem 1rem',
@@ -152,14 +148,15 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
         >
           {commands.length ? (
             <Fragment>
-              <Search style={{ padding: '0', marginBottom: '.5rem' }}>
-                <SearchInput
+              <div className={styles.search} style={{ padding: '0', marginBottom: '.5rem' }}>
+                <input
+                  className={styles.searchInput}
                   ref={input}
                   spellcheck={false}
                   placeholder={t('Select or type a command')}
                   onChange={handleSearch}
                 />
-              </Search>
+              </div>
               <List>
                 {Object.values(commands).map((value, index, array) => {
                   const { buffer, where, executedAt, executionTime } = value;
@@ -191,7 +188,7 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
                         </Info>
                       </Command>
                       <Action>
-                        <BadgeItem style={{ gap: '.25rem' }}>ENTER ↵</BadgeItem>
+                        <span className={styles.badgeItem} style={{ gap: '.25rem' }}>ENTER ↵</span>
                       </Action>
                     </Value>
                   );
@@ -205,8 +202,8 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
             <Warning>{t('No history yet')}</Warning>
           )}
         </Wrapper>
-      </Content>
-    </Container>
+      </div>
+    </div>
   );
 };
 

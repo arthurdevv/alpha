@@ -3,7 +3,7 @@ import { memo } from 'preact/compat';
 
 import useStore from 'lib/store';
 
-import { Group } from './styles';
+import styles from './styles.module.css';
 import Term from './term';
 import SplitTerm from './split';
 import Viewport from './Viewport';
@@ -29,9 +29,13 @@ const Terms: React.FC = () => {
         return id === 'Settings' ? (
           <Settings origin={origin} />
         ) : (
-          <Group role="group" key={id} $isCurrent={id === origin}>
+          <div
+            role="group"
+            key={id}
+            className={`${styles.group}${id === origin ? ` ${styles.groupCurrent}` : ''}`}
+          >
             <TermGroup {...props} />
-          </Group>
+          </div>
         );
       })}
       <Viewport {...store} />

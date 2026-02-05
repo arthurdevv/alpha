@@ -1,0 +1,13 @@
+export const MaximizeIcon = () => (
+  <svg
+    stroke="currentColor"
+    fill="currentColor"
+    strokeWidth="0"
+    viewBox="0 0 16 16"
+    width="1rem"
+    height="1rem"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M3 3v10h10V3H3zm9 9H4V4h8v8z" />
+  </svg>
+);

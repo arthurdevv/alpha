@@ -1,8 +1,7 @@
 import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
-import { throttle } from 'lodash';
 
-import { Divider, Panes, SplitPane } from './styles';
+import styles from './styles.module.css';
 
 const SplitTerm: React.FC<SplitTermProps> = (props: SplitTermProps) => {
   const { orientation, children, ratios } = props;
@@ -20,29 +19,43 @@ const SplitTerm: React.FC<SplitTermProps> = (props: SplitTermProps) => {
     const position = currentTarget.getBoundingClientRect()[offset];
     const totalSize = parentElement.getBoundingClientRect()[dimension];
 
-    const onMouseMove = throttle((event: MouseEvent) => {
-      const ratios = [...props.ratios];
+    let rafId: number | null = null;
 
-      const delta = position - event[client];
-      const ratio = -delta / totalSize;
+    const onMouseMove = (event: MouseEvent) => {
+      if (rafId !== null) return;
 
-      ratios[index] += ratio;
-      ratios[index + 1] -= ratio;
+      rafId = requestAnimationFrame(() => {
+        const ratios = [...props.ratios];
 
-      props.onResizeGroup(ratios);
-    }, 16);
+        const delta = position - event[client];
+        const ratio = -delta / totalSize;
+
+        ratios[index] += ratio;
+        ratios[index + 1] -= ratio;
+
+        props.onResizeGroup(ratios);
+        rafId = null;
+      });
+    };
 
     const onMouseUp = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('mousemove', onMouseMove);
 
-      setDragging(() => currentTarget.classList.toggle('dragging'));
+      currentTarget.classList.remove('dragging');
+      setDragging(false);
     };
 
     window.addEventListener('mouseup', onMouseUp);
     window.addEventListener('mousemove', onMouseMove);
 
-    setDragging(() => currentTarget.classList.toggle('dragging'));
+    currentTarget.classList.add('dragging');
+    setDragging(true);
   };
 
   const onDoubleClick = (index: number) => {
@@ -57,22 +70,30 @@ const SplitTerm: React.FC<SplitTermProps> = (props: SplitTermProps) => {
     props.onResizeGroup(ratios);
   };
 
+  const isHorizontal = cursor === 'ew-resize';
+  const panesClasses = [
+    styles.panes,
+    isHorizontal ? styles.panesHorizontal : styles.panesVertical,
+    isDragging ? (isHorizontal ? styles.panesDraggingHorizontal : styles.panesDraggingVertical) : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <Panes $cursor={cursor} $isDragging={isDragging}>
+    <div className={panesClasses}>
       {children.map((child, index) => (
         <Fragment key={index}>
-          <SplitPane style={{ [dimension]: `${ratios[index] * 100}%` }}>
+          <div className={styles.splitPane} style={{ [dimension]: `${ratios[index] * 100}%` }}>
             {child}
-          </SplitPane>
+          </div>
           {index < children.length - 1 && (
-            <Divider
+            <span
+              className={styles.divider}
               onMouseDown={(event: MouseEvent) => onMouseDown(event, index)}
               onDblClick={() => onDoubleClick(index)}
             />
           )}
         </Fragment>
       ))}
-    </Panes>
+    </div>
   );
 };
 
