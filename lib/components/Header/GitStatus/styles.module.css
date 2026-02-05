@@ -1,0 +1,108 @@
+/* GitStatus Component Styles */
+
+.container {
+  height: 100%;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--theme-disabled);
+  white-space: nowrap;
+}
+
+/* Branch section */
+.branch {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--theme-foreground);
+}
+
+.branchIcon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.branchName {
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status indicators */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+/* Modified files - yellow */
+.modified {
+  color: #e2b93d;
+}
+
+.modifiedDot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: #e2b93d;
+}
+
+/* Staged files - green */
+.staged {
+  color: #73c991;
+}
+
+.stagedDot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: #73c991;
+}
+
+/* Untracked - orange */
+.untracked {
+  color: #ce9178;
+  font-weight: 600;
+}
+
+/* Ahead/behind badges */
+.syncStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.1875rem;
+  font-size: 0.6875rem;
+  background-color: var(--theme-background-alt, rgba(255, 255, 255, 0.1));
+}
+
+.ahead {
+  color: #73c991;
+}
+
+.behind {
+  color: #f14c4c;
+}
+
+/* Separator */
+.separator {
+  width: 1px;
+  height: 0.75rem;
+  background-color: var(--theme-disabled);
+  opacity: 0.4;
+}
