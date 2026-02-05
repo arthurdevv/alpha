@@ -56,6 +56,8 @@ terminal:paste:
   - ctrl+shift+v
 terminal:search:
   - ctrl+shift+f
+terminal:snippets:
+  - ctrl+shift+;
 terminal:select-all:
   - ctrl+shift+a
 window:create:
