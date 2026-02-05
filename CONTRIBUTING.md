@@ -19,7 +19,7 @@ Before you begin, make sure you have the following tools installed:
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en/download/) (v24.x)
   - If you need multiple Node versions, use [nvm](https://github.com/coreybutler/nvm-windows) to install and switch between them easily
-- [yarn](https://yarnpkg.com/en/docs/install) (classic)
+- [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (included with Node.js)
 
 > **Note:** To avoid build issues, install ``Tools for Native Modules`` during Node.js installation or the ``Desktop development with C++`` workload in Visual Studio Build Tools.
 
@@ -39,21 +39,21 @@ cd alpha
 1. Install the dependencies:
 
 ```sh
-yarn install
+npm install
 ```
 
 2. Run the code in development mode:
 
 ```sh
-yarn run dev
+npm run dev
 ```
 
 3. After finishing your changes, you can generate the executable:
 
 ```sh
-yarn run clean
-yarn run build
-yarn run package
+npm run clean
+npm run build
+npm run package
 ```
 
 > **Note:** The executable will be generated in the `release/` folder.

@@ -100,7 +100,6 @@ function validateSettings(defaults: IRawSettings, current: IRawSettings) {
 
   if (keys1.length !== keys2.length) return false;
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const key of keys1) {
     if (!keys2.includes(key)) return false;
 
