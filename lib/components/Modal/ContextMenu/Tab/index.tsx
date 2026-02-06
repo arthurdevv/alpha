@@ -2,7 +2,7 @@ import { Fragment } from 'preact';
 import { memo } from 'preact/compat';
 
 import { formatKeys } from 'app/keymaps/schema';
-import { useContextMenu } from 'lib/utils/hooks';
+import { useContextMenu } from 'lib/hooks/useContextMenu';
 
 import { DotsIcon } from 'components/Icons';
 import { execCommand } from 'app/keymaps/commands';

@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import { execCommand } from 'app/keymaps/commands';
 import { resolveCommand } from 'app/keymaps/schema';
-import { useKeyboardIndex, useSearchFilter } from 'lib/utils/hooks';
+import {
+  useKeyboardNavigation,
+  useSearch,
+} from 'lib/hooks/useSearchController';
 
 import { KeyItem } from 'components/Header/Popover/styles';
-import getSchema from './schema';
 import {
   BadgeItem,
   Badges,
@@ -26,6 +28,7 @@ import {
   Warning,
   Wrapper,
 } from '../styles';
+import getSchema from './schema';
 
 const Commands: React.FC<ModalProps> = (props: ModalProps) => {
   const { store, modal } = props;
@@ -37,7 +40,7 @@ const Commands: React.FC<ModalProps> = (props: ModalProps) => {
     handleSearch,
     handleComplete,
     saveSuggestion,
-  } = useSearchFilter(modal, props);
+  } = useSearch(modal, props);
 
   const { t } = useTranslation();
 
@@ -65,7 +68,7 @@ const Commands: React.FC<ModalProps> = (props: ModalProps) => {
 
   const commands = Object.values(schema).flat();
 
-  const [selectedIndex, setSelectedIndex] = useKeyboardIndex(
+  const [selectedIndex, setSelectedIndex] = useKeyboardNavigation(
     commands.length,
     handleSelect,
   );

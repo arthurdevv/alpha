@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 
 import { resolveCommand } from 'app/keymaps/schema';
 import { execCommand } from 'app/keymaps/commands';
-import { useSearchFilter } from 'lib/utils/hooks';
-import schema from './schema';
+import { useSearch } from 'lib/hooks/useSearchController';
 
+import schema from './schema';
 import {
   BadgeItem,
   Badges,
@@ -34,7 +34,7 @@ const Keymaps: React.FC<ModalProps> = (props: ModalProps) => {
     handleSearch,
     handleComplete,
     saveSuggestion,
-  } = useSearchFilter(modal, props);
+  } = useSearch(modal, props);
 
   const { t } = useTranslation();
 

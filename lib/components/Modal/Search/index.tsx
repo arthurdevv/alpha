@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { clearResult, findResult, onChangeResults } from 'app/common/addons';
 import storage from 'app/utils/local-storage';
-import { useSuggestions } from 'lib/utils/hooks';
+import { useSuggestions } from 'lib/hooks/useSearchController';
 
 import {
   ArrowDownIcon,

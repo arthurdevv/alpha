@@ -3,7 +3,7 @@ import { memo, useState } from 'preact/compat';
 
 import { formatKeys } from 'app/keymaps/schema';
 import { execCommand } from 'app/keymaps/commands';
-import { useContextMenu } from 'lib/utils/hooks';
+import { useContextMenu } from 'lib/hooks/useContextMenu';
 
 import { DotsIcon } from 'lib/components/Icons';
 import getSchema from './schema';

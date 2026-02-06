@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import storage from 'app/utils/local-storage';
 import { onSearch } from 'lib/utils';
-import { useKeyboardIndex } from 'lib/utils/hooks';
+import { useKeyboardNavigation } from 'lib/hooks/useSearchController';
 
 import {
   BadgeItem,
@@ -44,7 +44,7 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
     return [item];
   });
 
-  const [selectedIndex, setSelectedIndex] = useKeyboardIndex(
+  const [selectedIndex, setSelectedIndex] = useKeyboardNavigation(
     commands ? commands.length : 0,
   );
 

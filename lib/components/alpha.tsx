@@ -1,9 +1,10 @@
-import { Fragment, memo, useEffect } from 'preact/compat';
+import { Fragment, memo, useEffect, useState } from 'preact/compat';
+import { unlink } from 'fs';
 
+import { firstRunFlag, firstRunFlagPath } from 'app/settings/constants';
 import useStore from 'lib/store';
 import invokeEvents from 'lib/events';
 import { Content } from 'lib/styles/global';
-import { useFirstRun } from 'lib/utils/hooks';
 import 'lib/i18n';
 
 import Welcome from './Welcome';
@@ -15,10 +16,12 @@ import Watermark from './Terminal/Watermark';
 const Alpha: React.FC = () => {
   const { getStore, setModal } = useStore();
 
-  const [isFirstRun, setIsFirstRun] = useFirstRun();
+  const [isFirstRun, setIsFirstRun] = useState(firstRunFlag);
 
   useEffect(() => {
-    if (!isFirstRun) invokeEvents(getStore);
+    if (!isFirstRun) return invokeEvents(getStore);
+
+    unlink(firstRunFlagPath, error => error && reportError(error));
   }, [isFirstRun]);
 
   return isFirstRun ? (

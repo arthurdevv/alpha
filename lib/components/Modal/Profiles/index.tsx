@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { createProfile, getGroups, sortGroups } from 'app/common/profiles';
 import { execCommand } from 'app/keymaps/commands';
 import storage from 'app/utils/local-storage';
-import { sortArray, useKeyboardIndex, useSearchFilter } from 'lib/utils/hooks';
+import {
+  useKeyboardNavigation,
+  useSearch,
+} from 'lib/hooks/useSearchController';
+import { sortArray } from 'lib/utils';
 
 import {
   BadgeItem,
@@ -41,7 +45,7 @@ const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
     handleSearch,
     handleComplete,
     saveSuggestion,
-  } = useSearchFilter(modal, props);
+  } = useSearch(modal, props);
 
   const { t } = useTranslation();
 
@@ -110,7 +114,7 @@ const Profiles: React.FC<ModalProps> = (props: ModalProps) => {
     })
     .flat();
 
-  const [selectedIndex, setSelectedIndex] = useKeyboardIndex(
+  const [selectedIndex, setSelectedIndex] = useKeyboardNavigation(
     visibleProfiles.length,
     handleSelect,
   );
