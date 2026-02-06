@@ -56,9 +56,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
       setTransition(false);
 
       setTimeout(() => {
-        setTransition(true);
-
         setSection(value);
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+        });
       }, 125);
 
       storage.updateItem('section', value);
