@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { clipboard } from '@electron/remote';
 import { debugVersions } from 'app/settings/constants';
 
-import { BadgeItem, Container, Content, Tag, Tags } from '../styles';
+import styles from '../styles.module.css';
 import { Copied, Info, List, Wrapper } from './styles';
 
 const About: React.FC<ModalProps> = ({ isVisible }) => {
@@ -26,12 +26,15 @@ const About: React.FC<ModalProps> = ({ isVisible }) => {
   };
 
   return (
-    <Container $width={20} $isVisible={isVisible}>
-      <Tags>
-        <Tag $isTitle>{t('About')}</Tag>
-        <Tag onClick={handleCopy}>{t('Copy')}</Tag>
-      </Tags>
-      <Content>
+    <div
+      className={`${styles.container} ${isVisible ? styles.containerVisible : styles.containerHidden}`}
+      style={{ maxWidth: '20rem' }}
+    >
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{t('About')}</div>
+        <div className={styles.tag} onClick={handleCopy}>{t('Copy')}</div>
+      </div>
+      <div className={styles.content}>
         <Wrapper>
           <List>
             {Object.keys(debugVersions).map((key, index) => {
@@ -40,15 +43,15 @@ const About: React.FC<ModalProps> = ({ isVisible }) => {
               return (
                 <Info key={index}>
                   <span>{t(key)}</span>
-                  <BadgeItem>{value}</BadgeItem>
+                  <span className={styles.badgeItem}>{value}</span>
                 </Info>
               );
             })}
           </List>
         </Wrapper>
         <Copied $hasCopied={hasCopied}>{t('Copied to clipboard')}</Copied>
-      </Content>
-    </Container>
+      </div>
+    </div>
   );
 };
 

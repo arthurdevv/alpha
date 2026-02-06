@@ -5,7 +5,7 @@ import { clipboard } from '@electron/remote';
 import { useSettings } from 'app/settings/listeners';
 
 import { Preview, Title, Wrapper } from './styles';
-import { Container, Content, Tag, Tags } from '../styles';
+import styles from '../styles.module.css';
 
 const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   const [settings] = useSettings();
@@ -21,13 +21,16 @@ const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
   };
 
   return (
-    <Container $width={34} $isVisible={isVisible}>
-      <Tags>
-        <Tag $isTitle>{t('Warning')}</Tag>
-        <Tag onClick={handleModal}>{t('Cancel')}</Tag>
-        <Tag onClick={handlePaste}>{t('Paste anyway')}</Tag>
-      </Tags>
-      <Content>
+    <div
+      className={`${styles.container} ${isVisible ? styles.containerVisible : styles.containerHidden}`}
+      style={{ maxWidth: '34rem' }}
+    >
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{t('Warning')}</div>
+        <div className={styles.tag} onClick={handleModal}>{t('Cancel')}</div>
+        <div className={styles.tag} onClick={handlePaste}>{t('Paste anyway')}</div>
+      </div>
+      <div className={styles.content}>
         <Wrapper>
           <Title>
             {t(
@@ -36,8 +39,8 @@ const Warning: React.FC<ModalProps> = ({ handleModal, isVisible }) => {
           </Title>
           <Preview style={{ fontFamily: settings.fontFamily }}>{data}</Preview>
         </Wrapper>
-      </Content>
-    </Container>
+      </div>
+    </div>
   );
 };
 

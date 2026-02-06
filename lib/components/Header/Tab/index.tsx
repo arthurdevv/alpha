@@ -5,7 +5,7 @@ import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 
 import { CloseTabIcon, DotsIcon } from 'lib/components/Icons';
-import { Action, Container, Group, Mask, Title } from './styles';
+import styles from './styles.module.css';
 import Popover from '../Popover';
 
 const TabGroup: React.FC = () => {
@@ -21,7 +21,7 @@ const TabGroup: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Group role="group">
+    <div className={styles.group} role="group">
       {Object.entries(context).map(([id, tab]) => {
         const [focused] = terms[id];
 
@@ -40,7 +40,7 @@ const TabGroup: React.FC = () => {
 
         return <Tab {...props} key={id} />;
       })}
-    </Group>
+    </div>
   );
 };
 
@@ -77,25 +77,30 @@ const Tab: React.FC<TabProps> = (props: TabProps) => {
 
   const { id, title, tabWidth, isCurrent } = props;
 
+  const containerClasses = [
+    styles.container,
+    isCurrent ? styles.containerCurrent : '',
+    !transition ? styles.containerHidden : '',
+    id !== 'Settings' ? styles.containerWithBefore : '',
+    tabWidth === 'fixed' ? styles.containerFixed : styles.containerAuto,
+  ].filter(Boolean).join(' ');
+
   return (
-    <Container
-      $transition={transition}
-      $isCurrent={isCurrent}
-      $tabWidth={tabWidth}
-      $before={id !== 'Settings'}
+    <div
+      className={containerClasses}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
     >
-      <Mask />
-      <Title title={title}>{title}</Title>
-      <Action data-signal="MENU" style={{ right: '1.875rem' }}>
+      <div className={styles.mask} />
+      <span className={styles.title} title={title}>{title}</span>
+      <div className={styles.action} data-signal="MENU" style={{ right: '1.875rem' }}>
         <DotsIcon />
-      </Action>
-      <Action data-signal="SIGHUP">
+      </div>
+      <div className={styles.action} data-signal="SIGHUP">
         <CloseTabIcon />
         <Popover label={`Close ${id !== 'Settings' ? 'tab' : 'settings'}`} />
-      </Action>
-    </Container>
+      </div>
+    </div>
   );
 };
 

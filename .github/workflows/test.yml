@@ -16,13 +16,13 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Build Electron app
-        run: yarn build
+        run: npm run build
 
       - name: Package Electron app
-        run: yarn package
+        run: npm run package
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

@@ -17,7 +17,7 @@ import {
 } from 'lib/components/Icons';
 import TabGroup from './Tab';
 import Popover from './Popover';
-import { ActionItem, Actions, Container, DragRegion } from './styles';
+import styles from './styles.module.css';
 
 const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
   const {
@@ -59,50 +59,54 @@ const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
     }
   }, [origin, preserveBackground]);
 
+  const preserveBg = (theme as any) === 'default' || preserveBackground;
+  const containerClasses = `${styles.container}${!preserveBg ? ` ${styles.containerWithBackground}` : ''}`;
+
   return (
-    <Container
+    <div
+      className={containerClasses}
       onClick={() => execCommand('terminal:focus')}
-      $preserveBackground={(theme as any) === 'default' || preserveBackground}
     >
       {!welcome && (
         <Fragment>
           <TabGroup />
-          <Actions>
-            <ActionItem onClick={() => execCommand('terminal:create', {})}>
+          <div className={styles.actions}>
+            <div className={styles.actionItem} onClick={() => execCommand('terminal:create', {})}>
               <PlusIcon />
               <Popover label="New terminal" />
-            </ActionItem>
-            <ActionItem onClick={() => execCommand('app:profiles')}>
+            </div>
+            <div className={styles.actionItem} onClick={() => execCommand('app:profiles')}>
               <ProfilesIcon />
               <Popover label="Profiles" />
-            </ActionItem>
-          </Actions>
+            </div>
+          </div>
         </Fragment>
       )}
-      <DragRegion />
-      <Actions>
+      <div className={styles.dragRegion} />
+      <div className={styles.actions}>
         {!welcome && (
-          <ActionItem onClick={() => execCommand('app:settings')}>
+          <div className={styles.actionItem} onClick={() => execCommand('app:settings')}>
             <SettingsIcon />
             <Popover label="Settings" />
-          </ActionItem>
+          </div>
         )}
-        <ActionItem onClick={() => handleAction('minimize')}>
+        <div className={styles.actionItem} onClick={() => handleAction('minimize')}>
           <MinimizeIcon />
           <Popover label="Minimize" />
-        </ActionItem>
-        <ActionItem
+        </div>
+        <div
+          className={styles.actionItem}
           onClick={() => handleAction(isMaximized ? 'restore' : 'maximize')}
         >
           {isMaximized ? <RestoreIcon /> : <MaximizeIcon />}
           <Popover label={isMaximized ? 'Restore' : 'Maximize'} />
-        </ActionItem>
-        <ActionItem onClick={() => handleAction('close')}>
+        </div>
+        <div className={styles.actionItem} onClick={() => handleAction('close')}>
           <CloseIcon />
           <Popover label="Close" />
-        </ActionItem>
-      </Actions>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

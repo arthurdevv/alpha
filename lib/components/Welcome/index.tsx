@@ -21,21 +21,7 @@ import {
   Switch,
   SwitchSlider,
 } from 'components/Settings/styles';
-import {
-  Container,
-  Content,
-  Footer,
-  KeyItem,
-  Keys,
-  Logo,
-  LogoName,
-  Options,
-  Subtitle,
-  Texts,
-  Title,
-  Version,
-  Wrapper,
-} from './styles';
+import styles from './styles.module.css';
 import schema from './schema';
 
 const Welcome: React.FC<WelcomeProps> = ({ setIsFirstRun, setModal }) => {
@@ -76,20 +62,24 @@ const Welcome: React.FC<WelcomeProps> = ({ setIsFirstRun, setModal }) => {
     setTimeout(() => ipc.emit('app:renderer-ready'), 3900);
   };
 
+  const containerClassName = showWelcome
+    ? styles.container
+    : `${styles.container} ${styles.containerHidden}`;
+
   return (
-    <Container $showWelcome={showWelcome} tabIndex={0} onKeyDown={handleEnter}>
+    <div className={containerClassName} tabIndex={0} onKeyDown={handleEnter}>
       <Header welcome />
-      <Content>
-        <Logo>
+      <div className={styles.content}>
+        <div className={styles.logo}>
           <AlphaIcon />
-          <LogoName>LPHA</LogoName>
-        </Logo>
-        <Wrapper>
-          <Texts>
-            <Title>{t('Welcome to Alpha')}</Title>
-            <Subtitle>{t('A modern terminal for modern workflows.')}</Subtitle>
-          </Texts>
-          <Options role="list">
+          <div className={styles.logoName}>LPHA</div>
+        </div>
+        <div className={styles.wrapper}>
+          <div className={styles.texts}>
+            <span className={styles.title}>{t('Welcome to Alpha')}</span>
+            <span className={styles.subtitle}>{t('A modern terminal for modern workflows.')}</span>
+          </div>
+          <div className={styles.options} role="list">
             {Object.entries(schema).map(([key, option], index) => {
               const { name, label, input, options, values } = option;
 
@@ -138,19 +128,19 @@ const Welcome: React.FC<WelcomeProps> = ({ setIsFirstRun, setModal }) => {
                 </Option>
               );
             })}
-          </Options>
-        </Wrapper>
-      </Content>
-      <Footer>
+          </div>
+        </div>
+      </div>
+      <footer className={styles.footer}>
         {t('Press')}
-        <Keys>
-          <KeyItem>Enter</KeyItem>
-        </Keys>
+        <div className={styles.keys}>
+          <div className={styles.keyItem}>Enter</div>
+        </div>
         {t('to start using Alpha')}
-        <Version onClick={() => setModal('About')}>{app.getVersion()}</Version>
-      </Footer>
+        <div className={styles.version} onClick={() => setModal('About')}>{app.getVersion()}</div>
+      </footer>
       <Modal />
-    </Container>
+    </div>
   );
 };
 

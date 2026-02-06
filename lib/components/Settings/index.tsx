@@ -10,27 +10,7 @@ import useStore from 'lib/store';
 import { getAutomaticLanguage } from 'lib/i18n';
 
 import schema from './schema';
-import {
-  BadgeItem,
-  Badges,
-  Container,
-  Content,
-  Description,
-  Entry,
-  Input,
-  Label,
-  Navigation,
-  NavigationItem,
-  Option,
-  Section,
-  Selector,
-  Separator,
-  Spinner,
-  Switch,
-  SwitchSlider,
-  Title,
-  Wrapper,
-} from './styles';
+import styles from './styles.module.css';
 import { SpinnerDownIcon, SpinnerIcon } from '../Icons';
 import Application from './Application';
 import Appearance from './Appearance';
@@ -94,11 +74,11 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
     const badges = option.querySelector('div');
 
-    if (badges) badges.classList.toggle('visible');
+    if (badges) badges.classList.toggle(styles.visible);
   };
 
   const handleBadgesClass = (key: string, value: any) =>
-    initialSettings[key] === value ? undefined : 'visible';
+    initialSettings[key] === value ? undefined : styles.visible;
 
   const handleUpdate = (
     key: string,
@@ -113,7 +93,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
         break;
 
       case 'boolean':
-        value = classList.toggle('checked');
+        value = classList.toggle(styles.checked);
         handleBadges(currentTarget);
         break;
     }
@@ -174,9 +154,9 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
   const options = Object.entries(schema[section]).map(
     ([title, value], index) => (
-      <Wrapper key={index}>
+      <div className={styles.wrapper} key={index}>
         {!customSections.includes(section) && (
-          <Title>{t(title === 'Default' ? section : title)}</Title>
+          <span className={styles.title}>{t(title === 'Default' ? section : title)}</span>
         )}
         {Object.entries(value).map(([key, option], index) => {
           const { name, label, type, input, options, values, range, badges } =
@@ -187,29 +167,29 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           const handleChange = handleUpdate.bind(null, key, option);
 
           return (
-            <Option key={index}>
-              <Separator />
-              <Content>
-                <Label>
+            <div className={styles.option} key={index}>
+              <hr className={styles.separator} />
+              <div className={styles.content}>
+                <div className={styles.label}>
                   {t(name)}
                   {badges && (
-                    <Badges className={handleBadgesClass(key, value)}>
+                    <div className={`${styles.badges} ${handleBadgesClass(key, value) || ''}`}>
                       {badges.map((text, index) => (
-                        <BadgeItem key={index}>{t(text)}</BadgeItem>
+                        <span className={styles.badgeItem} key={index}>{t(text)}</span>
                       ))}
-                    </Badges>
+                    </div>
                   )}
-                </Label>
+                </div>
                 {input === 'checkbox' ? (
-                  <Switch
-                    className={value ? 'checked' : undefined}
+                  <div
+                    className={`${styles.switch} ${value ? styles.checked : ''}`}
                     onClick={handleChange}
                   >
-                    <SwitchSlider />
-                  </Switch>
+                    <span className={styles.switchSlider} />
+                  </div>
                 ) : input === 'select' ? (
-                  <Entry>
-                    <Selector onChange={handleChange} id="mySelect">
+                  <div className={styles.entry}>
+                    <select className={styles.selector} onChange={handleChange} id="mySelect">
                       {(options || entityOptions.options)?.map(
                         (option, index) => {
                           let selected = false;
@@ -231,36 +211,38 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
                           );
                         },
                       )}
-                    </Selector>
-                    <Spinner $input={input}>
+                    </select>
+                    <div className={`${styles.spinner} ${styles.spinnerSelect}`}>
                       <SpinnerDownIcon />
-                    </Spinner>
-                  </Entry>
+                    </div>
+                  </div>
                 ) : (
-                  <Entry>
-                    <Input
+                  <div className={styles.entry}>
+                    <input
+                      className={`${styles.input} ${type === 'number' ? styles.inputNumber : styles.inputText}`}
                       type={type}
                       value={value}
                       onChange={handleChange}
                       placeholder="..."
+                      style={type !== 'number' ? { width: 'calc(15ch + 0.125rem)' } : undefined}
                       {...(type === 'number' ? range : {})}
                     />
                     {type === 'number' && (
-                      <Spinner $input={input}>
+                      <div className={`${styles.spinner} ${styles.spinnerNumber}`}>
                         <SpinnerIcon
                           arg0={() => handleSpinner(key, 1, range)}
                           arg1={() => handleSpinner(key, -1, range)}
                         />
-                      </Spinner>
+                      </div>
                     )}
-                  </Entry>
+                  </div>
                 )}
-              </Content>
-              <Description>{t(label)}</Description>
-            </Option>
+              </div>
+              <span className={styles.description}>{t(label)}</span>
+            </div>
           );
         })}
-      </Wrapper>
+      </div>
     ),
   );
 
@@ -281,22 +263,22 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
   })();
 
   return (
-    <Container $origin={props.origin}>
-      <Navigation>
+    <div className={`${styles.container} ${props.origin === 'Settings' ? styles.containerVisible : ''}`}>
+      <nav className={styles.navigation}>
         {Object.keys(schema).map((value, index) => (
-          <NavigationItem
+          <div
             key={index}
-            className={value === section ? 'selected' : undefined}
+            className={`${styles.navigationItem} ${value === section ? styles.selected : ''}`}
             onClick={() => handleSection(value as Section)}
           >
             {t(value)}
-          </NavigationItem>
+          </div>
         ))}
-      </Navigation>
-      <Section $section={section} $transition={transition}>
+      </nav>
+      <section className={`${styles.section} ${transition ? styles.sectionVisible : styles.sectionHidden}`}>
         {children || options}
-      </Section>
-    </Container>
+      </section>
+    </div>
   );
 };
 

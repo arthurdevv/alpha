@@ -6,22 +6,7 @@ import { execCommand } from 'app/keymaps/commands';
 import { useSearchFilter } from 'lib/utils/hooks';
 import schema from './schema';
 
-import {
-  BadgeItem,
-  Badges,
-  Ghost,
-  Name as Label,
-  List,
-  Search,
-  SearchInput,
-  Separator,
-  Suggestion,
-  Tag,
-  Tags,
-  Label as Title,
-  Warning,
-  Wrapper,
-} from '../styles';
+import styles from '../styles.module.css';
 import { Container, Content, Item } from './styles';
 
 const Keymaps: React.FC<ModalProps> = (props: ModalProps) => {
@@ -56,15 +41,16 @@ const Keymaps: React.FC<ModalProps> = (props: ModalProps) => {
       onMouseEnter={(event: MouseEvent) => handleFocus(event, true)}
       onMouseLeave={(event: MouseEvent) => handleFocus(event, false)}
     >
-      <Tags style={{ paddingRight: '0.75rem' }}>
-        <Tag $isTitle>{t('Keymaps')}</Tag>
-        <Tag onClick={() => execCommand('app:settings', 'Keymaps')}>
+      <div className={styles.tags} style={{ paddingRight: '0.75rem' }}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{t('Keymaps')}</div>
+        <div className={styles.tag} onClick={() => execCommand('app:settings', 'Keymaps')}>
           {t('Manage keymaps')}
-        </Tag>
-      </Tags>
+        </div>
+      </div>
       <Content>
-        <Search>
-          <SearchInput
+        <div className={styles.search}>
+          <input
+            className={styles.searchInput}
             ref={ref}
             value={search}
             placeholder={t('Search for a command')}
@@ -72,16 +58,16 @@ const Keymaps: React.FC<ModalProps> = (props: ModalProps) => {
             onKeyDown={handleComplete}
             style={{ paddingRight: '2.75rem' }}
           />
-          <Suggestion $suggestion={suggestion}>
-            <Ghost>{suggestion}</Ghost>
-            <BadgeItem>tab</BadgeItem>
-          </Suggestion>
-        </Search>
-        <Wrapper className="w">
+          <div className={`${styles.suggestion} ${suggestion ? styles.suggestionVisible : ''}`}>
+            <span className={styles.ghost}>{suggestion}</span>
+            <span className={styles.badgeItem}>tab</span>
+          </div>
+        </div>
+        <div className={`${styles.wrapper} w`}>
           {Object.entries(schema).map(([group, commands], index) => (
-            <List role="list" key={index}>
-              <Separator />
-              <Title>{t(group)}</Title>
+            <ul className={styles.list} role="list" key={index}>
+              <hr className={styles.separator} />
+              <div className={styles.modalLabel}>{t(group)}</div>
               {Object.keys(commands).map((command, index) => {
                 let { label, keys = [] } = resolveCommand(command);
 
@@ -89,21 +75,21 @@ const Keymaps: React.FC<ModalProps> = (props: ModalProps) => {
 
                 return (
                   <Item key={index} data-name={t(label)}>
-                    <Label>{t(label)}</Label>
-                    <Badges>
+                    <div className={styles.name}>{t(label)}</div>
+                    <div className={styles.badges}>
                       {keys.map((key, index) => (
-                        <BadgeItem key={index}>{key}</BadgeItem>
+                        <span className={styles.badgeItem} key={index}>{key}</span>
                       ))}
-                    </Badges>
+                    </div>
                   </Item>
                 );
               })}
-            </List>
+            </ul>
           ))}
-          <Warning style={{ display: 'none' }}>
+          <span className={styles.warning} style={{ display: 'none' }}>
             {t('No commands found')}
-          </Warning>
-        </Wrapper>
+          </span>
+        </div>
       </Content>
     </Container>
   );

@@ -10,7 +10,18 @@
   "commit": false,
   "commitType": "docs",
   "commitConvention": "none",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "Kipstz",
+      "name": "Kipstz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140314732?v=4",
+      "profile": "https://github.com/Kipstz",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "skipCi": true
 }

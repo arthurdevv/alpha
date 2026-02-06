@@ -6,7 +6,7 @@ import fetchConfig from 'app/api/fetch-config';
 import storage from 'app/utils/local-storage';
 import { getDateFormatted } from 'lib/utils';
 
-import { Container, Content, Search, SearchInput, Tag, Tags } from '../styles';
+import styles from '../styles.module.css';
 
 const Sync: React.FC<ModalProps> = (props: ModalProps) => {
   const [gistID, setGistID] = useState<string>('');
@@ -46,30 +46,34 @@ const Sync: React.FC<ModalProps> = (props: ModalProps) => {
   }, []);
 
   return (
-    <Container $width={30} $isVisible={props.isVisible}>
-      <Tags>
-        <Tag $isTitle>{t('Config file')}</Tag>
-        <Tag onClick={handleSync}>{t('Import')}</Tag>
-        <Tag onClick={props.handleModal}>{t('Cancel')}</Tag>
-      </Tags>
-      <Content>
-        <Search>
-          <SearchInput
+    <div
+      className={`${styles.container} ${props.isVisible ? styles.containerVisible : styles.containerHidden}`}
+      style={{ maxWidth: '30rem' }}
+    >
+      <div className={styles.tags}>
+        <div className={`${styles.tag} ${styles.tagTitle}`}>{t('Config file')}</div>
+        <div className={styles.tag} onClick={handleSync}>{t('Import')}</div>
+        <div className={styles.tag} onClick={props.handleModal}>{t('Cancel')}</div>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.search}>
+          <input
+            className={styles.searchInput}
             placeholder={t('Insert a valid Gist ID')}
             onChange={handleInput}
           />
-        </Search>
-      </Content>
+        </div>
+      </div>
       {syncInfo.filename && syncInfo.date && (
-        <Tags style={{ marginTop: '0.5rem' }}>
-          <Tag $isTitle>
+        <div className={styles.tags} style={{ marginTop: '0.5rem' }}>
+          <div className={`${styles.tag} ${styles.tagTitle}`}>
             {t('Last import: {{syncInfo.date}} from {{syncInfo.filename}}', {
               syncInfo,
             })}
-          </Tag>
-        </Tags>
+          </div>
+        </div>
       )}
-    </Container>
+    </div>
   );
 };
 

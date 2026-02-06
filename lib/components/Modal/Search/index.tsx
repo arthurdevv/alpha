@@ -14,13 +14,7 @@ import {
   WholeWordIcon,
 } from 'lib/components/Icons';
 import { KeyItem, Keys } from 'components/Header/Popover/styles';
-import {
-  Search as _Search,
-  BadgeItem,
-  Ghost,
-  SearchInput,
-  Suggestion,
-} from '../styles';
+import styles from '../styles.module.css';
 import {
   Arrow,
   Container,
@@ -60,14 +54,14 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
 
   const { t } = useTranslation();
 
-  const handleSearch = ({ currentTarget }, match?: string) => {
+  const handleSearch = async ({ currentTarget }, match?: string) => {
     const { value } = currentTarget;
 
     const result = match || value;
 
     setResult(result);
 
-    findResult(global.id!, result, 'findNext');
+    await findResult(global.id!, result, 'findNext');
   };
 
   const handleControl = ({ currentTarget }) => {
@@ -97,7 +91,12 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
 
     if (current) setTimeout(() => current.focus(), 100);
 
-    const { dispose } = onChangeResults(global.id!, setCount);
+    let disposeCallback: (() => void) | undefined;
+
+    // Initialize search addon and set up results listener
+    onChangeResults(global.id!, setCount).then(subscription => {
+      disposeCallback = subscription.dispose;
+    });
 
     function handleKeyDown({ key }: KeyboardEvent) {
       if (key === 'ArrowUp') findResult(global.id!, result, 'findPrevious');
@@ -112,7 +111,7 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
 
       saveSuggestion();
 
-      dispose();
+      if (disposeCallback) disposeCallback();
 
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -127,8 +126,9 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
       onMouseLeave={(event: MouseEvent) => handleFocus(event, false)}
     >
       <Content>
-        <_Search style={{ position: 'relative', padding: 0 }}>
-          <SearchInput
+        <div className={styles.search} style={{ position: 'relative', padding: 0 }}>
+          <input
+            className={styles.searchInput}
             value={result}
             placeholder={t('Search')}
             onChange={handleSearch}
@@ -138,16 +138,18 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
             style={{ paddingRight: suggestion ? '2.75rem' : '0' }}
             ref={input}
           />
-          <Suggestion style={{ width: '100%' }} $suggestion={suggestion}>
-            <Ghost>{suggestion}</Ghost>
-            <BadgeItem>tab</BadgeItem>
-          </Suggestion>
-        </_Search>
+          <div className={`${styles.suggestion} ${suggestion ? styles.suggestionVisible : ''}`} style={{ width: '100%' }}>
+            <span className={styles.ghost}>{suggestion}</span>
+            <span className={styles.badgeItem}>tab</span>
+          </div>
+        </div>
         <Controls>
           <Count>{count.join('/')}</Count>
           <Control
             aria-label="up"
-            onClick={() => findResult(global.id!, result, 'findPrevious')}
+            onClick={async () =>
+              await findResult(global.id!, result, 'findPrevious')
+            }
           >
             <ArrowUpIcon />
             <Label $hasKeys>
@@ -162,7 +164,9 @@ const Search: React.FC<SearchProps> = (props: SearchProps) => {
           </Control>
           <Control
             aria-label="down"
-            onClick={() => findResult(global.id!, result, 'findNext')}
+            onClick={async () =>
+              await findResult(global.id!, result, 'findNext')
+            }
           >
             <ArrowDownIcon />
             <Label $hasKeys>

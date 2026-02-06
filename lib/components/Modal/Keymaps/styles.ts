@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import { ListItem } from '../styles';
 
 export const Container = styled.div<{ $isVisible: boolean }>`
   position: fixed;
@@ -45,9 +44,16 @@ export const Content = styled.div`
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
 `;
 
-export const Item = styled(ListItem)`
+export const Item = styled.li`
+  height: 2.25rem;
   padding: 0 1rem 0 1.5rem;
+  font-size: 0.813rem;
+  overflow: hidden;
   cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.2s ease 0s;
 
   &:hover {
     background: transparent !important;

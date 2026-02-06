@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { Transform, type TransformCallback } from 'stream';
 
 class HexParser extends Transform {
