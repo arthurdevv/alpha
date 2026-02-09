@@ -27,6 +27,7 @@ export { GridIcon } from './GridIcon';
 export { HistoryIcon } from './HistoryIcon';
 export { MaximizeIcon } from './MaximizeIcon';
 export { MinimizeIcon } from './MinimizeIcon';
+export { PaletteIcon } from './PaletteIcon';
 export { PasteIcon } from './PasteIcon';
 export { PlusIcon } from './PlusIcon';
 export { ProfilesIcon } from './ProfilesIcon';

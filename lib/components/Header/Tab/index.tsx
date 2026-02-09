@@ -1,9 +1,10 @@
-import { memo, useState } from 'preact/compat';
+import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
 import { execCommand } from 'app/keymaps/commands';
 import useStore from 'lib/store';
 
+import storage from 'app/utils/local-storage';
 import { CloseTabIcon, DotsIcon } from 'lib/components/Icons';
 import styles from './styles.module.css';
 import Popover from '../Popover';
@@ -46,6 +47,20 @@ const TabGroup: React.FC = () => {
 
 const Tab: React.FC<TabProps> = (props: TabProps) => {
   const [transition, setTransition] = useState<boolean>(true);
+  const [tabColor, setTabColor] = useState<string>(() => {
+    const colors = storage.parseItem('tabColors') || {};
+    return colors[props.id] || '';
+  });
+
+  useEffect(() => {
+    const handleColorChange = () => {
+      const colors = storage.parseItem('tabColors') || {};
+      setTabColor(colors[props.id] || '');
+    };
+
+    window.addEventListener('tabColorChange', handleColorChange);
+    return () => window.removeEventListener('tabColorChange', handleColorChange);
+  }, [props.id]);
 
   const handleClick = (event: MouseEvent) => {
     const { signal } = (event.target as HTMLElement).dataset;
@@ -83,11 +98,15 @@ const Tab: React.FC<TabProps> = (props: TabProps) => {
     !transition ? styles.containerHidden : '',
     id !== 'Settings' ? styles.containerWithBefore : '',
     tabWidth === 'fixed' ? styles.containerFixed : styles.containerAuto,
+    tabColor ? styles.containerColored : '',
   ].filter(Boolean).join(' ');
+
+  const tabStyle = tabColor ? { '--indicator': tabColor } as React.CSSProperties : {};
 
   return (
     <div
       className={containerClasses}
+      style={tabStyle}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
     >

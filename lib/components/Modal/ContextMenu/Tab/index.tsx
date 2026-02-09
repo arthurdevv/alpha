@@ -27,6 +27,7 @@ const TabContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
     event.preventDefault();
 
     if (command === 'tab:rename') return props.handleModal(null, 'Rename');
+    if (command === 'tab:color') return props.handleModal(null, 'ColorPicker');
 
     if (command) {
       execCommand(command, props.handleModal).execCommand('terminal:focus');

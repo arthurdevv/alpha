@@ -1125,3 +1125,33 @@ msgstr "Tente uma busca diferente"
 msgid "Search for a command"
 msgstr "Buscar um comando"
 
+
+msgid "Tab color"
+msgstr "Cor da aba"
+
+msgid "None"
+msgstr "Nenhuma"
+
+msgid "Red"
+msgstr "Vermelho"
+
+msgid "Orange"
+msgstr "Laranja"
+
+msgid "Yellow"
+msgstr "Amarelo"
+
+msgid "Green"
+msgstr "Verde"
+
+msgid "Cyan"
+msgstr "Ciano"
+
+msgid "Blue"
+msgstr "Azul"
+
+msgid "Purple"
+msgstr "Roxo"
+
+msgid "Pink"
+msgstr "Rosa"
