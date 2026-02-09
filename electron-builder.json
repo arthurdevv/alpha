@@ -37,8 +37,7 @@
   },
   "win": {
     "target": "nsis",
-    "icon": "build/icon.ico",
-    "rfc3161TimeStampServer": "http://timestamp.sectigo.com"
+    "icon": "build/icon.ico"
   },
   "nsis": {
     "artifactName": "${productName}-Setup-${version}.${ext}",

@@ -5,7 +5,7 @@ export function errorLog(text: string): string {
 }
 
 class Logger {
-  private ipc: IPC;
+  protected ipc: IPC;
 
   private interval!: NodeJS.Timeout;
 

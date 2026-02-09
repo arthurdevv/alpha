@@ -69,6 +69,12 @@ class Shell extends Logger {
 
       watcher.set(performance.now());
     });
+
+    this.pty.onExit(({ exitCode }) => {
+      if (exitCode !== 0) return;
+
+      this.ipc.send('tab:action', 'close');
+    });
   }
 
   write(command: string) {
