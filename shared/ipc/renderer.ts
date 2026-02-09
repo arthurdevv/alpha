@@ -25,9 +25,7 @@ class IPCRenderer {
   }
 
   on(event: string, listener: (...args: any[]) => void) {
-    this.emitter.on(event, listener);
-
-    return this;
+    return this.emitter.on(event, listener);
   }
 
   emit(event: string, ...args: any[]) {
@@ -36,6 +34,10 @@ class IPCRenderer {
 
   send(event: string, args?: any) {
     ipcRenderer.send(this.id, { event, args });
+  }
+
+  removeAllListeners(event: string) {
+    return this.emitter.removeAllListeners(event);
   }
 }
 

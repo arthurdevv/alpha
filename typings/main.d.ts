@@ -41,6 +41,8 @@ declare global {
     copyOnSelect: boolean;
     defaultProfile: string;
     focusOnHover: boolean;
+    gitStatus: boolean;
+    indicatorsMode: 'always' | 'hover' | false;
     linkHandlerKey: 'ctrl' | 'shift' | 'alt' | 'meta' | false;
     openOnStart: boolean;
     preserveCWD: boolean;
@@ -197,6 +199,16 @@ declare global {
 
   type IPC = IPCMain;
 
+  type IGitInfo = {
+    branch: string;
+    modified: number;
+    staged: number;
+    untracked: number;
+    ahead: number;
+    behind: number;
+    isRepo: boolean;
+  };
+
   interface InstanceArgs {
     profile: IProfile;
     origin?: string;
@@ -204,6 +216,22 @@ declare global {
     title?: string;
     commands?: string[];
     overrideTitle?: boolean;
+  }
+
+  interface CacheEntry {
+    info: IGitInfo;
+    timestamp: number;
+  }
+
+  interface StatusCounts {
+    modified: number;
+    staged: number;
+    untracked: number;
+  }
+
+  interface AheadBehind {
+    ahead: number;
+    behind: number;
   }
 
   var id: string | null;

@@ -215,6 +215,23 @@ export default {
         input: 'checkbox',
       },
     },
+    Indicators: {
+      indicatorsMode: {
+        name: 'Status indicators',
+        label: 'Controls when terminal footer indicators are displayed.',
+        type: 'string',
+        input: 'select',
+        options: ['Always', 'On hover', 'Hidden'],
+        values: ['always', 'hover', false],
+      },
+      gitStatus: {
+        name: 'Git indicators',
+        label:
+          'Whether to display the current Git branch and working tree status.',
+        type: 'boolean',
+        input: 'checkbox',
+      },
+    },
     Startup: {
       openOnStart: {
         name: 'Open a terminal at startup',

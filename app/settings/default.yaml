@@ -29,6 +29,8 @@ terminal:
   wordSeparators: ()[]{}< >/\|"'.,;
   focusOnHover: false
   preserveCWD: true
+  indicatorsMode: hover
+  gitStatus: true
   openOnStart: false
   restoreOnStart: true
   workspace: false

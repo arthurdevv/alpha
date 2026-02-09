@@ -3,6 +3,7 @@ import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
 import { createWindow } from 'app/window';
 import { getSettings } from 'app/settings';
 import { checkForUpdates } from 'app/updater';
+import getGitInfo from 'app/services/git';
 import { getDefaultProfile, getProfileByKey } from 'app/common/profiles';
 import Shell, { getExternalLaunch } from 'app/common/shell';
 import SSH from 'app/connections/ssh';
@@ -105,6 +106,24 @@ export default (mainWindow: Alpha.BrowserWindow) => {
         executedAt: new Date().toJSON(),
         entryTime: performance.now(),
       });
+    }
+  });
+
+  ipc.on('terminal:get-git-info', async ({ id }) => {
+    const process = processes[id];
+
+    if (process instanceof Shell) {
+      let info: IGitInfo | null = null;
+
+      try {
+        const cwd = getWorkingDirectoryFromPID(process.pty.pid);
+
+        if (cwd) info = await getGitInfo(cwd);
+      } catch (error) {
+        reportError(error);
+      }
+
+      ipc.send('terminal:git-info', { id, info });
     }
   });
 

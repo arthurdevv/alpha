@@ -6,7 +6,7 @@ import useStore from 'lib/store';
 import { Group } from './styles';
 import Term from './term';
 import SplitTerm from './split';
-import Viewport from './Viewport';
+import Indicators from './Indicators';
 import Settings from '../Settings';
 
 const Terms: React.FC = () => {
@@ -34,7 +34,7 @@ const Terms: React.FC = () => {
           </Group>
         );
       })}
-      <Viewport {...store} />
+      <Indicators />
     </Fragment>
   );
 };

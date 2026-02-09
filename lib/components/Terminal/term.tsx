@@ -6,7 +6,6 @@ import { loadTheme } from 'app/common/themes';
 import { changeOpacity } from 'app/utils/color-utils';
 
 import { Content, Pane } from './styles';
-import Tooltip from './Tooltip';
 
 const Term: React.FC<TermProps> = (props: TermProps) => {
   const parent = useRef<HTMLElement | null>(null);
@@ -124,7 +123,6 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
       style={{ backgroundColor }}
     >
       <Content ref={onRef} />
-      <Tooltip {...props} />
     </Pane>
   );
 };

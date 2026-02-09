@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Container = styled.div`
   position: absolute;
@@ -6,12 +6,16 @@ export const Container = styled.div`
   right: 1rem;
   bottom: 1rem;
   display: flex;
+  animation: ${keyframes`
+      0% {
+        opacity: 0;
+      }
+  `} 0.4s ease 0s;
 `;
 
 export const Wrapper = styled.div<{
   $visible?: boolean;
   $text?: boolean;
-  $hovered?: boolean;
 }>`
   position: absolute;
   width: 1.875rem;
@@ -19,6 +23,9 @@ export const Wrapper = styled.div<{
   z-index: 10;
   right: 0;
   bottom: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,8 +33,9 @@ export const Wrapper = styled.div<{
   border: 1px solid ${props => props.theme.border};
   box-shadow: ${props => props.theme.boxShadow} 0px 2px 7px;
   backdrop-filter: ${props => props.theme.modalBackdrop};
-  transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
   transition-property: opacity, right;
+  transition-delay: 0s, 0.1s;
   border-radius: 4px;
 
   & svg {
@@ -35,16 +43,15 @@ export const Wrapper = styled.div<{
     height: 1rem;
   }
 
-  ${({ $visible, $text }) =>
-    !$text &&
-    ($visible
+  ${({ $visible }) =>
+    $visible
       ? css`
           opacity: 1;
         `
       : css`
           opacity: 0;
           pointer-events: none;
-        `)}
+        `}
 
   ${({ $text }) =>
     $text &&
@@ -52,17 +59,6 @@ export const Wrapper = styled.div<{
       width: fit-content;
       padding: 0.25rem 0.25rem 0.25rem 0.5rem;
       font-size: 0.75rem;
-      opacity: 0;
-      cursor: text;
-      pointer-events: none;
-      transition-delay: 0s, 0.1s;
-    `}
-
-  ${({ $hovered }) =>
-    $hovered &&
-    css`
-      opacity: 1;
-      transition-delay: 0.3s, 0.1s;
     `}
 `;
 
