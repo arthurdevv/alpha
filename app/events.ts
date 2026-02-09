@@ -10,6 +10,7 @@ import Serial from 'app/connections/serial';
 import IPC from 'shared/ipc/main';
 import { reportError } from 'shared/error-reporter';
 import { sanitizeObject } from 'lib/utils';
+import { getGitInfo } from 'app/services/git';
 
 let ipc: IPC;
 
@@ -137,6 +138,30 @@ export default (mainWindow: Alpha.BrowserWindow) => {
       }
 
       action in process && process[action]();
+    }
+  });
+
+  ipc.on('git:get-info', async ({ id }) => {
+    const process = processes[id];
+
+    if (process && process instanceof Shell) {
+      let cwd: string | null = null;
+
+      try {
+        cwd = getWorkingDirectoryFromPID(process.pty.pid);
+      } catch (error) {
+        reportError(error);
+      }
+
+      if (cwd) {
+        const gitInfo = await getGitInfo(cwd);
+
+        ipc.send('git:info', { id, gitInfo });
+      } else {
+        ipc.send('git:info', { id, gitInfo: null });
+      }
+    } else {
+      ipc.send('git:info', { id, gitInfo: null });
     }
   });
 
