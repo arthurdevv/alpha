@@ -116,6 +116,14 @@ function useKeyboardNavigation(
 
   useEffect(() => {
     indexRef.current = index;
+
+    const wrapper = document.querySelector('.w');
+
+    if (wrapper) {
+      const items = Array.from(wrapper.querySelectorAll('li'));
+
+      items[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   }, [index]);
 
   return [index, setIndex];
