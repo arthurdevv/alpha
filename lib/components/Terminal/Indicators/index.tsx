@@ -105,28 +105,30 @@ const Indicators: React.FC = () => {
       <Wrapper
         $text
         $visible={isResizing}
-        style={{ padding: '0.25rem 0.5rem', right: offset }}
+        style={{ padding: '0.25rem 0.5rem', right: `${offset}rem` }}
       >
         {cols}x{rows}
       </Wrapper>
-      <Wrapper
-        $text
-        $visible={isHovered}
-        onMouseEnter={handleMouse}
-        onMouseLeave={handleMouse}
-        style={{ right: isExpanded ? '4.25rem' : '2.125rem' }}
-      >
-        {content.label ? (
-          <>
-            {content.label}
-            <Badges>
-              <BadgeItem>{content.badge}</BadgeItem>
-            </Badges>
-          </>
-        ) : (
-          gitStatus && <GitStatus id={instance.id} />
-        )}
-      </Wrapper>
+      {(content.label || content.badge || gitStatus) && (
+        <Wrapper
+          $text
+          $visible={isHovered}
+          onMouseEnter={handleMouse}
+          onMouseLeave={handleMouse}
+          style={{ right: isExpanded ? '4.25rem' : '2.125rem' }}
+        >
+          {content.label ? (
+            <>
+              {content.label}
+              <Badges>
+                <BadgeItem>{content.badge}</BadgeItem>
+              </Badges>
+            </>
+          ) : (
+            gitStatus && <GitStatus id={instance.id} />
+          )}
+        </Wrapper>
+      )}
       {content.indicator && (
         <Wrapper
           $visible
