@@ -116,7 +116,11 @@ export const Tag = styled.div<{ $isTitle?: boolean; $isHint?: boolean }>`
   ${({ $isTitle }) =>
     $isTitle &&
     css`
+      display: block;
       cursor: default;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       text-transform: none;
       color: ${props => props.theme.foreground};
     `}

@@ -105,14 +105,6 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
   }, [isVisible]);
 
   useEffect(() => {
-    const element = itemRefs.current[selectedIndex];
-
-    if (element) {
-      element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }
-  }, [selectedIndex]);
-
-  useEffect(() => {
     const handleEnterCommand = ({ key }: KeyboardEvent) => {
       if (key === 'Enter' && selectedIndex !== -1) {
         const { buffer } = commands[selectedIndex];
@@ -129,9 +121,9 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
   }, [selectedIndex, commands]);
 
   return (
-    <Container $isVisible={isVisible} $width={20} onClick={handleFocus}>
+    <Container $isVisible={isVisible} $width={23} onClick={handleFocus}>
       <Tags>
-        <Tag $isTitle>
+        <Tag $isTitle title={profile.name}>
           {t('History')}: {profile.name}
         </Tag>
         {commands.length ? (
@@ -146,6 +138,7 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
       </Tags>
       <Content>
         <Wrapper
+          className="w"
           style={{
             padding: commands.length ? '0 1rem .875rem' : '.875rem 1rem',
           }}
@@ -160,7 +153,7 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
                   onChange={handleSearch}
                 />
               </Search>
-              <List>
+              <List role="list">
                 {Object.values(commands).map((value, index, array) => {
                   const { buffer, where, executedAt, executionTime } = value;
 
