@@ -121,8 +121,11 @@ function useKeyboardNavigation(
 
     if (wrapper) {
       const items = Array.from(wrapper.querySelectorAll('li'));
+      const element = items[index];
 
-      items[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      if (element) {
+        element.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     }
   }, [index]);
 
