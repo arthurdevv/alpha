@@ -1125,3 +1125,27 @@ msgstr "Prueba una búsqueda diferente"
 msgid "Search for a command"
 msgstr "Buscar un comando"
 
+
+msgid "Snippets"
+msgstr "Snippets"
+
+msgid "Add"
+msgstr "Agregar"
+
+msgid "Snippet name"
+msgstr "Nombre del snippet"
+
+msgid "Command"
+msgstr "Comando"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "No snippets yet"
+msgstr "No hay snippets todavía"
