@@ -20,6 +20,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "oguisantosilva",
+      "name": "Guilherme Silva",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65671476?v=4",
+      "profile": "https://cortexsecurity.app",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
