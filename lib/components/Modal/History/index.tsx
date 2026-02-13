@@ -3,7 +3,7 @@ import { memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
 import storage from 'app/utils/local-storage';
-import { onSearch } from 'lib/utils';
+import { getDateFormatted, onSearch } from 'lib/utils';
 import { useKeyboardNavigation } from 'lib/hooks/useSearchController';
 
 import {
@@ -50,8 +50,6 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
 
   const input = useRef<HTMLInputElement | null>(null);
 
-  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
-
   const { t } = useTranslation();
 
   const handleClearHistory = (flag: number) => {
@@ -78,18 +76,6 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
     const searchIndex = commands.findIndex(command => command.buffer === value);
 
     setSelectedIndex(searchIndex);
-  };
-
-  const handleDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: 'short',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    };
-
-    return new Intl.DateTimeFormat('en-US', options).format(new Date(date));
   };
 
   const handleFocus = ({ currentTarget }) => {
@@ -136,64 +122,56 @@ const History: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
           <Fragment />
         )}
       </Tags>
-      <Content>
-        <Wrapper
-          className="w"
-          style={{
-            padding: commands.length ? '0 1rem .875rem' : '.875rem 1rem',
-          }}
-        >
+      <Content style={{ padding: commands.length ? '0 1rem 1rem' : '1rem' }}>
+        {commands.length > 0 && (
+          <Search style={{ padding: '0', marginBottom: '.5rem' }}>
+            <SearchInput
+              ref={input}
+              spellcheck={false}
+              placeholder={t('Select or type a command')}
+              onChange={handleSearch}
+            />
+          </Search>
+        )}
+        <Wrapper className="w" style={{ padding: 0 }}>
           {commands.length ? (
-            <Fragment>
-              <Search style={{ padding: '0', marginBottom: '.5rem' }}>
-                <SearchInput
-                  ref={input}
-                  spellcheck={false}
-                  placeholder={t('Select or type a command')}
-                  onChange={handleSearch}
-                />
-              </Search>
-              <List role="list">
-                {Object.values(commands).map((value, index, array) => {
-                  const { buffer, where, executedAt, executionTime } = value;
+            <List role="list">
+              {Object.values(commands).map((value, index, array) => {
+                const { buffer, where, executedAt, executionTime } = value;
 
-                  const ref = (element: HTMLLIElement | null) => {
-                    itemRefs.current[index] = element;
-                  };
+                const formattedDate = getDateFormatted('en-US', executedAt);
 
-                  return (
-                    <Value
-                      ref={ref}
-                      key={index}
-                      data-name={buffer}
-                      $selected={selectedIndex === index}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                    >
-                      <Dot
-                        $first={index === 0}
-                        $last={index === array.length - 1}
-                        $old={index > Math.floor(array.length * (1 / 1.15))}
-                      />
-                      <Command>
-                        {buffer}
-                        <Info>
-                          <span>
-                            {handleDate(executedAt)} | {executionTime} ms
-                          </span>
-                          <span>{where}</span>
-                        </Info>
-                      </Command>
-                      <Action>
-                        <BadgeItem style={{ gap: '.25rem' }}>ENTER ↵</BadgeItem>
-                      </Action>
-                    </Value>
-                  );
-                })}
-                <Warning style={{ display: 'none' }}>
-                  {t('No results found')}
-                </Warning>
-              </List>
-            </Fragment>
+                return (
+                  <Value
+                    key={index}
+                    data-name={buffer}
+                    $selected={selectedIndex === index}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                  >
+                    <Dot
+                      $first={index === 0}
+                      $last={index === array.length - 1}
+                      $old={index > Math.floor(array.length * (1 / 1.15))}
+                    />
+                    <Command>
+                      {buffer}
+                      <Info>
+                        <span>
+                          {formattedDate} | {executionTime} ms
+                        </span>
+                        <span>{where}</span>
+                      </Info>
+                    </Command>
+                    <Action>
+                      <BadgeItem style={{ gap: '.25rem' }}>ENTER ↵</BadgeItem>
+                    </Action>
+                  </Value>
+                );
+              })}
+              <Warning style={{ display: 'none' }}>
+                {t('No results found')}
+              </Warning>
+            </List>
           ) : (
             <Warning>{t('No history yet')}</Warning>
           )}
