@@ -52,6 +52,8 @@ terminal:create:
   - ctrl+shift+t
 terminal:history:
   - ctrl+shift+h
+terminal:snippets:
+  - ctrl+shift+;
 terminal:paste:
   - ctrl+shift+v
 terminal:search:

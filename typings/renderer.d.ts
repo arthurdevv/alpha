@@ -262,6 +262,14 @@ declare global {
     prompt: string | undefined;
   };
 
+  type ISnippet = {
+    id: string;
+    name: string;
+    commands: string[];
+    lastRun: string | null;
+    lastProfile: string | null;
+  };
+
   type NestedPartial<T> = { [K in keyof T]?: NestedPartial<T[K]> };
 
   type NestedExclude<T> = { [K in keyof T]: Exclude<T[K], null> };

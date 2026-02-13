@@ -1125,3 +1125,32 @@ msgstr "Prueba una búsqueda diferente"
 msgid "Search for a command"
 msgstr "Buscar un comando"
 
+msgid "Snippets"
+msgstr "Snippets"
+
+msgid "New snippet"
+msgstr "Nuevo snippet"
+
+msgid "Add command"
+msgstr "Añadir comando"
+
+msgid "Select or type a snippet"
+msgstr "Selecciona o escribe un snippet"
+
+msgid "No commands yet"
+msgstr "Aún no hay comandos"
+
+msgid "No snippets yet"
+msgstr "Aún no hay snippets"
+
+msgid "Not run yet"
+msgstr "Aún no ejecutado"
+
+msgid "Last ran"
+msgstr "Última ejecución"
+
+msgid "in"
+msgstr "en"
+
+msgid "others"
+msgstr "otros"

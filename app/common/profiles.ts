@@ -183,6 +183,20 @@ function getAllProfiles(): IProfile[] {
   return profiles.concat(defaultProfiles);
 }
 
+function getInstanceProfile({
+  instances,
+  current,
+}: AlphaStore): IProfile | null {
+  const { origin, terms } = current;
+
+  if (!origin || !terms[origin]) return null;
+
+  const [id] = terms[origin];
+  const { profile } = instances[id];
+
+  return profile;
+}
+
 function sortGroups(groups: any): string[] {
   const weights = { Ungrouped: -1, External: 98, System: 99, Connections: 100 };
 
@@ -206,5 +220,6 @@ export {
   getProfileByKey,
   getDefaultProfile,
   getAllProfiles,
+  getInstanceProfile,
   sortGroups,
 };

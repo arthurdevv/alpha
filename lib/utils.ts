@@ -96,10 +96,29 @@ export function sanitizeObject(target: any): any {
   });
 }
 
-export function getDateFormatted(language: string): string {
-  return new Intl.DateTimeFormat(language, {
+export function getDateFormatted(
+  language: string = 'en-US',
+  value?: number | string | Date,
+): string {
+  let date = new Date();
+
+  let options: Intl.DateTimeFormatOptions = {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  }).format(new Date());
+  };
+
+  if (value) {
+    date = new Date(value);
+
+    options = {
+      day: '2-digit',
+      month: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+  }
+
+  return new Intl.DateTimeFormat(language, options).format(date);
 }

@@ -10,6 +10,7 @@ export const schema: Record<string, string> = {
   'terminal:clear': 'Clear terminal',
   'terminal:search': 'Search',
   'terminal:history': 'History',
+  'terminal:snippets': 'Snippets',
   'terminal:copy': 'Copy',
   'terminal:paste': 'Paste',
   'terminal:select-all': 'Select all',
@@ -46,7 +47,7 @@ export const boundCommands: Record<string, Record<string, any>> = {
   },
   terminal: {
     action: ['copy', 'paste', 'select-all', 'clear', 'focus', 'connected'],
-    modal: ['search', 'history'],
+    modal: ['search', 'history', 'snippets'],
   },
   pane: {
     action: ['expand', 'collapse', 'broadcast'],

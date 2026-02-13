@@ -10,6 +10,7 @@ export default {
     'terminal:clear': 'Clear terminal',
     'terminal:search': 'Search',
     'terminal:history': 'History',
+    'terminal:snippets': 'Snippets',
     'terminal:copy': 'Copy',
     'terminal:paste': 'Paste',
     'terminal:select-all': 'Select all',

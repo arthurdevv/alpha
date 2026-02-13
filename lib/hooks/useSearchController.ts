@@ -2,13 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import storage from 'app/utils/local-storage';
 import { onSearch } from 'lib/utils';
 
-function useSearch(modal: string | null, props: ModalProps) {
+function useSearch(
+  modal: string | null,
+  props: ModalProps,
+  display: 'flex' | 'block' = 'block',
+) {
   const [search, setSearch] = useState('');
 
   const { suggestion, saveSuggestion } = useSuggestions(modal, search);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(event, 'block', setSearch);
+    onSearch(event, display, setSearch);
   };
 
   const handleComplete = (event: KeyboardEvent) => {

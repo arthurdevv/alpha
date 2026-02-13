@@ -1,7 +1,8 @@
-import { Fragment, memo } from 'preact/compat';
+import { Fragment, memo, useEffect } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
 import { getSettings, setSettings } from 'app/settings';
+import storage from 'app/utils/local-storage';
 
 import { Container, Content, Tag, Tags } from '../styles';
 import { Title } from './styles';
@@ -15,6 +16,18 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
   const { t } = useTranslation();
 
   const handleDelete = () => {
+    if (snippets) {
+      const [snippets, id] = data;
+
+      const updated = snippets.filter(s => s.id !== id);
+      global.setSnippets(updated);
+
+      storage.updateItem('snippets', updated);
+      global.setIsEditing(false);
+
+      return handleModal(undefined, 'Snippets');
+    }
+
     if (target) {
       const [index] = data;
       const _workspaces = [...workspaces];
@@ -31,24 +44,34 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
         global.handleContext('tabs', id, tabs.length - 1);
       }
 
-      setSettings('workspaces', _workspaces, handleModal);
-    } else {
-      const { profiles: _profiles, defaultProfile } = getSettings();
-
-      const profiles = _profiles.filter(item => item.id !== profile.id);
-
-      if (profile.id === defaultProfile) {
-        setSettings(
-          'defaultProfile',
-          profiles.length > 0 ? profiles[profiles.length - 1].id : 'cmd',
-        );
-      }
-
-      setSettings('profiles', profiles, handleModal);
+      return setSettings('workspaces', _workspaces, handleModal);
     }
+
+    const { profiles: _profiles, defaultProfile } = getSettings();
+
+    const profiles = _profiles.filter(item => item.id !== profile.id);
+
+    if (profile.id === defaultProfile) {
+      setSettings(
+        'defaultProfile',
+        profiles.length > 0 ? profiles[profiles.length - 1].id : 'cmd',
+      );
+    }
+
+    setSettings('profiles', profiles, handleModal);
   };
 
-  const { source, target, from, data } = global.dialog || {};
+  useEffect(() => {
+    return () => {
+      ['dialog', 'handleContext', 'setSnippets', 'setIsEditing'].forEach(
+        item => {
+          delete global[item];
+        },
+      );
+    };
+  }, []);
+
+  const { source, target, from, data, snippets } = global.dialog || {};
 
   return (
     <Container $isVisible={isVisible}>
@@ -63,8 +86,12 @@ const Dialog: React.FC<ModalProps> = ({ store, handleModal, isVisible }) => {
           {target ? (
             <Fragment>
               <span style={{ fontFamily }}>{target}</span>&nbsp;
-              {t('from')}&nbsp;
-              <span style={{ fontFamily }}>{from}</span>
+              {!snippets && (
+                <>
+                  {t('from')}&nbsp;
+                  <span style={{ fontFamily }}>{from}</span>
+                </>
+              )}
             </Fragment>
           ) : (
             <span style={{ fontFamily }}>{profile.name}</span>

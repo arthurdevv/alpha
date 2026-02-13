@@ -275,6 +275,8 @@ export const Warning = styled.span`
 `;
 
 export const Badges = styled.div`
+  position: relative;
+  z-index: 1;
   margin-left: 0.5rem;
   gap: 0.25rem;
   display: flex;
