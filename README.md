@@ -70,6 +70,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on how to get s
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kipstz"><img src="https://avatars.githubusercontent.com/u/140314732?v=4?s=100" width="100px;" alt="Kipstz"/><br /><sub><b>Kipstz</b></sub></a><br /><a href="https://github.com/arthurdevv/alpha/issues?q=author%3AKipstz" title="Bug reports">🐛</a> <a href="https://github.com/arthurdevv/alpha/commits?author=Kipstz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cortexsecurity.app"><img src="https://avatars.githubusercontent.com/u/65671476?v=4?s=100" width="100px;" alt="Guilherme Silva"/><br /><sub><b>Guilherme Silva</b></sub></a><br /><a href="https://github.com/arthurdevv/alpha/issues?q=author%3Aoguisantosilva" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
