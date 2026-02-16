@@ -31,6 +31,8 @@ terminal:
   preserveCWD: true
   indicatorsMode: hover
   gitStatus: true
+  showTabs: single
+  hideIndicators: true
   openOnStart: false
   restoreOnStart: true
   workspace: false

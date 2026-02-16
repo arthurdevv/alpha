@@ -48,23 +48,24 @@ class Terminal {
 
         const key = event.key.toLowerCase();
 
-        if (props.profile.type === 'shell' && event.ctrlKey && key === 'c') {
+        if (
+          !isKeyDown ||
+          (props.profile.type === 'shell' && event.ctrlKey && key === 'c')
+        ) {
           return true;
         }
 
-        if (isKeyDown) {
-          if (key.length === 1) buffer += event.key;
+        if (key.length === 1) buffer += event.key;
 
-          if (key === 'backspace') buffer = buffer.slice(0, -1);
+        if (key === 'backspace') buffer = buffer.slice(0, -1);
 
-          if (key === 'enter' && buffer !== '') {
-            execCommand('terminal:prepare-history', { id: props.id, buffer });
+        if (key === 'enter' && buffer !== '') {
+          execCommand('terminal:prepare-history', { id: props.id, buffer });
 
-            buffer = '';
-          }
-
-          if (key === 'escape') global.handleModal();
+          buffer = '';
         }
+
+        if (key === 'escape') global.handleModal();
 
         return !keymaps.has(handleCustomKeys(event));
       });

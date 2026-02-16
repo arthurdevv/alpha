@@ -91,8 +91,7 @@ function handleCustomKeys({ key, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
   if (altKey) keys.push('alt');
   if (shiftKey) keys.push('shift');
   if (key.includes('Arrow')) key = key.replace('Arrow', '');
-
-  keys.push(key.toLowerCase());
+  if (key.length === 1) keys.push(key.toLowerCase());
 
   return keys.join('+');
 }

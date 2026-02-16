@@ -81,6 +81,27 @@ export default (getStore: () => AlphaStore) => {
     storage.updateItem('history', history);
   });
 
+  ipc.on('terminal:zen-mode', (toggle: boolean = true) => {
+    const isZenMode = storage[toggle ? 'toggleItem' : 'parseItem']('zen-mode');
+
+    const {
+      options: { showTabs, hideIndicators },
+    } = getCurrent();
+
+    const flags = {
+      'zen-mode': isZenMode,
+      'zen-mode-show-tabs': showTabs,
+      'zen-mode-hide-indicators': hideIndicators,
+    };
+
+    const root = document.documentElement;
+
+    Object.entries(flags).forEach(([key, value]) => {
+      if (isZenMode) root.setAttribute(`${key}`, `${value}`);
+      else root.removeAttribute(`${key}`);
+    });
+  });
+
   ipc.on('process:action', (action: string, id: string) => {
     const { id: focused } = getCurrent();
 
@@ -244,6 +265,8 @@ export default (getStore: () => AlphaStore) => {
   ipc.on('app:renderer-ready', () => {
     if (rendererIsReady) return;
 
+    let isFirstRendering = true;
+
     const { openOnStart, restoreOnStart, workspaces, workspace } =
       getSettings();
 
@@ -274,6 +297,16 @@ export default (getStore: () => AlphaStore) => {
             ipc.send(`window:${option}`, settings[option]);
           }
         });
+
+        if (!isFirstRendering) {
+          ['showTabs', 'hideIndicators'].forEach(option => {
+            if (options[option] !== settings[option]) {
+              ipc.emit('terminal:zen-mode', false);
+            }
+          });
+        }
+
+        isFirstRendering = false;
       })
       .subscribe('keymaps', bindKeymaps);
 

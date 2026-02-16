@@ -27,7 +27,7 @@ export const Mask = styled.div`
 
 export const Container = styled.div<{
   $isCurrent: boolean;
-  $transition: boolean;
+  $isClosing: boolean;
   $tabWidth: 'auto' | 'fixed' | undefined;
   $before?: boolean;
 }>`
@@ -41,14 +41,26 @@ export const Container = styled.div<{
   justify-content: center;
   color: var(--foreground, ${props => props.theme.disabled});
   background: var(--header, transparent);
-  transition: 0.2s linear 0s;
-  transition-property: color, opacity, width, padding;
-  animation: ${keyframes`
-    0% {
-      width: 0;
-      padding: 0;
-    }
-  `} 0.3s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s;
+  transition:
+    color 0.2s linear,
+    opacity 0.2s linear,
+    width 0.2s linear,
+    padding 0.2s linear;
+
+  ${({ $isClosing }) =>
+    !$isClosing &&
+    css`
+      animation: ${keyframes`
+        from {
+          width: 0;
+          padding: 0;
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      `} 0.28s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    `}
 
   &:hover {
     ${Mask} {
@@ -80,7 +92,7 @@ export const Container = styled.div<{
     $isCurrent &&
     css`
       cursor: default;
-      color: var(--foreground, ${props => props.theme.foreground});
+      color: var(--foreground, ${p => p.theme.foreground});
       background: var(--acrylic, var(--background, transparent));
 
       &::before {
@@ -88,12 +100,13 @@ export const Container = styled.div<{
       }
     `}
 
-  ${({ $transition }) =>
-    !$transition &&
+  ${({ $isClosing }) =>
+    $isClosing &&
     css`
       width: 0 !important;
       padding: 0;
       opacity: 0;
+      pointer-events: none;
     `}
 
   ${({ $tabWidth }) =>
@@ -112,14 +125,15 @@ export const Container = styled.div<{
 
 export const Title = styled.span`
   font-size: 0.8125rem;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
-  opacity: 0;
   text-overflow: ellipsis;
+  opacity: 0;
+  transform: translateY(1px);
   animation: ${keyframes`
-    from { opacity: 0; width: 0; }
-    to { opacity: 1; width: fit-content; }
-  `} 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards 0s;
+    to { opacity: 1; transform: translateY(0); }
+  `} 0.22s ease forwards;
 `;
 
 export const Action = styled.div`

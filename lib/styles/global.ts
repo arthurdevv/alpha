@@ -1,6 +1,15 @@
 import styled, { createGlobalStyle } from 'styled-components';
 import '@xterm/xterm/css/xterm.css';
 
+import {
+  Actions,
+  DragRegion,
+  Container as Header,
+} from 'components/Header/styles';
+import { Group, Container as Tab } from 'components/Header/Tab/styles';
+import { Container as Indicators } from 'components/Terminal/Indicators/styles';
+import { Content as TermContent } from 'components/Terminal/styles';
+
 export const Content = styled.div`
   position: relative;
   width: 100vw;
@@ -72,5 +81,60 @@ export default createGlobalStyle`
     font-weight: 100 1000;
     font-style: normal;
     src: url('lib/styles/fonts/FiraCode.ttf') format('truetype');
+  }
+
+  html {
+    &[zen-mode='true'] {
+      ${Actions} {
+        display: none;
+      }
+    }
+
+    &[zen-mode-show-tabs='single'] {
+      ${Group} {
+        position: fixed;
+        height: 2.375rem;
+        width: 100%;
+        justify-content: center;
+        transition: width .2s ease 0s;
+      }
+
+      ${DragRegion} {
+        position: fixed;
+        width: 100%;
+        height: 2.375rem;
+        z-index: 999;
+      }
+
+      ${Tab}:not(.current) {
+        width: 0;
+        opacity: 0;
+        pointer-events: none;
+        transform: scaleX(0.98);
+        transition: opacity .2s ease 0s, transform .2s ease 0s;
+      }
+    }
+
+    &[zen-mode-show-tabs='hidden'] {
+      ${Header} {
+        position: fixed;
+        opacity: 0 !important;
+        pointer-events: none;
+        transition: opacity .2s ease 0s;
+      }
+
+      ${TermContent} {
+        margin: 1rem 0.75rem 0.75rem 1rem;
+      }
+    }
+
+    &[zen-mode-hide-indicators='true'] {
+      ${Indicators} {
+        opacity: 0;
+        transform: translateY(-2px);
+        pointer-events: none;
+        transition: opacity .2s ease 0s;
+      }
+    }
   }
 `;

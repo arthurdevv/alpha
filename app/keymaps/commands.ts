@@ -8,9 +8,9 @@ function getBoundCommand(value: string): string[] | [string, string[]] {
 
   const context = boundCommands[scope];
 
-  if (!context) return [];
-
   const [prefix, head] = value.split('-');
+
+  if (!context || action.includes('zen')) return ['false'];
 
   if (head && scope !== 'tab' && !action.includes('all')) {
     if (scope === 'pane') {
@@ -35,7 +35,11 @@ function assignCommand(command: string, ...args: any[]): void {
   commands[command] = (...extraArgs: any[]) => {
     const [boundCommand, boundArgs] = getBoundCommand(command);
 
-    const channel = excluded ? command : boundCommand || command;
+    const channel = excluded
+      ? command
+      : boundCommand === 'false'
+        ? command
+        : boundCommand || command;
 
     ipc[method](channel, ...args.concat(extraArgs, boundArgs));
   };

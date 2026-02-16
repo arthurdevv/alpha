@@ -14,6 +14,7 @@ export const schema: Record<string, string> = {
   'terminal:copy': 'Copy',
   'terminal:paste': 'Paste',
   'terminal:select-all': 'Select all',
+  'terminal:zen-mode': 'Zen mode',
   'process:reconnect': 'Reconnect client',
   'process:disconnect': 'Disconnect client',
   'pane:split-horizontal': 'Split horizontal',
@@ -141,7 +142,7 @@ function watchKeymaps(callback: (keymaps: Set<string>) => void) {
 }
 
 function watchCommand(command: string, callback: (keymaps: string[]) => void) {
-  if (command !== 'window:toggle-visibility') return; // workaround
+  if (command !== 'window:toggle-visibility') return;
 
   listeners.subscribe('keymaps', () => {
     const keymaps = getKeymaps()[command];

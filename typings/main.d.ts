@@ -8,6 +8,7 @@ declare global {
   type ISettings = IAppOptions &
     IAppearanceOptions &
     ITerminalOptions &
+    IZenModeOptions &
     IWindowOptions;
 
   type IAppOptions = {
@@ -42,6 +43,7 @@ declare global {
     defaultProfile: string;
     focusOnHover: boolean;
     gitStatus: boolean;
+    hideIndicators: boolean;
     indicatorsMode: 'always' | 'hover' | false;
     linkHandlerKey: 'ctrl' | 'shift' | 'alt' | 'meta' | false;
     openOnStart: boolean;
@@ -52,6 +54,7 @@ declare global {
     rightClick: 'contextmenu' | 'clipboard';
     scrollback: number;
     scrollOnUserInput: boolean;
+    showTabs: 'single' | 'multiple' | 'hidden';
     trimSelection: boolean;
     wordSeparators: string;
     workspace: string;

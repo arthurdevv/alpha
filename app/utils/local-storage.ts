@@ -15,7 +15,11 @@ function parseItem(key: string, value?: any): any {
 
   if (item) {
     try {
-      return /[{}[\]]/.test(item) ? JSON.parse(item) : item;
+      if (/[{}[\]]/.test(item) || ['true', 'false'].includes(item)) {
+        return JSON.parse(item);
+      }
+
+      return item;
     } catch (error) {
       reportError(error);
     }
@@ -34,10 +38,20 @@ function updateItem(key: string, value: any, spread?: boolean): void {
   localStorage.setItem(key, value);
 }
 
+function toggleItem(key: string): any {
+  const item = parseItem(key);
+
+  const value = JSON.stringify(!item);
+
+  localStorage.setItem(key, value);
+
+  return !item;
+}
+
 function deleteItem(key: string): { updateItem: typeof updateItem } {
   localStorage.removeItem(key);
 
   return { updateItem };
 }
 
-export default { createItem, parseItem, updateItem, deleteItem };
+export default { createItem, parseItem, updateItem, toggleItem, deleteItem };

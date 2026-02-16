@@ -232,6 +232,22 @@ export default {
         input: 'checkbox',
       },
     },
+    'Zen mode': {
+      showTabs: {
+        name: 'Show tabs',
+        label: 'Controls the tab bar visibility in zen mode.',
+        type: 'string',
+        input: 'select',
+        options: ['Single', 'Multiple', 'Hidden'],
+        values: ['single', 'multiple', 'hidden'],
+      },
+      hideIndicators: {
+        name: 'Hide indicators',
+        label: 'Whether to hide terminal footer indicators in zen mode.',
+        type: 'boolean',
+        input: 'checkbox',
+      },
+    },
     Startup: {
       openOnStart: {
         name: 'Open a terminal at startup',

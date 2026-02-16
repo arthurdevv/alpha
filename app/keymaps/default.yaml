@@ -60,6 +60,8 @@ terminal:search:
   - ctrl+shift+f
 terminal:select-all:
   - ctrl+shift+a
+terminal:zen-mode:
+  - ctrl+alt+z
 window:create:
   - ctrl+shift+n
 window:devtools:

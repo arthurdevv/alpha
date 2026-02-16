@@ -44,29 +44,37 @@ const TabGroup: React.FC = () => {
   );
 };
 
-const Tab: React.FC<TabProps> = (props: TabProps) => {
-  const [transition, setTransition] = useState<boolean>(true);
+const Tab: React.FC<TabProps> = ({
+  id,
+  title,
+  tabWidth,
+  isCurrent,
+  onClose,
+  onSelect,
+}) => {
+  const [isClosing, setIsClosing] = useState(false);
 
   const handleClick = (event: MouseEvent) => {
-    const { signal } = (event.target as HTMLElement).dataset;
+    const signal = (event.target as HTMLElement).closest<HTMLElement>(
+      '[data-signal]',
+    )?.dataset.signal;
 
     switch (signal) {
       case 'MENU':
         return handleContextMenu(event);
 
-      case 'SIGHUP': {
-        setTransition(false);
-
-        return setTimeout(() => {
-          setTransition(true);
-
-          props.onClose();
-        }, 100);
-      }
+      case 'SIGHUP':
+        return setIsClosing(true);
 
       default:
-        return execCommand('window:title', title, props.onSelect);
+        return execCommand('window:title', title, onSelect);
     }
+  };
+
+  const handleTransitionEnd = ({ target, currentTarget, propertyName }) => {
+    if (target !== currentTarget || propertyName !== 'width') return;
+
+    if (isClosing) onClose();
   };
 
   const handleContextMenu = (event: MouseEvent) => {
@@ -75,16 +83,16 @@ const Tab: React.FC<TabProps> = (props: TabProps) => {
     global.handleModal(undefined, 'TabContextMenu', { on: 1, off: 1 });
   };
 
-  const { id, title, tabWidth, isCurrent } = props;
-
   return (
     <Container
-      $transition={transition}
+      $isClosing={isClosing}
       $isCurrent={isCurrent}
       $tabWidth={tabWidth}
       $before={id !== 'Settings'}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
+      onTransitionEnd={handleTransitionEnd}
+      className={isCurrent ? 'current' : undefined}
     >
       <Mask />
       <Title title={title}>{title}</Title>
