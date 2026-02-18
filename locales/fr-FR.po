@@ -1154,3 +1154,33 @@ msgstr "dans"
 
 msgid "others"
 msgstr "autres"
+
+msgid "Tab color"
+msgstr "Couleur de l'onglet"
+
+msgid "None"
+msgstr "Aucune"
+
+msgid "Red"
+msgstr "Rouge"
+
+msgid "Orange"
+msgstr "Orange"
+
+msgid "Yellow"
+msgstr "Jaune"
+
+msgid "Green"
+msgstr "Vert"
+
+msgid "Cyan"
+msgstr "Cyan"
+
+msgid "Blue"
+msgstr "Bleu"
+
+msgid "Purple"
+msgstr "Violet"
+
+msgid "Pink"
+msgstr "Rose"

@@ -1154,3 +1154,33 @@ msgstr "en"
 
 msgid "others"
 msgstr "otros"
+
+msgid "Tab color"
+msgstr "Color de pestaña"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Red"
+msgstr "Rojo"
+
+msgid "Orange"
+msgstr "Naranja"
+
+msgid "Yellow"
+msgstr "Amarillo"
+
+msgid "Green"
+msgstr "Verde"
+
+msgid "Cyan"
+msgstr "Cian"
+
+msgid "Blue"
+msgstr "Azul"
+
+msgid "Purple"
+msgstr "Morado"
+
+msgid "Pink"
+msgstr "Rosa"

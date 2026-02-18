@@ -1154,3 +1154,33 @@ msgstr "in"
 
 msgid "others"
 msgstr "andere"
+
+msgid "Tab color"
+msgstr "Tab-Farbe"
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Red"
+msgstr "Rot"
+
+msgid "Orange"
+msgstr "Orange"
+
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Green"
+msgstr "Grün"
+
+msgid "Cyan"
+msgstr "Cyan"
+
+msgid "Blue"
+msgstr "Blau"
+
+msgid "Purple"
+msgstr "Lila"
+
+msgid "Pink"
+msgstr "Rosa"
