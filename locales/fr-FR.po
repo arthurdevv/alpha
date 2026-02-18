@@ -1125,7 +1125,6 @@ msgstr "Essayez une autre recherche"
 msgid "Search for a command"
 msgstr "Rechercher une commande"
 
-
 msgid "Tab color"
 msgstr "Couleur de l'onglet"
 
@@ -1155,3 +1154,27 @@ msgstr "Violet"
 
 msgid "Pink"
 msgstr "Rose"
+
+msgid "Snippets"
+msgstr "Snippets"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Snippet name"
+msgstr "Nom du snippet"
+
+msgid "Command"
+msgstr "Commande"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "No snippets yet"
+msgstr "Aucun snippet pour le moment"

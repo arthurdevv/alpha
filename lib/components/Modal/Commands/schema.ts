@@ -13,6 +13,7 @@ const instanceSchema = {
     'terminal:clear',
     'terminal:search',
     'terminal:history',
+    'terminal:snippets',
     'terminal:copy',
     'terminal:paste',
     'terminal:select-all',

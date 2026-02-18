@@ -5,6 +5,7 @@ import { BrowserWindow } from '@electron/remote';
 import { execCommand } from 'app/keymaps/commands';
 import { removeThemeVariables, setThemeVariables } from 'app/common/themes';
 import useStore from 'lib/store';
+import { useGitStatus } from 'lib/hooks/useGitStatus';
 
 import {
   CloseIcon,
@@ -17,15 +18,17 @@ import {
 } from 'lib/components/Icons';
 import TabGroup from './Tab';
 import Popover from './Popover';
+import GitStatus from './GitStatus';
 import styles from './styles.module.css';
 
 const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
   const {
-    current: { origin },
+    current: { origin, focused },
     options: { theme, preserveBackground, acrylic },
   } = useStore();
 
   const [isMaximized, setMaximized] = useState<boolean>(false);
+  const gitInfo = useGitStatus(focused || null);
 
   const handleAction = (action: string) => {
     const focusedWindow = BrowserWindow.getFocusedWindow()!;
@@ -85,10 +88,13 @@ const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
       <div className={styles.dragRegion} />
       <div className={styles.actions}>
         {!welcome && (
-          <div className={styles.actionItem} onClick={() => execCommand('app:settings')}>
-            <SettingsIcon />
-            <Popover label="Settings" />
-          </div>
+          <Fragment>
+            <GitStatus gitInfo={gitInfo} />
+            <div className={styles.actionItem} onClick={() => execCommand('app:settings')}>
+              <SettingsIcon />
+              <Popover label="Settings" />
+            </div>
+          </Fragment>
         )}
         <div className={styles.actionItem} onClick={() => handleAction('minimize')}>
           <MinimizeIcon />

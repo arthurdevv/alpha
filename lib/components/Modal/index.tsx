@@ -20,6 +20,7 @@ import Sync from './Sync';
 import Workspace from './Workspace';
 import History from './History';
 import Keymaps from './Keymaps';
+import Snippets from './Snippets';
 
 const components = {
   Search,
@@ -38,6 +39,7 @@ const components = {
     Workspace,
     History,
     Keymaps,
+    Snippets,
   },
 };
 
