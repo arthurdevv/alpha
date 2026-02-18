@@ -5,6 +5,7 @@ import {
   CloseRightIcon,
   DuplicateIcon,
   HistoryIcon,
+  PaletteIcon,
   RenameIcon,
 } from 'lib/components/Icons';
 
@@ -13,6 +14,11 @@ const initialSchema = [
     label: 'Rename tab',
     command: 'tab:rename',
     icon: RenameIcon(),
+  },
+  {
+    label: 'Tab color',
+    command: 'tab:color',
+    icon: PaletteIcon(),
   },
   {
     label: 'Duplicate tab',
