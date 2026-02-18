@@ -66,6 +66,7 @@ export const boundCommands: Record<string, Record<string, any>> = {
   tab: {
     action: [
       'rename',
+      'color',
       'duplicate',
       'reopen-closed',
       'close',

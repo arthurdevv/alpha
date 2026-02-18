@@ -197,7 +197,12 @@ export default (getStore: () => AlphaStore) => {
       }
 
       case 'rename': {
-        if (id) store.setModal('Rename');
+        if (id) ipc.emit('app:modal', 'Rename');
+        break;
+      }
+
+      case 'color': {
+        if (id) ipc.emit('app:modal', 'Colors');
         break;
       }
 
@@ -218,7 +223,7 @@ export default (getStore: () => AlphaStore) => {
   ipc.on('app:settings', (section: string) => {
     const { modal } = getCurrent();
 
-    if (modal) store.setModal(null);
+    if (modal) ipc.emit('app:modal', null);
 
     if (section) {
       storage.updateItem('section', section);

@@ -96,15 +96,11 @@ function setThemeVariables(
 function removeThemeVariables() {
   const root = document.documentElement;
 
-  [
-    '--foreground',
-    '--background',
-    '--acrylic',
-    '--header',
-    '--indicator',
-  ].forEach(variable => {
-    root.style.removeProperty(variable);
-  });
+  ['--foreground', '--background', '--acrylic', '--header'].forEach(
+    variable => {
+      root.style.removeProperty(variable);
+    },
+  );
 }
 
 export { loadTheme, listThemes, setThemeVariables, removeThemeVariables };

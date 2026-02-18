@@ -77,7 +77,7 @@ declare global {
   type IContextMenuSchema = {
     label: string;
     command: string;
-    icon: JSX.Element;
+    icon: () => JSX.Element;
     type?: string;
     submenu?: any;
   };
@@ -262,12 +262,26 @@ declare global {
     prompt: string | undefined;
   };
 
+  interface ColorPickerProps {
+    isPickingColor: boolean;
+    currentColor: string;
+    handleSelect: (color: string) => void;
+  }
+
   type ISnippet = {
     id: string;
     name: string;
     commands: string[];
     lastRun: string | null;
     lastProfile: string | null;
+  };
+
+  type IColor = {
+    hex: string;
+    hue: number;
+    alpha: number;
+    saturation: number;
+    value: number;
   };
 
   type NestedPartial<T> = { [K in keyof T]?: NestedPartial<T[K]> };

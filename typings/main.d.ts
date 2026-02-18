@@ -8,7 +8,6 @@ declare global {
   type ISettings = IAppOptions &
     IAppearanceOptions &
     ITerminalOptions &
-    IZenModeOptions &
     IWindowOptions;
 
   type IAppOptions = {

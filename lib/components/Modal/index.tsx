@@ -13,6 +13,7 @@ import Warning from './Warning';
 import TabContextMenu from './ContextMenu/Tab';
 import TerminalContextMenu from './ContextMenu/Terminal';
 import Rename from './ContextMenu/Tab/Rename';
+import Colors from './ContextMenu/Tab/Colors';
 import Form from './Profiles/Form';
 import Dialog from './Dialog';
 import Sync from './Sync';
@@ -25,6 +26,7 @@ const components = {
   Search,
   TabContextMenu,
   TerminalContextMenu,
+  Colors,
   overlayed: {
     Profiles,
     Commands,

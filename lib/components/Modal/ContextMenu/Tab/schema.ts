@@ -5,6 +5,7 @@ import {
   CloseRightIcon,
   DuplicateIcon,
   HistoryIcon,
+  PaletteIcon,
   RenameIcon,
 } from 'lib/components/Icons';
 
@@ -12,18 +13,23 @@ const initialSchema = [
   {
     label: 'Rename tab',
     command: 'tab:rename',
-    icon: RenameIcon(),
+    icon: RenameIcon,
   },
   {
     label: 'Duplicate tab',
     command: 'tab:duplicate',
-    icon: DuplicateIcon(),
+    icon: DuplicateIcon,
   },
-  { label: 'separator', command: ':', icon: BlankIcon() },
+  {
+    label: 'Color tab',
+    command: 'tab:color',
+    icon: PaletteIcon,
+  },
+  { label: 'separator', command: ':', icon: BlankIcon },
   {
     label: 'Reopen closed tab',
     command: 'tab:reopen-closed',
-    icon: HistoryIcon(),
+    icon: HistoryIcon,
   },
 ];
 
@@ -31,17 +37,17 @@ const extendedSchema = [
   {
     label: 'Close tab',
     command: 'tab:close',
-    icon: CloseIcon({ vb: '15' }),
+    icon: () => CloseIcon({ vb: '15' }),
   },
   {
     label: 'Close other tabs',
     command: 'tab:close-others',
-    icon: CloseAllIcon(),
+    icon: CloseAllIcon,
   },
   {
     label: 'Close tabs to the right',
     command: 'tab:close-right',
-    icon: CloseRightIcon(),
+    icon: CloseRightIcon,
   },
 ];
 

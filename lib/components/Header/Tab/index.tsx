@@ -1,7 +1,8 @@
-import { memo, useState } from 'preact/compat';
+import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
 import { execCommand } from 'app/keymaps/commands';
+import storage from 'app/utils/local-storage';
 import useStore from 'lib/store';
 
 import { CloseTabIcon, DotsIcon } from 'lib/components/Icons';
@@ -54,6 +55,12 @@ const Tab: React.FC<TabProps> = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
+  const [tabColor, setTabColor] = useState<string>(() => {
+    const stored = storage.parseItem('tab-colors');
+
+    return stored[id] || '#00000000';
+  });
+
   const handleClick = (event: MouseEvent) => {
     const signal = (event.target as HTMLElement).closest<HTMLElement>(
       '[data-signal]',
@@ -83,16 +90,28 @@ const Tab: React.FC<TabProps> = ({
     global.handleModal(undefined, 'TabContextMenu', { on: 1, off: 1 });
   };
 
+  useEffect(() => {
+    const handleColorChange = () => {
+      const colors = storage.parseItem('tab-colors');
+
+      setTabColor(colors[id] || '#00000000');
+    };
+
+    window.addEventListener('tab:color', handleColorChange);
+
+    return () => window.removeEventListener('tab:color', handleColorChange);
+  }, [id]);
+
   return (
     <Container
       $isClosing={isClosing}
       $isCurrent={isCurrent}
       $tabWidth={tabWidth}
-      $before={id !== 'Settings'}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
       onTransitionEnd={handleTransitionEnd}
       className={isCurrent ? 'current' : undefined}
+      style={{ '--indicator': tabColor }}
     >
       <Mask />
       <Title title={title}>{title}</Title>

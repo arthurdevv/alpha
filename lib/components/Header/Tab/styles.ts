@@ -29,7 +29,6 @@ export const Container = styled.div<{
   $isCurrent: boolean;
   $isClosing: boolean;
   $tabWidth: 'auto' | 'fixed' | undefined;
-  $before?: boolean;
 }>`
   position: relative;
   width: 12.5rem;
@@ -47,6 +46,27 @@ export const Container = styled.div<{
     width 0.2s linear,
     padding 0.2s linear;
 
+  &:hover {
+    ${Mask} {
+      opacity: 1;
+    }
+
+    & div {
+      opacity: 1;
+      transition: all 0.2s ease 0s;
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 0.25rem;
+    top: 0;
+    background: var(--indicator, transparent);
+    transition: opacity 0.2s ease 0s;
+  }
+
   ${({ $isClosing }) =>
     !$isClosing &&
     css`
@@ -62,42 +82,12 @@ export const Container = styled.div<{
       `} 0.28s cubic-bezier(0.455, 0.03, 0.515, 0.955);
     `}
 
-  &:hover {
-    ${Mask} {
-      opacity: 1;
-    }
-
-    & div {
-      opacity: 1;
-      transition: all 0.2s ease 0s;
-    }
-  }
-
-  ${({ $before }) =>
-    $before &&
-    css`
-      &::before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 0.25rem;
-        top: 0;
-        opacity: 0;
-        background: var(--indicator, transparent);
-        transition: opacity 0.2s ease 0s;
-      }
-    `}
-
   ${({ $isCurrent }) =>
     $isCurrent &&
     css`
       cursor: default;
       color: var(--foreground, ${p => p.theme.foreground});
       background: var(--acrylic, var(--background, transparent));
-
-      &::before {
-        opacity: 1;
-      }
     `}
 
   ${({ $isClosing }) =>
