@@ -10,9 +10,9 @@ pane:broadcast:
   - ctrl+alt+b
 pane:close:
   - ctrl+w
-pane:expand:
-  - ctrl+alt+enter
 pane:collapse:
+  - ctrl+alt+enter
+pane:expand:
   - ctrl+alt+enter
 pane:focus-next:
   - ctrl+alt+right
