@@ -57,7 +57,7 @@ const TerminalContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
                 onClick={(event: MouseEvent) => handleAction(event, command)}
                 key={index}
               >
-                {icon}
+                {icon()}
                 {isMinimal ? (
                   <Fragment>
                     <Label $keys={keys}>

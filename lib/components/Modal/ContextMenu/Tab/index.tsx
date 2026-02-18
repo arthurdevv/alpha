@@ -53,7 +53,7 @@ const TabContextMenu: React.FC<ModalProps> = (props: ModalProps) => {
                 onClick={event => handleAction(event, command)}
                 key={index}
               >
-                {icon}
+                {icon()}
                 {isMinimal ? (
                   <Fragment>
                     <Label $keys={keys}>

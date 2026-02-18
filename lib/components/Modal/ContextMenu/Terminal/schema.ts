@@ -22,33 +22,33 @@ const initialSchema = [
   {
     label: 'Copy',
     command: 'terminal:copy',
-    icon: CopyIcon(),
+    icon: CopyIcon,
   },
   {
     label: 'Paste',
     command: 'terminal:paste',
-    icon: PasteIcon(),
+    icon: PasteIcon,
   },
   {
     label: 'Select all',
     command: 'terminal:select-all',
-    icon: SelectAllIcon(),
+    icon: SelectAllIcon,
   },
-  { label: 'separator', command: ':', icon: BlankIcon() },
+  { label: 'separator', command: ':', icon: BlankIcon },
 ];
 
 const extendedSchema = [
   {
     label: 'Split',
     command: 'menu:split',
-    icon: GridIcon(),
-    submenu: TriangleRight(),
+    icon: GridIcon,
+    submenu: TriangleRight,
   },
-  { label: 'separator', command: ':', icon: BlankIcon() },
+  { label: 'separator', command: ':', icon: BlankIcon },
   {
     label: 'Close pane',
     command: 'pane:close',
-    icon: CloseIcon({ vb: '15' }),
+    icon: () => CloseIcon({ vb: '15' }),
   },
 ];
 
@@ -56,18 +56,18 @@ const splitSchema = [
   {
     label: 'Back',
     command: 'menu:split',
-    icon: ArrowLeft(),
+    icon: ArrowLeft,
   },
-  { label: 'separator', command: ':', icon: BlankIcon() },
+  { label: 'separator', command: ':', icon: BlankIcon },
   {
     label: 'Split horizontal',
     command: 'pane:split-horizontal',
-    icon: SplitHorizontalIcon(),
+    icon: SplitHorizontalIcon,
   },
   {
     label: 'Split vertical',
     command: 'pane:split-vertical',
-    icon: SplitVerticalIcon(),
+    icon: SplitVerticalIcon,
   },
 ];
 
@@ -75,26 +75,26 @@ const interactionSchema = [
   {
     label: 'Expand pane',
     command: 'pane:expand',
-    icon: EnterFullScreenIcon(),
+    icon: EnterFullScreenIcon,
   },
   {
     label: 'Collapse pane',
     command: 'pane:collapse',
-    icon: ExitFullScreenIcon(),
+    icon: ExitFullScreenIcon,
   },
   {
     label: 'Broadcast',
     command: 'pane:broadcast',
-    icon: RecordIcon(),
+    icon: RecordIcon,
   },
-  { label: 'separator', command: ':', icon: BlankIcon() },
+  { label: 'separator', command: ':', icon: BlankIcon },
 ];
 
 const extrasSchema = [
   {
     label: 'Search',
     command: 'terminal:search',
-    icon: SearchIcon(),
+    icon: SearchIcon,
   },
 ];
 
@@ -102,12 +102,12 @@ const connectionSchema = [
   {
     label: 'Disconnect',
     command: 'process:disconnect',
-    icon: DisconnectIcon({ vb: '15 15' }),
+    icon: () => DisconnectIcon({ vb: '15 15' }),
   },
   {
     label: 'Reconnect',
     command: 'process:reconnect',
-    icon: ReconnectIcon(),
+    icon: ReconnectIcon,
   },
 ];
 
