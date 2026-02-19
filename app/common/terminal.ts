@@ -9,6 +9,8 @@ import Addons from 'app/common/addons';
 
 export const terms: Record<string, Terminal | null> = {};
 
+export const zooms: Record<string, number | null> = {};
+
 const defaultOptions: xterm.ITerminalOptions = {
   allowProposedApi: true,
   allowTransparency: true,

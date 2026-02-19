@@ -1,14 +1,26 @@
-import { memo, useCallback, useEffect, useRef } from 'preact/compat';
+import { memo, useCallback, useEffect, useRef, useState } from 'preact/compat';
 
-import Terminal, { terms } from 'app/common/terminal';
-import { getSettings } from 'app/settings';
+import Terminal, { terms, zooms } from 'app/common/terminal';
 import { loadTheme } from 'app/common/themes';
+import { getSettings } from 'app/settings';
 import { changeOpacity } from 'app/utils/color-utils';
 
 import { Content, Pane } from './styles';
 
 const Term: React.FC<TermProps> = (props: TermProps) => {
   const parent = useRef<HTMLElement | null>(null);
+
+  const [zoom, setZoom] = useState<number | null>(zooms[props.id]);
+
+  const handleZoom = (direction: number) => {
+    setZoom(zoom => {
+      const updated = Math.min(80, Math.max(-15, (zoom ?? 0) + direction * 1));
+
+      zooms[props.id] = updated;
+
+      return updated;
+    });
+  };
 
   const onContextMenu = (event: MouseEvent) => {
     const term = terms[props.id];
@@ -39,6 +51,28 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
 
   const onMouseDown = (event: MouseEvent) => {
     if (event.button !== 2) props.onFocus();
+  };
+
+  const onWheel = (event: WheelEvent) => {
+    if (!event.ctrlKey) return;
+    event.preventDefault();
+
+    handleZoom(event.deltaY > 0 ? -1 : 1);
+  };
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (!event.ctrlKey) return;
+    event.preventDefault();
+
+    if (event.key === '+' || event.key === '=') {
+      handleZoom(1);
+    } else if (event.key === '-') {
+      handleZoom(-1);
+    } else if (event.key === '0') {
+      setZoom(0);
+
+      zooms[props.id] = 0;
+    }
   };
 
   const onRef = useCallback(
@@ -96,11 +130,16 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     const term = terms[props.id];
 
     if (term) {
-      term.setOptions(props.options);
+      const { fontSize } = props.options;
+
+      term.setOptions({
+        ...props.options,
+        fontSize: fontSize ? fontSize + (zoom ?? 0) : undefined,
+      });
 
       if (props.isCurrent) term.focus();
     }
-  }, [props]);
+  }, [props.options, props.isCurrent, zoom]);
 
   const backgroundColor = (() => {
     const { theme, preserveBackground, acrylic } = props.options;
@@ -120,6 +159,8 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onContextMenu={onContextMenu}
+      onWheel={onWheel}
+      onKeyDown={onKeyDown}
       style={{ backgroundColor }}
     >
       <Content ref={onRef} />

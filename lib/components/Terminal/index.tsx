@@ -1,4 +1,4 @@
-import { Fragment, h, JSX } from 'preact';
+import { Fragment, JSX } from 'preact';
 import { memo } from 'preact/compat';
 
 import useStore from 'lib/store';
