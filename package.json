@@ -19,7 +19,8 @@
     "package": "electron-builder",
     "postinstall": "echo Skipping native rebuild - using prebuilds",
     "lint": "tsc --noEmit && eslint \"{lib,app}/**/*.{ts,tsx}\"",
-    "clean": "rimraf target release test-results"
+    "clean": "rimraf target release test-results",
+    "prepare": "husky"
   },
   "dependencies": {
     "@electron/remote": "2.1.3",
