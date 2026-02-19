@@ -104,7 +104,7 @@ export const Arrow = styled.div`
     position: absolute;
     top: -0.3125rem;
     border: 7px solid transparent;
-    border-bottom-color: ${props => props.theme.modal};
+    border-bottom-color: ${props => props.theme.transparent};
   }
 `;
 

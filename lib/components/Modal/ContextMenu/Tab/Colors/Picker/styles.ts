@@ -15,7 +15,7 @@ export const Container = styled.div<{
   transition:
     max-height 0.2s ease 0s,
     opacity 0.2s ease 0s,
-    padding 0.2s ease 0s;
+    padding 0.2s ease 0.1s;
 
   ${props =>
     props.$isPickingColor &&
