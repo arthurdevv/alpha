@@ -1,12 +1,18 @@
 import styled, { css } from 'styled-components';
 import { Content as _Content } from 'components/Modal/styles';
 import { AnsiColor } from 'components/Settings/Appearance/styles';
-import { Container } from 'components/Modal/ContextMenu/Terminal/styles';
 
-export { Container };
+export {
+  Container,
+  Label,
+  Arrow,
+  Keys,
+  Key,
+} from 'components/Modal/ContextMenu/Terminal/styles';
 
 export const Content = styled(_Content)`
   backdrop-filter: none;
+  overflow: visible;
 
   &::before {
     content: '';
@@ -41,6 +47,10 @@ export const Color = styled(AnsiColor)<{ $text?: boolean }>`
   &:hover {
     color: ${props => props.theme.foreground};
   }
+
+  &.active {
+    color: ${props => props.theme.foreground};
+  }
 `;
 
 export const CurrentColor = styled(AnsiColor)<{
@@ -51,7 +61,9 @@ export const CurrentColor = styled(AnsiColor)<{
   margin: 0 0.5rem ${props => (props.$isPickingColor ? '0.625rem' : '0.5rem')}
     0.5rem;
   font-size: 0.625rem;
-  transition: background-color 0.2s ease 0s;
+  transition:
+    margin 0.2s ease 0s,
+    background-color 0.2s ease 0s;
 
   ${props =>
     props.$none &&

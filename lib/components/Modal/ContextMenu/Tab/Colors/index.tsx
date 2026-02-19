@@ -1,10 +1,21 @@
 import { Fragment, memo, useEffect, useRef, useState } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
 
 import storage from 'app/utils/local-storage';
 import { abbreviateColorName } from 'app/utils/color-utils';
 
 import { EyeDropperIcon, NoneIcon } from 'components/Icons';
-import { Color, Container, Content, CurrentColor, Grid } from './styles';
+import {
+  Arrow,
+  Color,
+  Container,
+  Content,
+  CurrentColor,
+  Grid,
+  Key,
+  Keys,
+  Label,
+} from './styles';
 import ColorPicker from './Picker';
 
 const schema = [
@@ -51,8 +62,10 @@ const Colors: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
     window.dispatchEvent(new CustomEvent('tab:color'));
   };
 
-  const handleSignal = (signal?: string) => {
+  const handleSignal = ({ currentTarget }, signal?: string) => {
     if (signal === 'eyedropper') {
+      currentTarget.classList.toggle('active');
+
       return setIsPickingColor(p => !p);
     }
 
@@ -80,17 +93,18 @@ const Colors: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
     >
       <Content>
         <Grid>
-          {schema.map(({ name, value, signal }) => (
+          {schema.map(({ name, value, signal }, index) => (
             <Fragment key={name}>
               {typeof value === 'function' ? (
                 <Color
                   style={{
                     border: 'none',
-                    paddingTop: signal === 'eyedropper' ? '0.125rem' : 0,
+                    top: signal === 'eyedropper' ? '0.125rem' : 0,
                   }}
-                  onClick={() => handleSignal(signal)}
+                  onClick={e => handleSignal(e, signal)}
                 >
                   {value()}
+                  <ColorLabel name={name} />
                 </Color>
               ) : (
                 <Color
@@ -99,6 +113,7 @@ const Colors: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
                   onClick={() => handleSelect(value)}
                 >
                   {abbreviateColorName(name)}
+                  <ColorLabel name={name} value={value} />
                 </Color>
               )}
             </Fragment>
@@ -118,6 +133,36 @@ const Colors: React.FC<ModalProps> = ({ store, isVisible, handleModal }) => {
         />
       </Content>
     </Container>
+  );
+};
+
+const ColorLabel: React.FC<{ name: string; value?: string }> = ({
+  name,
+  value,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Label
+      $keys={value ? [value] : []}
+      style={{
+        position: 'absolute',
+        zIndex: 1,
+        fontWeight: 400,
+        top: '2rem',
+        left: '50%',
+        transform: 'translateX(-52%)',
+        backdropFilter: 'blur(12px)',
+      }}
+    >
+      <Arrow style={{ top: '-0.75rem' }} />
+      <span>{t(name)}</span>
+      {value && (
+        <Keys>
+          <Key>{value}</Key>
+        </Keys>
+      )}
+    </Label>
   );
 };
 
