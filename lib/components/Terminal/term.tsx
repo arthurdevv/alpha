@@ -129,16 +129,28 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
   useEffect(() => {
     const term = terms[props.id];
 
-    if (term) {
-      const { fontSize } = props.options;
+    if (!term) return;
 
-      term.setOptions({
-        ...props.options,
-        fontSize: fontSize ? fontSize + (zoom ?? 0) : undefined,
-      });
+    const timeout = setTimeout(() => {
+      term.fit();
+    }, 100);
 
-      if (props.isCurrent) term.focus();
-    }
+    return () => clearTimeout(timeout);
+  }, [zoom]);
+
+  useEffect(() => {
+    const term = terms[props.id];
+
+    if (!term) return;
+
+    const { fontSize } = props.options;
+
+    term.setOptions({
+      ...props.options,
+      fontSize: fontSize ? fontSize + (zoom ?? 0) : undefined,
+    });
+
+    if (props.isCurrent) term.focus();
   }, [props.options, props.isCurrent, zoom]);
 
   const backgroundColor = (() => {
