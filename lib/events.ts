@@ -132,7 +132,9 @@ export default (getStore: () => AlphaStore) => {
   });
 
   ipc.on('pane:layout', (action: string, orientation: any) => {
-    const { id, focused, instances } = getCurrent();
+    const { id, origin, focused, instances } = getCurrent();
+
+    if (!origin || origin === 'Settings') return;
 
     if (id) {
       const { profile, isExpanded } = instances[id];
@@ -155,13 +157,13 @@ export default (getStore: () => AlphaStore) => {
   ipc.on('pane:close', () => {
     let { id, origin, children } = getCurrent();
 
-    if (origin) {
-      id = global.id || id;
+    if (!origin || origin === 'Settings') return;
 
-      store.switchTerm(id, 'previous').disposeTerm(id, origin);
+    id = global.id || id;
 
-      if (children.length === 0) store.onClose(origin, false);
-    }
+    store.switchTerm(id, 'previous').disposeTerm(id, origin);
+
+    if (children.length === 0) store.onClose(origin, false);
   });
 
   ipc.on('tab:layout', (order: any) => {
