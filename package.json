@@ -17,6 +17,7 @@
     "dev": "vite",
     "build": "vite build",
     "package": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
     "lint": "tsc --noEmit && eslint \"{lib,app}/**/*.{ts,tsx}\"",
     "clean": "rimraf target release test-results",
     "prepare": "husky"
