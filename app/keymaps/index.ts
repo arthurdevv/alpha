@@ -7,6 +7,31 @@ import { reportError } from 'shared/error-reporter';
 
 export const mousetrap: MousetrapInstance = new (Mousetrap as any)(window);
 
+const SPECIAL_KEYS = new Set([
+  'enter',
+  'tab',
+  'backspace',
+  'delete',
+  'escape',
+  'home',
+  'end',
+  'pageup',
+  'pagedown',
+  'capslock',
+  'f1',
+  'f2',
+  'f3',
+  'f4',
+  'f5',
+  'f6',
+  'f7',
+  'f8',
+  'f9',
+  'f10',
+  'f11',
+  'f12',
+]);
+
 function getNumericKeys(): Record<string, string[]> {
   const keys: Record<string, string[]> = {};
 
@@ -84,16 +109,20 @@ function bindKeymaps(): void {
   });
 }
 
-function handleCustomKeys({ key, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
-  const keys: string[] = [];
+function normalizeKeyCombo({ key, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
+  const combo: string[] = [];
 
-  if (ctrlKey) keys.push('ctrl');
-  if (altKey) keys.push('alt');
-  if (shiftKey) keys.push('shift');
-  if (key.includes('Arrow')) key = key.replace('Arrow', '');
-  if (key.length === 1) keys.push(key.toLowerCase());
+  if (ctrlKey) combo.push('ctrl');
+  if (altKey) combo.push('alt');
+  if (shiftKey) combo.push('shift');
 
-  return keys.join('+');
+  let k = key.toLowerCase();
+
+  if (k.startsWith('arrow')) k = k.replace('arrow', '');
+  if (k === ' ') k = 'space';
+  if (k.length === 1 || SPECIAL_KEYS.has(k)) combo.push(k);
+
+  return combo.join('+');
 }
 
-export { getKeymaps, writeKeymaps, bindKeymaps, handleCustomKeys };
+export { getKeymaps, writeKeymaps, bindKeymaps, normalizeKeyCombo };

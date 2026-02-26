@@ -1,7 +1,7 @@
 import * as xterm from '@xterm/xterm';
 import { clipboard } from '@electron/remote';
 import { getSettings } from 'app/settings';
-import { handleCustomKeys } from 'app/keymaps';
+import { normalizeKeyCombo } from 'app/keymaps';
 import { execCommand } from 'app/keymaps/commands';
 import { watchKeymaps } from 'app/keymaps/schema';
 import { loadTheme } from 'app/common/themes';
@@ -69,7 +69,7 @@ class Terminal {
 
         if (key === 'escape') global.handleModal();
 
-        return !keymaps.has(handleCustomKeys(event));
+        return !keymaps.has(normalizeKeyCombo(event));
       });
     });
 
