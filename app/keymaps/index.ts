@@ -9,6 +9,7 @@ export const mousetrap: MousetrapInstance = new (Mousetrap as any)(window);
 
 const SPECIAL_KEYS = new Set([
   'enter',
+  'space',
   'tab',
   'backspace',
   'delete',
@@ -30,6 +31,10 @@ const SPECIAL_KEYS = new Set([
   'f10',
   'f11',
   'f12',
+  'up',
+  'down',
+  'left',
+  'right',
 ]);
 
 function getNumericKeys(): Record<string, string[]> {
@@ -118,8 +123,8 @@ function normalizeKeyCombo({ key, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
 
   let k = key.toLowerCase();
 
-  if (k.startsWith('arrow')) k = k.replace('arrow', '');
   if (k === ' ') k = 'space';
+  if (k.startsWith('arrow')) k = k.slice(5);
   if (k.length === 1 || SPECIAL_KEYS.has(k)) combo.push(k);
 
   return combo.join('+');
