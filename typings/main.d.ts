@@ -48,7 +48,7 @@ declare global {
     openOnStart: boolean;
     preserveCWD: boolean;
     profiles: IProfile[];
-    renderer: 'default' | 'webgl' | 'canvas';
+    renderer: 'dom' | 'webgl' | 'canvas';
     restoreOnStart: boolean;
     rightClick: 'contextmenu' | 'clipboard';
     scrollback: number;

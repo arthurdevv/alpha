@@ -23,6 +23,8 @@ class Terminal {
 
   addons: Addons;
 
+  private buffer: string;
+
   constructor(private props: TermProps) {
     this.options = Object.assign(props.options, defaultOptions);
 
@@ -42,29 +44,31 @@ class Terminal {
       if (copyOnSelect) this.copy();
     });
 
-    let buffer: string = '';
+    this.buffer = '';
+
+    this.term.onData(data => {
+      if (data === '\r') {
+        if (this.buffer.trim()) {
+          execCommand('terminal:prepare-history', {
+            id: props.id,
+            buffer: this.buffer.trim(),
+          });
+        }
+
+        this.buffer = '';
+      } else if (data === '\x7f') {
+        this.buffer = this.buffer.slice(0, -1);
+      } else if (!data.startsWith('\x1b')) {
+        this.buffer += data;
+      }
+    });
 
     watchKeymaps(keymaps => {
       this.term.attachCustomKeyEventHandler((event: KeyboardEvent) => {
-        const isKeyDown = event.type === 'keydown';
-
         const key = event.key.toLowerCase();
 
-        if (
-          !isKeyDown ||
-          (props.profile.type === 'shell' && event.ctrlKey && key === 'c')
-        ) {
+        if (event.type !== 'keydown' || (event.ctrlKey && key === 'c')) {
           return true;
-        }
-
-        if (key.length === 1) buffer += event.key;
-
-        if (key === 'backspace') buffer = buffer.slice(0, -1);
-
-        if (key === 'enter' && buffer !== '') {
-          execCommand('terminal:prepare-history', { id: props.id, buffer });
-
-          buffer = '';
         }
 
         if (key === 'escape') global.handleModal();
@@ -134,6 +138,13 @@ class Terminal {
 
   handleClipboard(): void {
     this.hasSelection ? this.copy() : this.paste();
+  }
+
+  setOption<K extends keyof xterm.ITerminalOptions>(
+    key: K,
+    value: xterm.ITerminalOptions[K],
+  ) {
+    this.term.options[key] = value;
   }
 
   setOptions(options: Partial<ISettings>): void {

@@ -62,7 +62,7 @@ export default class Addons {
   }
 
   handleOptionalAddons({ renderer, linkHandlerKey }: Partial<ISettings>): void {
-    if (renderer !== 'default') {
+    if (renderer !== 'dom') {
       this.RendererAddon = new (
         renderer === 'canvas' ? CanvasAddon : WebglAddon
       )();
