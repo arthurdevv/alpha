@@ -10,11 +10,11 @@ import { builtinModules } from 'module';
 const isDev = process.env.NODE_ENV === 'development';
 
 const alias: Record<string, string> = {
-  app: path.resolve(__dirname, 'app'),
-  lib: path.resolve(__dirname, 'lib'),
+  main: path.resolve(__dirname, 'src/main'),
+  ui: path.resolve(__dirname, 'src/ui'),
+  shared: path.resolve(__dirname, 'src/shared'),
+  components: path.resolve(__dirname, 'src/ui/components'),
   cli: path.resolve(__dirname, 'cli'),
-  shared: path.resolve(__dirname, 'shared'),
-  components: path.resolve(__dirname, 'lib/components'),
   shallowequal: 'shallowequal/index.js',
 };
 

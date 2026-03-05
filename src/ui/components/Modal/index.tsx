@@ -1,0 +1,133 @@
+import { createElement, Fragment } from 'preact';
+import { memo, useEffect, useRef, useState } from 'preact/compat';
+
+import { execCommand } from 'src/main/keymaps/commands';
+import useStore from 'lib/store';
+
+import { Overlay } from './styles';
+import Profiles from './Profiles';
+import Commands from './Commands';
+import About from './About';
+import Search from './Search';
+import Warning from './Warning';
+import TabContextMenu from './ContextMenu/Tab';
+import TerminalContextMenu from './ContextMenu/Terminal';
+import Rename from './ContextMenu/Tab/Rename';
+import Colors from './ContextMenu/Tab/Colors';
+import Form from './Profiles/Form';
+import Dialog from './Dialog';
+import Sync from './Sync';
+import Workspace from './Workspace';
+import History from './History';
+import Keymaps from './Keymaps';
+import Snippets from './Snippets';
+
+const components = {
+  Search,
+  TabContextMenu,
+  TerminalContextMenu,
+  Colors,
+  overlayed: {
+    Profiles,
+    Commands,
+    About,
+    Form,
+    Dialog,
+    Warning,
+    Sync,
+    Rename,
+    Workspace,
+    History,
+    Keymaps,
+    Snippets,
+  },
+};
+
+const Modal: React.FC = () => {
+  const store = useStore();
+
+  const { modal, setModal } = store;
+
+  const [isVisible, setVisible] = useState<boolean>(false);
+
+  const offTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const onTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearTimers = (delay?: { on: number; off: number }) => {
+    if (offTimeoutRef.current) {
+      clearTimeout(offTimeoutRef.current);
+
+      offTimeoutRef.current = null;
+    }
+
+    if (onTimeoutRef.current) {
+      clearTimeout(onTimeoutRef.current);
+
+      onTimeoutRef.current = null;
+    }
+
+    return { offDelay: delay?.off ?? 200, onDelay: delay?.on ?? 200 };
+  };
+
+  const handleModal = (
+    _?: any,
+    modal?: string | null,
+    delay?: { on: number; off: number },
+  ) => {
+    setVisible(false);
+
+    execCommand('terminal:focus', () => {
+      const { offDelay, onDelay } = clearTimers(delay);
+
+      offTimeoutRef.current = setTimeout(() => setModal(null), offDelay);
+
+      if (modal) {
+        onTimeoutRef.current = setTimeout(() => setModal(modal), onDelay);
+      }
+    });
+  };
+
+  const handleOverlay = (event: React.TargetedEvent<HTMLElement>) => {
+    const { target, currentTarget } = event;
+
+    target === currentTarget && handleModal();
+  };
+
+  useEffect(() => {
+    setVisible(Boolean(modal));
+
+    global.handleModal = handleModal;
+  }, [modal]);
+
+  useEffect(() => {
+    const handleEscape = ({ key }: KeyboardEvent) =>
+      key === 'Escape' && handleModal();
+
+    window.addEventListener('keydown', handleEscape);
+
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  const props: ModalProps = {
+    store,
+    modal,
+    isVisible,
+    setVisible,
+    handleModal,
+  };
+
+  return modal ? (
+    modal in components ? (
+      createElement(components[modal], props)
+    ) : (
+      <Overlay $modal={modal} $isVisible={isVisible} onClick={handleOverlay}>
+        {createElement(components.overlayed[modal], props)}
+      </Overlay>
+    )
+  ) : (
+    <Fragment />
+  );
+};
+
+export default memo(Modal);
