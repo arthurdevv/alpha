@@ -1,4 +1,4 @@
-import { reportError } from 'src/shared/error-reporter';
+import { reportError } from 'shared/error-reporter';
 
 export default async (
   gist: string | null,

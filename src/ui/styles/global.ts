@@ -1,14 +1,14 @@
-import styled, { createGlobalStyle } from 'styled-components';
 import '@xterm/xterm/css/xterm.css';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import {
   Actions,
   DragRegion,
   Container as Header,
-} from 'src/ui/components/Header/styles';
-import { Group, Container as Tab } from 'src/ui/components/Header/Tab/styles';
-import { Container as Indicators } from 'src/ui/components/Terminal/Indicators/styles';
-import { Content as TermContent } from 'src/ui/components/Terminal/styles';
+} from 'ui/components/Header/styles';
+import { Group, Container as Tab } from 'ui/components/Header/Tab/styles';
+import { Container as Indicators } from 'ui/components/Terminal/Indicators/styles';
+import { Content as TermContent } from 'ui/components/Terminal/styles';
 
 export const Content = styled.div`
   position: relative;

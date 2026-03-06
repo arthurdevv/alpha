@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import storage from 'src/main/utils/local-storage';
+
+import storage from 'main/utils/local-storage';
+import type { ModalProps } from 'ui/types';
 import { onSearch } from 'ui/utils/search-filter';
 
 export function useSearch(

@@ -1,4 +1,6 @@
-import { terms } from 'app/common/terminal';
+import { terms } from 'main/core/terminal';
+import type { ModalProps, IContextMenuSchema } from 'ui/types';
+
 import {
   ArrowLeft,
   BlankIcon,
@@ -16,7 +18,7 @@ import {
   SplitHorizontalIcon,
   SplitVerticalIcon,
   TriangleRight,
-} from 'src/ui/components/Icons';
+} from 'components/Icons';
 
 const initialSchema = [
   {

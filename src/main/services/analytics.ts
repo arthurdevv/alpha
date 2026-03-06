@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/electron/main';
-import { errorLog } from 'app/common/logger';
-import { SENTRY_CONFIG } from 'app/settings/constants';
-import { setErrorReporter } from 'src/shared/error-reporter';
+
+import { errorLog } from 'main/core/logger';
+import { SENTRY_CONFIG } from 'main/settings/constants';
+import { setErrorReporter } from 'shared/error-reporter';
 
 export function captureException(
   error: unknown,

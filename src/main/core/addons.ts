@@ -1,14 +1,16 @@
-import { FitAddon } from '@xterm/addon-fit';
-import { SearchAddon } from '@xterm/addon-search';
-import { LigaturesAddon } from '@xterm/addon-ligatures';
-import { WebLinksAddon } from '@xterm/addon-web-links';
-import { Unicode11Addon } from '@xterm/addon-unicode11';
-import { ImageAddon } from '@xterm/addon-image';
-import { WebglAddon } from '@xterm/addon-webgl';
-import { CanvasAddon } from '@xterm/addon-canvas';
 import { shell } from '@electron/remote';
-import storage from 'src/main/utils/local-storage';
-import { decorations } from 'src/ui/styles/theme';
+import { CanvasAddon } from '@xterm/addon-canvas';
+import { FitAddon } from '@xterm/addon-fit';
+import { ImageAddon } from '@xterm/addon-image';
+import { LigaturesAddon } from '@xterm/addon-ligatures';
+import { SearchAddon } from '@xterm/addon-search';
+import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { WebglAddon } from '@xterm/addon-webgl';
+
+import storage from 'main/utils/local-storage';
+import type { ISettings } from 'shared/types';
+import { decorations } from 'ui/styles/theme';
 
 const addons: Record<string, Addons> = {};
 

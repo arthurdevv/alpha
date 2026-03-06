@@ -1,4 +1,5 @@
-import { Transform, type TransformCallback } from 'stream';
+import { Transform } from 'node:stream';
+import type { TransformCallback } from 'node:stream';
 
 class HexParser extends Transform {
   constructor(options = {}) {

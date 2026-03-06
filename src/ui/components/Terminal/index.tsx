@@ -1,13 +1,15 @@
 import { Fragment, JSX } from 'preact';
 import { memo } from 'preact/compat';
 
-import useStore from 'lib/store';
+import useStore from 'ui/store';
+import type { SplitTermProps, TermGroupProps, TermProps } from 'ui/types';
 
+import Settings from 'components/Settings';
+
+import Indicators from './Indicators';
+import SplitTerm from './split';
 import { Group } from './styles';
 import Term from './term';
-import SplitTerm from './split';
-import Indicators from './Indicators';
-import Settings from '../Settings';
 
 const Terms: React.FC = () => {
   const store = useStore();

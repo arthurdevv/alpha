@@ -1,7 +1,8 @@
-import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import { EventEmitter } from 'node:events';
+
 import { ipcMain } from 'electron';
 import type { BrowserWindow } from 'glasstron';
+import { v4 as uuidv4 } from 'uuid';
 
 class IPCMain {
   private emitter: EventEmitter;

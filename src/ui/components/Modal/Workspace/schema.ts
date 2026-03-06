@@ -1,4 +1,5 @@
-import { getAllProfiles } from 'app/common/profiles';
+import { getAllProfiles } from 'main/core/profiles';
+import type { IProfile } from 'shared/types';
 
 export default {
   profile: {

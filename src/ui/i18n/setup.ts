@@ -1,11 +1,14 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { gettextToI18next } from 'i18next-conv';
-import { join } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { app } from '@electron/remote';
-import { getSettings } from 'app/settings';
-import { appPath } from 'app/settings/constants';
+import i18n from 'i18next';
+import { gettextToI18next } from 'i18next-conv';
+import { initReactI18next } from 'react-i18next';
+
+import { getSettings } from 'main/settings';
+import { appPath } from 'main/settings/constants';
+import type { IAppOptions } from 'shared/types';
 
 const localeMap: Record<string, string> = {
   de: 'de-DE',

@@ -1,10 +1,12 @@
+import { app } from '@electron/remote';
 import { Fragment } from 'preact';
 import { memo } from 'preact/compat';
 
-import { app } from '@electron/remote';
-import { execCommand } from 'src/main/keymaps/commands';
+import { execCommand } from 'main/keymaps/commands';
+import type { SectionProps } from 'ui/types';
 
-import { AlphaIcon } from 'src/ui/components/Icons';
+import { AlphaIcon } from 'components/Icons';
+
 import { CheckForUpdates, Container, Logo, LogoText, Version } from './styles';
 
 const Application: React.FC<SectionProps> = ({ options, t }) => (

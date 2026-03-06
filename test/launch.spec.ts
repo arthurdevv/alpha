@@ -1,5 +1,6 @@
-import { _electron as electron, test } from '@playwright/test';
 import { join } from 'path';
+
+import { _electron as electron, test } from '@playwright/test';
 
 const getExecutablePath = (): string => {
   switch (process.platform) {

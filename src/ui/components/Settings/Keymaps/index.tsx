@@ -1,19 +1,21 @@
 import { Fragment } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { getKeymaps, mousetrap, writeKeymaps } from 'src/main/keymaps';
-import { parseKeys, schema, watchKeys } from 'src/main/keymaps/schema';
+import { getKeymaps, mousetrap, writeKeymaps } from 'main/keymaps';
+import { parseKeys, schema, watchKeys } from 'main/keymaps/schema';
+import type { SectionProps } from 'ui/types';
 
-import { Overlay } from 'src/ui/components/Modal/styles';
-import { KeyItem as KeyBadge } from 'src/ui/components/Header/Popover/styles';
+import { KeyItem as KeyBadge } from 'components/Header/Popover/styles';
+import { Overlay } from 'components/Modal/styles';
 import {
   Wrapper as Warning,
   Label as WarningLabel,
-} from 'src/ui/components/Settings/Config/styles';
+} from 'components/Settings/Config/styles';
 import {
   KeyItem as WarningKey,
   Keys as WarningKeys,
 } from 'components/Watermark/styles';
+
 import { Title } from '../styles';
 import {
   Action,

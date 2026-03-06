@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Cursor, Flex } from '../Appearance/styles';
+
+import type { ITheme } from 'shared/types';
+
+import { Cursor, Flex } from 'components/Settings/Appearance/styles';
 
 const PROMPT_TEXTS = [
   `git pull

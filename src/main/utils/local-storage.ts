@@ -1,4 +1,4 @@
-import { reportError } from 'src/shared/error-reporter';
+import { reportError } from 'shared/error-reporter';
 
 function createItem(key: string, value?: any): any {
   const item = localStorage.getItem(key);

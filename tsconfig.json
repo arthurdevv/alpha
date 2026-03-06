@@ -22,7 +22,6 @@
       "main/*": ["src/main/*"],
       "ui/*": ["src/ui/*"],
       "shared/*": ["src/shared/*"],
-      "types/*": ["src/types/*"],
       "components/*": ["src/ui/components/*"]
     },
     "typeRoots": ["node_modules/@types", "src/types/*.d.ts"]

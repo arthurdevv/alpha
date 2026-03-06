@@ -1,7 +1,9 @@
-import { arch, homedir, release } from 'os';
-import { dirname, join } from 'path';
-import { versions } from 'process';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
+import { arch, homedir, release } from 'node:os';
+import { dirname, join } from 'node:path';
+import { versions } from 'node:process';
+
+import type { IAnalyticsConfig } from 'shared/types';
 
 const { app }: typeof Electron =
   process.type === 'browser'

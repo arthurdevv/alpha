@@ -1,8 +1,10 @@
-import yaml from 'js-yaml';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+
 import { screen } from 'electron';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { boundsPath } from 'app/settings/constants';
-import { reportError } from 'src/shared/error-reporter';
+import yaml from 'js-yaml';
+
+import { boundsPath } from 'main/settings/constants';
+import { reportError } from 'shared/error-reporter';
 
 function getBounds(
   center?: boolean,

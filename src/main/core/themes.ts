@@ -1,7 +1,9 @@
-import { readdirSync, readFileSync } from 'fs';
-import { resourcesPath } from 'app/settings/constants';
-import { changeOpacity, darkenHex } from 'src/main/utils/color-utils';
-import { reportError } from 'src/shared/error-reporter';
+import { readdirSync, readFileSync } from 'node:fs';
+
+import { resourcesPath } from 'main/settings/constants';
+import { changeOpacity, darkenHex } from 'main/utils/color-utils';
+import { reportError } from 'shared/error-reporter';
+import type { ISettings, ITheme } from 'shared/types';
 
 function loadTheme(name: any): ITheme {
   let theme = <ITheme>{};

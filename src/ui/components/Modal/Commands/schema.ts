@@ -1,4 +1,5 @@
-import { terms } from 'app/common/terminal';
+import { terms } from 'main/core/terminal';
+import type { AlphaState } from 'ui/types';
 
 const mainSchema: Record<string, string[]> = {
   Terminal: ['terminal:create', 'app:profiles', 'app:settings'],

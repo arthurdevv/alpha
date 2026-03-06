@@ -1,6 +1,8 @@
-import { autoUpdater } from 'electron-updater';
 import { dialog } from 'electron';
-import { isPackaged } from 'app/settings/constants';
+import { autoUpdater } from 'electron-updater';
+import type { BrowserWindow } from 'glasstron';
+
+import { isPackaged } from 'main/settings/constants';
 
 export function checkForUpdates(): void {
   if (!isPackaged) return;
@@ -20,7 +22,7 @@ export function checkForUpdates(): void {
   });
 }
 
-export default (mainWindow: Alpha.BrowserWindow): void => {
+export default (mainWindow: BrowserWindow): void => {
   if (!isPackaged) return;
 
   autoUpdater.checkForUpdates();

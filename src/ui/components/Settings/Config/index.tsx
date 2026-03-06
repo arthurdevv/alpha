@@ -1,11 +1,13 @@
 import { Fragment } from 'preact';
 import { memo, useCallback, useEffect, useState } from 'preact/compat';
 
-import { execCommand } from 'src/main/keymaps/commands';
-import { getSettings, loadSettings, writeSettings } from 'app/settings';
+import { execCommand } from 'main/keymaps/commands';
+import { getSettings, loadSettings, writeSettings } from 'main/settings';
+import listeners from 'main/settings/listeners';
+import type { SectionProps } from 'ui/types';
 
 import { KeyItem, Keys } from 'components/Watermark/styles';
-import listeners from 'app/settings/listeners';
+
 import {
   Action,
   Code,

@@ -1,9 +1,14 @@
-import { ReadlineParser, SerialPort } from 'serialport';
-import { SerialPortStream } from '@serialport/stream';
 import { autoDetect } from '@serialport/bindings-cpp';
-import Logger from 'app/common/logger';
-import executeScripts from 'src/main/connections/scripts';
-import { reportError } from 'src/shared/error-reporter';
+import { SerialPortStream } from '@serialport/stream';
+import { ReadlineParser, SerialPort } from 'serialport';
+
+import executeScripts from 'main/connections/scripts';
+import Logger from 'main/core/logger';
+import type IPC from 'main/ipc';
+import type { ISerialOptions } from 'main/types';
+import { reportError } from 'shared/error-reporter';
+import type { IInstance } from 'shared/types';
+
 import HexParser from './hex';
 
 export const defaultOptions = <Partial<ISerialOptions>>{

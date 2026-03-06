@@ -1,3 +1,4 @@
+import { dialog, getCurrentWindow } from '@electron/remote';
 import React, {
   createElement,
   Fragment,
@@ -8,12 +9,20 @@ import React, {
 } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { dialog, getCurrentWindow } from '@electron/remote';
-import { getSettings, setSettings } from 'app/settings';
-import useStore from 'lib/store';
+import { getSettings, setSettings } from 'main/settings';
+import useStore from 'ui/store';
+import type {
+  ModalProps,
+  ProfileFormProps,
+  ProfileFormOptionProps,
+} from 'ui/types';
 
-import { Search, SearchInput } from 'src/ui/components/Modal/styles';
-import { SpinnerDownIcon, SpinnerIcon } from 'src/ui/components/Icons';
+import { SpinnerDownIcon, SpinnerIcon } from 'components/Icons';
+import { Search, SearchInput } from 'components/Modal/styles';
+
+import ConnectionForm from './connection';
+import EnvironmentForm from './env';
+import schema from './schema';
 import {
   Container,
   Content,
@@ -32,9 +41,6 @@ import {
   Tags,
   Wrapper,
 } from './styles';
-import EnvironmentForm from './env';
-import ConnectionForm from './connection';
-import schema from './schema';
 
 let cachedSection: string = 'general';
 

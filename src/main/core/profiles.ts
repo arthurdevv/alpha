@@ -1,10 +1,14 @@
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
+
 import { v4 as uuidv4 } from 'uuid';
-import { getSettings } from 'app/settings';
-import { HOMEDIR, resourcesPath } from 'app/settings/constants';
-import { defaultOptions as sshOptions } from 'src/main/connections/ssh';
-import { defaultOptions as serialOptions } from 'src/main/connections/serial';
-import getRegistryPath from 'src/main/utils/registry-path';
+
+import { defaultOptions as serialOptions } from 'main/connections/serial';
+import { defaultOptions as sshOptions } from 'main/connections/ssh';
+import { getSettings } from 'main/settings';
+import { HOMEDIR, resourcesPath } from 'main/settings/constants';
+import getRegistryPath from 'main/utils/registry-path';
+import type { IProfile } from 'shared/types';
+import type { AlphaStore } from 'ui/types';
 
 export const defaultProfiles = [
   {

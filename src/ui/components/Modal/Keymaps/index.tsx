@@ -1,9 +1,10 @@
 import { memo, useEffect } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { resolveCommand } from 'src/main/keymaps/schema';
-import { execCommand } from 'src/main/keymaps/commands';
-import { useSearch } from 'lib/hooks/useSearchController';
+import { execCommand } from 'main/keymaps/commands';
+import { resolveCommand } from 'main/keymaps/schema';
+import { useSearch } from 'ui/hooks/use-search-controller';
+import type { ModalProps } from 'ui/types';
 
 import schema from './schema';
 import {

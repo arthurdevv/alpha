@@ -1,12 +1,14 @@
-import { app, BrowserWindow, globalShortcut, Menu } from 'electron';
 import { enable, initialize } from '@electron/remote/main';
+import { app, BrowserWindow, globalShortcut, Menu } from 'electron';
 import * as glasstron from 'glasstron';
-import settings, { getSettings } from 'app/settings';
-import { iconPath, isPackaged } from 'app/settings/constants';
-import checkForUpdates from 'src/main/services/updater';
-import initMainAnalytics from 'app/analytics';
-import invokeEvents from 'src/main/ipc/events';
+
 import installCLI from 'cli/install';
+import invokeEvents from 'main/ipc/events';
+import initMainAnalytics from 'main/services/analytics';
+import checkForUpdates from 'main/services/updater';
+import settings, { getSettings } from 'main/settings';
+import { iconPath, isPackaged } from 'main/settings/constants';
+
 import { getBounds, saveBounds } from './bounds';
 
 const { autoUpdates, enableAnalytics, acrylic, launchMode, centerOnLaunch } =
@@ -38,7 +40,7 @@ function handleInitialization(): void {
   initialize();
 }
 
-let mainWindow: Alpha.BrowserWindow | null = null;
+let mainWindow: glasstron.BrowserWindow | null = null;
 
 function createWindow(): void {
   mainWindow = new (acrylic ? glasstron.BrowserWindow : BrowserWindow)({
@@ -58,7 +60,7 @@ function createWindow(): void {
     },
     ...settings,
     ...getBounds(centerOnLaunch),
-  }) as Alpha.BrowserWindow;
+  }) as glasstron.BrowserWindow;
 
   enable(mainWindow.webContents);
 

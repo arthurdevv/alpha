@@ -1,4 +1,5 @@
-import ipc from 'shared/ipc/renderer';
+import ipc from 'ui/ipc';
+
 import { boundCommands } from './schema';
 
 const commands: Record<string, (...args: any[]) => void> = {};

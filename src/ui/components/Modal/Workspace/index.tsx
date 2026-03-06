@@ -1,8 +1,11 @@
 import { memo, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { setSettings } from 'app/settings';
+import { setSettings } from 'main/settings';
+import type { IWorkspaceTab } from 'shared/types';
+import type { ModalProps } from 'ui/types';
 
+import { SpinnerDownIcon } from 'components/Icons';
 import {
   Description,
   Entry,
@@ -14,8 +17,8 @@ import {
   Spinner,
   Switch,
   SwitchSlider,
-} from 'src/ui/components/Settings/styles';
-import { SpinnerDownIcon } from 'src/ui/components/Icons';
+} from 'components/Settings/styles';
+
 import {
   Container,
   Content,

@@ -1,6 +1,9 @@
-import { execFile } from 'child_process';
-import { resolve } from 'path';
-import { reportError } from 'src/shared/error-reporter';
+import { execFile } from 'node:child_process';
+import { resolve } from 'node:path';
+
+import type { AheadBehind, CacheEntry, StatusCounts } from 'main/types';
+import { reportError } from 'shared/error-reporter';
+import type { IGitInfo } from 'shared/types';
 
 const CACHE_TTL = 500;
 const cache = new Map<string, CacheEntry>();

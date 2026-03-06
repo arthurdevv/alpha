@@ -1,5 +1,7 @@
 import { isEqual } from 'lodash';
 
+import type { IScript } from 'main/types';
+
 function getUnique<T>(target: T[]): T[] {
   const result: typeof target = [];
 

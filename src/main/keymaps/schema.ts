@@ -1,4 +1,5 @@
-import listeners from 'app/settings/listeners';
+import listeners from 'main/settings/listeners';
+
 import { getKeymaps } from '.';
 
 export const schema: Record<string, string> = {

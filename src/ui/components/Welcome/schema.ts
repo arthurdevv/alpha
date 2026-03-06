@@ -1,3 +1,5 @@
+import type { ISettingsOption } from 'ui/types';
+
 export default {
   language: {
     name: 'Language',

@@ -1,10 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { clearResult, findResult, onChangeResults } from 'app/common/addons';
-import storage from 'src/main/utils/local-storage';
-import { useSuggestions } from 'lib/hooks/useSearchController';
+import { clearResult, findResult, onChangeResults } from 'main/core/addons';
+import storage from 'main/utils/local-storage';
+import { useSuggestions } from 'ui/hooks/use-search-controller';
+import type { SearchProps } from 'ui/types';
 
+import { KeyItem, Keys } from 'components/Header/Popover/styles';
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -12,8 +14,8 @@ import {
   CloseMenuIcon,
   RegexIcon,
   WholeWordIcon,
-} from 'src/ui/components/Icons';
-import { KeyItem, Keys } from 'src/ui/components/Header/Popover/styles';
+} from 'components/Icons';
+
 import {
   Search as _Search,
   BadgeItem,

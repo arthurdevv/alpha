@@ -1,4 +1,5 @@
-import { type EffectCallback, useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
+import type { EffectCallback } from 'preact/hooks';
 
 export function useUpdateEffect(effect: EffectCallback, deps: any[]) {
   const isInitialMount = useRef(true);

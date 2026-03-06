@@ -1,4 +1,5 @@
-import { listThemes } from 'app/common/themes';
+import { listThemes } from 'main/core/themes';
+import type { ISettingsOption, Section } from 'ui/types';
 
 export default {
   Application: {

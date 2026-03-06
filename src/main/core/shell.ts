@@ -1,11 +1,16 @@
-import * as pty from 'node-pty';
-import { existsSync } from 'fs';
-import { isAbsolute, normalize } from 'path';
+import { existsSync } from 'node:fs';
+import { isAbsolute, normalize } from 'node:path';
+
 import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
-import { HOMEDIR } from 'app/settings/constants';
-import Logger from 'app/common/logger';
-import Performance from 'src/main/utils/performance';
-import { reportError } from 'src/shared/error-reporter';
+import * as pty from 'node-pty';
+
+import Logger from 'main/core/logger';
+import type IPC from 'main/ipc';
+import { HOMEDIR } from 'main/settings/constants';
+import type { IShellOptions } from 'main/types';
+import Performance from 'main/utils/performance';
+import { reportError } from 'shared/error-reporter';
+import type { IInstance, IViewport } from 'shared/types';
 
 export function getExternalLaunch(): string | null {
   const workingDirectory = process.argv[1];

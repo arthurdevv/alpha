@@ -1,13 +1,14 @@
+import { app } from '@electron/remote';
 import { Fragment } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { app } from '@electron/remote';
-import { watchKeys } from 'src/main/keymaps/schema';
-import { execCommand } from 'src/main/keymaps/commands';
-import useStore from 'lib/store';
+import { execCommand } from 'main/keymaps/commands';
+import { watchKeys } from 'main/keymaps/schema';
+import useStore from 'ui/store';
 
-import { AlphaIcon } from 'src/ui/components/Icons';
+import { AlphaIcon } from 'components/Icons';
+
 import {
   Container,
   Footer,

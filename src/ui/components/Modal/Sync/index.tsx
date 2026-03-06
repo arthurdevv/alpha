@@ -1,10 +1,11 @@
 import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { writeSettings } from 'app/settings';
-import fetchConfig from 'src/ui/services/get-gist';
-import storage from 'src/main/utils/local-storage';
-import { getDateFormatted } from 'ui/utils';
+import { writeSettings } from 'main/settings';
+import storage from 'main/utils/local-storage';
+import fetchConfig from 'ui/services/get-gist';
+import type { ModalProps } from 'ui/types';
+import { getDateFormatted } from 'ui/utils/utils';
 
 import { Container, Content, Search, SearchInput, Tag, Tags } from '../styles';
 

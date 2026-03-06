@@ -1,15 +1,19 @@
 import { getCurrentWindow, globalShortcut } from '@electron/remote';
-import { getSettings } from 'app/settings';
-import { bindKeymaps } from 'src/main/keymaps';
-import { terms } from 'app/common/terminal';
-import { watchCommand } from 'src/main/keymaps/schema';
-import { formatCommand } from 'src/main/keymaps/commands';
-import { getDefaultProfile } from 'app/common/profiles';
-import { loadTheme, setThemeVariables } from 'app/common/themes';
-import { appDir } from 'app/settings/constants';
-import listeners from 'app/settings/listeners';
-import storage from 'src/main/utils/local-storage';
-import ipc from 'shared/ipc/renderer';
+
+import { getDefaultProfile } from 'main/core/profiles';
+import { terms } from 'main/core/terminal';
+import { loadTheme, setThemeVariables } from 'main/core/themes';
+import { bindKeymaps } from 'main/keymaps';
+import { formatCommand } from 'main/keymaps/commands';
+import { watchCommand } from 'main/keymaps/schema';
+import { getSettings } from 'main/settings';
+import { appDir } from 'main/settings/constants';
+import listeners from 'main/settings/listeners';
+import storage from 'main/utils/local-storage';
+import type { IInstance, ISession } from 'shared/types';
+import ipc from 'ui/ipc';
+import type { AlphaState, AlphaStore, ICommand } from 'ui/types';
+
 import { isNonEmptyObject } from '../utils/utils';
 
 let rendererIsReady: boolean = false;

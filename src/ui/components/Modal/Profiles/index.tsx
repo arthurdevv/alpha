@@ -2,14 +2,16 @@ import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { createProfile, getGroups, sortGroups } from 'app/common/profiles';
-import { execCommand } from 'src/main/keymaps/commands';
-import storage from 'src/main/utils/local-storage';
+import { createProfile, getGroups, sortGroups } from 'main/core/profiles';
+import { execCommand } from 'main/keymaps/commands';
+import storage from 'main/utils/local-storage';
+import type { IProfile } from 'shared/types';
 import {
   useKeyboardNavigation,
   useSearch,
-} from 'lib/hooks/useSearchController';
-import { sortArray } from 'lib/utils';
+} from 'ui/hooks/use-search-controller';
+import type { ModalProps } from 'ui/types';
+import { sortArray } from 'ui/utils/utils';
 
 import {
   BadgeItem,

@@ -1,6 +1,6 @@
 import { memo } from 'preact/compat';
 
-import { useGitStatus } from 'lib/hooks/useGitStatus';
+import { useGitStatus } from 'ui/hooks/use-git-status';
 
 import { BadgeItem, Badges } from './styles';
 

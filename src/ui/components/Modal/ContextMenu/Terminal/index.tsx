@@ -1,11 +1,13 @@
 import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
 
-import { formatKeys } from 'src/main/keymaps/schema';
-import { execCommand } from 'src/main/keymaps/commands';
-import { useContextMenu } from 'lib/hooks/useContextMenu';
+import { execCommand } from 'main/keymaps/commands';
+import { formatKeys } from 'main/keymaps/schema';
+import { useContextMenu } from 'ui/hooks/use-context-menu';
+import type { ModalProps } from 'ui/types';
 
-import { DotsIcon } from 'src/ui/components/Icons';
+import { DotsIcon } from 'components/Icons';
+
 import getSchema from './schema';
 import {
   Action,

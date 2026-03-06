@@ -1,7 +1,9 @@
+import type { TFunction } from 'i18next';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
-import storage from 'src/main/utils/local-storage';
+
+import storage from 'main/utils/local-storage';
+import type { ModalProps } from 'ui/types';
 
 export function useContextMenu(
   props: ModalProps,

@@ -1,7 +1,15 @@
 import { Fragment, memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { SpinnerDownIcon } from 'src/ui/components/Icons';
+import type { IProfile } from 'shared/types';
+import type {
+  ConnectionFormProps,
+  ProfileFormSchemaOption,
+  ProfileFormSchemaProperty,
+} from 'ui/types';
+
+import { SpinnerDownIcon } from 'components/Icons';
+
 import { FormOption } from '.';
 import {
   Entry,

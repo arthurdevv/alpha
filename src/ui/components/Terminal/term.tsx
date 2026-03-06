@@ -1,9 +1,10 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'preact/compat';
 
-import Terminal, { terms, zooms } from 'app/common/terminal';
-import { loadTheme } from 'app/common/themes';
-import { getSettings } from 'app/settings';
-import { changeOpacity } from 'src/main/utils/color-utils';
+import Terminal, { terms, zooms } from 'main/core/terminal';
+import { loadTheme } from 'main/core/themes';
+import { getSettings } from 'main/settings';
+import { changeOpacity } from 'main/utils/color-utils';
+import type { TermProps } from 'ui/types';
 
 import { Content, Pane } from './styles';
 

@@ -1,10 +1,13 @@
 import { Fragment, memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import storage from 'src/main/utils/local-storage';
-import { abbreviateColorName } from 'src/main/utils/color-utils';
+import { abbreviateColorName } from 'main/utils/color-utils';
+import storage from 'main/utils/local-storage';
+import type { ModalProps } from 'ui/types';
 
-import { EyeDropperIcon, NoneIcon } from 'src/ui/components/Icons';
+import { EyeDropperIcon, NoneIcon } from 'components/Icons';
+
+import ColorPicker from './Picker';
 import {
   Arrow,
   Color,
@@ -16,7 +19,6 @@ import {
   Keys,
   Label,
 } from './styles';
-import ColorPicker from './Picker';
 
 const schema = [
   { name: 'None', value: NoneIcon, signal: 'none' },

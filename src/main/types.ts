@@ -1,4 +1,5 @@
 import type { AuthenticationType, ConnectConfig } from 'ssh2';
+
 import type { IGitInfo, IProfile } from 'shared/types';
 
 export type IShellOptions = {

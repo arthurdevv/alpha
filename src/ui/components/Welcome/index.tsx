@@ -1,14 +1,16 @@
+import { app } from '@electron/remote';
 import { memo, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
-import { app } from '@electron/remote';
 
-import { getSettings, setSettings } from 'app/settings';
-import { changeLanguage } from 'lib/i18n';
-import ipc from 'shared/ipc/renderer';
+import { getSettings, setSettings } from 'main/settings';
+import type { ISettings } from 'shared/types';
+import { changeLanguage } from 'ui/i18n/setup';
+import ipc from 'ui/ipc';
+import type { ISettingsOption, WelcomeProps } from 'ui/types';
 
-import Header from 'src/ui/components/Header';
-import Modal from 'src/ui/components/Modal';
-import { AlphaIcon, SpinnerDownIcon } from 'src/ui/components/Icons';
+import Header from 'components/Header';
+import { AlphaIcon, SpinnerDownIcon } from 'components/Icons';
+import Modal from 'components/Modal';
 import {
   Description,
   Entry,
@@ -20,7 +22,9 @@ import {
   Spinner,
   Switch,
   SwitchSlider,
-} from 'src/ui/components/Settings/styles';
+} from 'components/Settings/styles';
+
+import schema from './schema';
 import {
   Container,
   Content,
@@ -36,7 +40,6 @@ import {
   Version,
   Wrapper,
 } from './styles';
-import schema from './schema';
 
 const Welcome: React.FC<WelcomeProps> = ({ setIsFirstRun, setModal }) => {
   const [showWelcome, setShowWelcome] = useState<boolean>(true);

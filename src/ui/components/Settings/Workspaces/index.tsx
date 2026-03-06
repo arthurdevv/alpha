@@ -1,17 +1,19 @@
 import { Fragment } from 'preact';
 import { memo, useEffect, useRef, useState } from 'preact/compat';
 
-import { setSettings } from 'app/settings';
-import { loadTheme } from 'app/common/themes';
-import { execCommand } from 'src/main/keymaps/commands';
-import { useSettings } from 'app/settings/listeners';
+import { loadTheme } from 'main/core/themes';
 import {
   createWorkspace,
   createWorkspaceTab,
   getPreviewPrompt,
-} from 'app/common/workspaces';
-import { theme as globalTheme } from 'lib/styles/theme';
-import { onSearch } from 'lib/utils';
+} from 'main/core/workspaces';
+import { execCommand } from 'main/keymaps/commands';
+import { setSettings } from 'main/settings';
+import { useSettings } from 'main/settings/listeners';
+import type { IWorkspace } from 'shared/types';
+import { theme as globalTheme } from 'ui/styles/theme';
+import type { SectionProps, WorkspaceContext } from 'ui/types';
+import { onSearch } from 'ui/utils/search-filter';
 
 import {
   GearsIcon,
@@ -19,9 +21,11 @@ import {
   RunIcon,
   SearchIcon,
   SearchOffIcon,
-} from 'src/ui/components/Icons';
-import { Cursor, Flex, Preview } from 'src/ui/components/Settings/Appearance/styles';
+} from 'components/Icons';
+import { Cursor, Flex, Preview } from 'components/Settings/Appearance/styles';
+
 import { Form, FormItem, Placeholder, Title as Section } from '../styles';
+import PromptExample from './example';
 import {
   Action,
   Arrow,
@@ -38,7 +42,6 @@ import {
   Workspace,
   Wrapper,
 } from './styles';
-import PromptExample from './example';
 
 const Workspaces: React.FC<SectionProps> = ({ options, store, t }) => {
   const [{ workspaces, theme: _theme, tabWidth, fontFamily, fontWeight }] =

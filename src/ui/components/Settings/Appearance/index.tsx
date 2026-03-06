@@ -1,14 +1,17 @@
 import { Fragment } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { loadTheme } from 'app/common/themes';
-import { useSettings } from 'app/settings/listeners';
-import { theme as globalTheme } from 'lib/styles/theme';
-import systemInfo, { renderSystemInfo } from 'src/main/utils/system-info';
-import { changeOpacity } from 'src/main/utils/color-utils';
+import { loadTheme } from 'main/core/themes';
+import { useSettings } from 'main/settings/listeners';
+import { changeOpacity } from 'main/utils/color-utils';
+import systemInfo, { renderSystemInfo } from 'main/utils/system-info';
+import type { ITheme } from 'shared/types';
+import { theme as globalTheme } from 'ui/styles/theme';
+import type { SectionProps } from 'ui/types';
 
-import { Arrow, Label } from 'src/ui/components/Modal/Search/styles';
-import { Key, Keys } from 'src/ui/components/Modal/ContextMenu/Terminal/styles';
+import { Key, Keys } from 'components/Modal/ContextMenu/Terminal/styles';
+import { Arrow, Label } from 'components/Modal/Search/styles';
+
 import {
   AnsiColor,
   Colors,

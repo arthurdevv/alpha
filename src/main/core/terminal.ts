@@ -1,11 +1,14 @@
-import * as xterm from '@xterm/xterm';
 import { clipboard } from '@electron/remote';
-import { getSettings } from 'app/settings';
-import { handleCustomKeys } from 'src/main/keymaps';
-import { execCommand } from 'src/main/keymaps/commands';
-import { watchKeymaps } from 'src/main/keymaps/schema';
-import { loadTheme } from 'app/common/themes';
-import Addons from 'app/common/addons';
+import * as xterm from '@xterm/xterm';
+
+import Addons from 'main/core/addons';
+import { loadTheme } from 'main/core/themes';
+import { handleCustomKeys } from 'main/keymaps';
+import { execCommand } from 'main/keymaps/commands';
+import { watchKeymaps } from 'main/keymaps/schema';
+import { getSettings } from 'main/settings';
+import type { ISettings } from 'shared/types';
+import type { TermProps } from 'ui/types';
 
 export const terms: Record<string, Terminal | null> = {};
 

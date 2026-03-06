@@ -1,17 +1,21 @@
 import { Fragment } from 'preact';
 import { memo, useEffect, useMemo, useState } from 'preact/compat';
 
-import { createProfile, getGroups, sortGroups } from 'app/common/profiles';
-import { execCommand } from 'src/main/keymaps/commands';
-import storage from 'src/main/utils/local-storage';
-import { onSearch, sortArray } from 'lib/utils';
+import { createProfile, getGroups, sortGroups } from 'main/core/profiles';
+import { execCommand } from 'main/keymaps/commands';
+import storage from 'main/utils/local-storage';
+import type { IProfile } from 'shared/types';
+import type { SectionProps } from 'ui/types';
+import { onSearch } from 'ui/utils/search-filter';
+import { sortArray } from 'ui/utils/utils';
 
 import {
   EyeClosedIcon,
   EyeIcon,
   SearchIcon,
   SearchOffIcon,
-} from 'src/ui/components/Icons';
+} from 'components/Icons';
+
 import {
   Form,
   FormItem,

@@ -1,8 +1,10 @@
 import styled, { css, keyframes } from 'styled-components';
+
 import {
   Arrow as _Arrow,
   Label as _Label,
-} from 'src/ui/components/Modal/Search/styles';
+} from 'components/Modal/Search/styles';
+
 import { Placeholder } from '../styles';
 
 export const Name = styled.input`

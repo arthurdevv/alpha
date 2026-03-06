@@ -1,9 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
-import { basename, extname, relative, sep } from 'path';
-import { getDefaultProfile, getProfileByKey } from 'app/common/profiles';
-import systemInfo, { getCurrentBranch } from 'src/main/utils/system-info';
+import { basename, extname, relative, sep } from 'node:path';
 
-function createWorkspace(t: any, index: number = 0): IWorkspace {
+import { v4 as uuidv4 } from 'uuid';
+
+import { getDefaultProfile, getProfileByKey } from 'main/core/profiles';
+import systemInfo, { getCurrentBranch } from 'main/utils/system-info';
+import type { ITheme, IWorkspace, IWorkspaceTab } from 'shared/types';
+
+export function createWorkspace(t: any, index: number = 0): IWorkspace {
   return {
     id: uuidv4(),
     name: `${t('Workspace')} ${index}`,
@@ -11,7 +14,7 @@ function createWorkspace(t: any, index: number = 0): IWorkspace {
   };
 }
 
-function createWorkspaceTab(t: any, index: number = 1): IWorkspaceTab {
+export function createWorkspaceTab(t: any, index: number = 1): IWorkspaceTab {
   const { id } = getDefaultProfile();
 
   return {
@@ -22,7 +25,10 @@ function createWorkspaceTab(t: any, index: number = 1): IWorkspaceTab {
   };
 }
 
-function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
+export function getPreviewPrompt(
+  { profile: id }: IWorkspaceTab,
+  theme: ITheme,
+) {
   const profile = getProfileByKey('id', id);
 
   if (profile.type === 'shell') {
@@ -66,5 +72,3 @@ function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
     '> %',
   ];
 }
-
-export { createWorkspace, createWorkspaceTab, getPreviewPrompt };

@@ -1,14 +1,16 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'preact/compat';
 
-import useStore from 'lib/store';
+import type { IInstance } from 'shared/types';
+import useStore from 'ui/store';
 
-import GitStatus from './git';
 import {
   BranchIcon,
   ConnectedIcon,
   DisconnectIcon,
   ScreenFullIcon,
-} from 'src/ui/components/Icons';
+} from 'components/Icons';
+
+import GitStatus from './git';
 import { BadgeItem, Badges, Container, Wrapper } from './styles';
 
 const Indicators: React.FC = () => {

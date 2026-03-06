@@ -1,7 +1,8 @@
 import { memo, useEffect, useState } from 'preact/compat';
 
-import { clamp, hsv } from 'src/main/utils/color-utils';
-import { useUpdateEffect } from 'lib/hooks/useUpdateEffect';
+import { clamp, hsv } from 'main/utils/color-utils';
+import { useUpdateEffect } from 'ui/hooks/use-update-effect';
+import type { ColorPickerProps, IColor } from 'ui/types';
 
 import {
   AlphaSlider,

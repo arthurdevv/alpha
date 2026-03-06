@@ -1,4 +1,5 @@
 import type { FontWeight, ITheme as ITerminalTheme } from '@xterm/xterm';
+
 import type { ISerialOptions, IShellOptions, ISSHOptions } from 'main/types';
 import type { AlphaState, Section } from 'ui/types';
 

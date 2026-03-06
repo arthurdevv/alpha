@@ -1,8 +1,9 @@
+import { clipboard } from '@electron/remote';
 import { memo, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { clipboard } from '@electron/remote';
-import { debugVersions } from 'app/settings/constants';
+import { debugVersions } from 'main/settings/constants';
+import type { ModalProps } from 'ui/types';
 
 import { BadgeItem, Container, Content, Tag, Tags } from '../styles';
 import { Copied, Info, List, Wrapper } from './styles';

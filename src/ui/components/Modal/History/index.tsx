@@ -2,9 +2,11 @@ import { Fragment } from 'preact';
 import { memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import storage from 'src/main/utils/local-storage';
-import { getDateFormatted, onSearch } from 'lib/utils';
-import { useKeyboardNavigation } from 'lib/hooks/useSearchController';
+import storage from 'main/utils/local-storage';
+import { useKeyboardNavigation } from 'ui/hooks/use-search-controller';
+import type { ModalProps, ICommand } from 'ui/types';
+import { onSearch } from 'ui/utils/search-filter';
+import { getDateFormatted } from 'ui/utils/utils';
 
 import {
   BadgeItem,

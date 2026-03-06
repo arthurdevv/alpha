@@ -1,6 +1,7 @@
 import * as Registry from 'native-reg';
-import { binPath, firstRunFlag } from 'app/settings/constants';
-import enableShellIntegration from 'src/main/utils/shell-integration';
+
+import { binPath, firstRunFlag } from 'main/settings/constants';
+import enableShellIntegration from 'main/utils/shell-integration';
 
 function installCLI(): void {
   if (!firstRunFlag) return;

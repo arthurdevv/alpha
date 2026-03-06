@@ -1,6 +1,7 @@
-import { existsSync } from 'fs';
-import { execSync } from 'child_process';
-import { reportError } from 'src/shared/error-reporter';
+import { execSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+
+import { reportError } from 'shared/error-reporter';
 
 const OPENSSH_AGENT_PIPE = '\\\\.\\pipe\\openssh-ssh-agent';
 

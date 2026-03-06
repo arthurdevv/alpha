@@ -1,9 +1,11 @@
+import { clipboard } from '@electron/remote';
 import { Fragment, memo, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { clipboard } from '@electron/remote';
+import type { EnvironmentFormProps, ProfileFormSchemaProperty } from 'ui/types';
 
-import { EyeClosedIcon, EyeIcon } from 'src/ui/components/Icons';
+import { EyeClosedIcon, EyeIcon } from 'components/Icons';
+
 import { FormOption } from '.';
 import {
   Copied,

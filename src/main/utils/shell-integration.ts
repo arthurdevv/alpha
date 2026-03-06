@@ -1,6 +1,7 @@
-import * as Registry from 'native-reg';
 import { app } from 'electron';
-import { reportError } from 'src/shared/error-reporter';
+import * as Registry from 'native-reg';
+
+import { reportError } from 'shared/error-reporter';
 
 const { HKCU, Access } = Registry;
 

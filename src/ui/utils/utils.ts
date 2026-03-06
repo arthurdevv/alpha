@@ -1,4 +1,4 @@
-import { cloneDeepWith, isPlainObject, transform } from 'lodash';
+import { cloneDeepWith } from 'lodash';
 
 export function sortArray(array: any[]) {
   return array.sort((a, b) => a.name.localeCompare(b.name));
@@ -34,24 +34,6 @@ export function serialize<T extends object>(target: T): T {
       ? undefined
       : undefined,
   );
-}
-
-export function sanitizeObject(target: any): any {
-  return transform(target, (result, value, key) => {
-    if (
-      value === undefined ||
-      typeof value === 'function' ||
-      typeof value === 'symbol' ||
-      Buffer?.isBuffer?.(value)
-    ) {
-      return;
-    }
-
-    result[key] =
-      isPlainObject(value) || Array.isArray(value)
-        ? sanitizeObject(value)
-        : value;
-  });
 }
 
 export function getDateFormatted(

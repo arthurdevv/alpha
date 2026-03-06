@@ -1,4 +1,4 @@
-import { getSettings } from 'app/settings';
+import { getSettings } from 'main/settings';
 
 const { acrylic } = getSettings();
 

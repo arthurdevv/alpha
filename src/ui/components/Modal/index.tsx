@@ -1,26 +1,27 @@
 import { createElement, Fragment } from 'preact';
 import { memo, useEffect, useRef, useState } from 'preact/compat';
 
-import { execCommand } from 'src/main/keymaps/commands';
-import useStore from 'lib/store';
+import { execCommand } from 'main/keymaps/commands';
+import useStore from 'ui/store';
+import type { ModalProps } from 'ui/types';
 
-import { Overlay } from './styles';
-import Profiles from './Profiles';
-import Commands from './Commands';
 import About from './About';
-import Search from './Search';
-import Warning from './Warning';
+import Commands from './Commands';
 import TabContextMenu from './ContextMenu/Tab';
-import TerminalContextMenu from './ContextMenu/Terminal';
-import Rename from './ContextMenu/Tab/Rename';
 import Colors from './ContextMenu/Tab/Colors';
-import Form from './Profiles/Form';
+import Rename from './ContextMenu/Tab/Rename';
+import TerminalContextMenu from './ContextMenu/Terminal';
 import Dialog from './Dialog';
-import Sync from './Sync';
-import Workspace from './Workspace';
 import History from './History';
 import Keymaps from './Keymaps';
+import Profiles from './Profiles';
+import Form from './Profiles/Form';
+import Search from './Search';
 import Snippets from './Snippets';
+import { Overlay } from './styles';
+import Sync from './Sync';
+import Warning from './Warning';
+import Workspace from './Workspace';
 
 const components = {
   Search,

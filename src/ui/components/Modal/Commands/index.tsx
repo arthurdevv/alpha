@@ -1,14 +1,16 @@
 import { memo } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { execCommand } from 'src/main/keymaps/commands';
-import { resolveCommand } from 'src/main/keymaps/schema';
+import { execCommand } from 'main/keymaps/commands';
+import { resolveCommand } from 'main/keymaps/schema';
 import {
   useKeyboardNavigation,
   useSearch,
-} from 'lib/hooks/useSearchController';
+} from 'ui/hooks/use-search-controller';
+import type { ModalProps } from 'ui/types';
 
-import { KeyItem } from 'src/ui/components/Header/Popover/styles';
+import { KeyItem } from 'components/Header/Popover/styles';
+
 import {
   BadgeItem,
   Badges,

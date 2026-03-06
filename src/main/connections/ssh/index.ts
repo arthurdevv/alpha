@@ -1,12 +1,19 @@
-import { Client, type ClientChannel } from 'ssh2';
-import net from 'net';
+import crypto from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import net from 'node:net';
+
 import socks from 'socksv5';
+import { Client } from 'ssh2';
+import type { ClientChannel } from 'ssh2';
 import sshpk from 'sshpk';
-import crypto from 'crypto';
-import { readFileSync } from 'fs';
-import executeScripts, { getUnique } from 'src/main/connections/scripts';
-import Logger from 'app/common/logger';
-import { reportError } from 'src/shared/error-reporter';
+
+import executeScripts, { getUnique } from 'main/connections/scripts';
+import Logger from 'main/core/logger';
+import type IPC from 'main/ipc';
+import type { IForwardPort, ISSHOptions } from 'main/types';
+import { reportError } from 'shared/error-reporter';
+import type { IInstance } from 'shared/types';
+
 import getAgent from './agent';
 import algorithms from './algorithms';
 

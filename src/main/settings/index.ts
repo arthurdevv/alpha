@@ -1,11 +1,14 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+
 import yaml from 'js-yaml';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+
 import {
   appVersion,
   settingsPath,
   userSettingsPath,
-} from 'app/settings/constants';
-import { reportError } from 'src/shared/error-reporter';
+} from 'main/settings/constants';
+import { reportError } from 'shared/error-reporter';
+import type { IRawSettings, ISettings } from 'shared/types';
 
 function loadSettings(defaults?: boolean, raw = false): IRawSettings {
   let settings = <IRawSettings>{};

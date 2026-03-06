@@ -1,6 +1,8 @@
+import { throttle } from 'lodash';
 import { Fragment } from 'preact';
 import { memo, useState } from 'preact/compat';
-import { throttle } from 'lodash';
+
+import type { SplitTermProps } from 'ui/types';
 
 import { Divider, Panes, SplitPane } from './styles';
 

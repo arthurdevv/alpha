@@ -1,3 +1,5 @@
+import type { IColor } from 'ui/types';
+
 function changeOpacity(color: string | undefined, opacity: number): string {
   if (!color) return 'transparent';
 

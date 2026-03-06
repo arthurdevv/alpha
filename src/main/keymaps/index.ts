@@ -1,9 +1,11 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+
 import yaml from 'js-yaml';
 import Mousetrap, { MousetrapInstance } from 'mousetrap';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { commands, execCommand } from 'src/main/keymaps/commands';
-import { keymapsPath, userKeymapsPath } from 'app/settings/constants';
-import { reportError } from 'src/shared/error-reporter';
+
+import { commands, execCommand } from 'main/keymaps/commands';
+import { keymapsPath, userKeymapsPath } from 'main/settings/constants';
+import { reportError } from 'shared/error-reporter';
 
 export const mousetrap: MousetrapInstance = new (Mousetrap as any)(window);
 

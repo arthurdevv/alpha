@@ -1,11 +1,12 @@
+import { spawn } from 'node:child_process';
+import type {
+  SpawnOptionsWithoutStdio,
+  StdioPipeNamed,
+} from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { isAbsolute, resolve } from 'node:path';
+
 import args from 'args';
-import { existsSync } from 'fs';
-import { isAbsolute, resolve } from 'path';
-import {
-  spawn,
-  type SpawnOptionsWithoutStdio,
-  type StdioPipeNamed,
-} from 'child_process';
 
 args.command('<default>', 'Initialize Alpha');
 

@@ -1,8 +1,9 @@
+import { clipboard } from '@electron/remote';
 import { memo } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { clipboard } from '@electron/remote';
-import { useSettings } from 'app/settings/listeners';
+import { useSettings } from 'main/settings/listeners';
+import type { ModalProps } from 'ui/types';
 
 import { Preview, Title, Wrapper } from './styles';
 import { Container, Content, Tag, Tags } from '../styles';

@@ -1,14 +1,7 @@
 import styled, { css } from 'styled-components';
-import { Content as _Content } from 'src/ui/components/Modal/styles';
-import { AnsiColor } from 'src/ui/components/Settings/Appearance/styles';
 
-export {
-  Container,
-  Label,
-  Arrow,
-  Keys,
-  Key,
-} from 'src/ui/components/Modal/ContextMenu/Terminal/styles';
+import { Content as _Content } from 'components/Modal/styles';
+import { AnsiColor } from 'components/Settings/Appearance/styles';
 
 export const Content = styled(_Content)`
   backdrop-filter: none;
@@ -76,3 +69,11 @@ export const CurrentColor = styled(AnsiColor)<{
       background-size: calc(var(--cell) * 2) calc(var(--cell) * 2);
     `}
 `;
+
+export {
+  Container,
+  Label,
+  Arrow,
+  Keys,
+  Key,
+} from 'components/Modal/ContextMenu/Terminal/styles';

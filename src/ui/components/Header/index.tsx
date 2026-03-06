@@ -1,10 +1,11 @@
+import { BrowserWindow } from '@electron/remote';
 import { Fragment } from 'preact';
 import React, { memo, useEffect, useState } from 'preact/compat';
 
-import { BrowserWindow } from '@electron/remote';
-import { execCommand } from 'src/main/keymaps/commands';
-import { removeThemeVariables, setThemeVariables } from 'app/common/themes';
-import useStore from 'lib/store';
+import { removeThemeVariables, setThemeVariables } from 'main/core/themes';
+import { execCommand } from 'main/keymaps/commands';
+import type { ISettings } from 'shared/types';
+import useStore from 'ui/store';
 
 import {
   CloseIcon,
@@ -14,10 +15,11 @@ import {
   ProfilesIcon,
   RestoreIcon,
   SettingsIcon,
-} from 'src/ui/components/Icons';
-import TabGroup from './Tab';
+} from 'components/Icons';
+
 import Popover from './Popover';
 import { ActionItem, Actions, Container, DragRegion } from './styles';
+import TabGroup from './Tab';
 
 const Header: React.FC<{ welcome?: boolean }> = ({ welcome }) => {
   const {

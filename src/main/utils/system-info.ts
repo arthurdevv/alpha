@@ -1,6 +1,6 @@
-import { homedir, hostname, uptime as uptimesecs, userInfo } from 'os';
-import { execSync } from 'child_process';
-import { resolve } from 'path';
+import { execSync } from 'node:child_process';
+import { homedir, hostname, uptime as uptimesecs, userInfo } from 'node:os';
+import { resolve } from 'node:path';
 
 function runCommand(
   command: string,

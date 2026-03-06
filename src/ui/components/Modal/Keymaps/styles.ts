@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+
 import { ListItem } from '../styles';
 
 export const Container = styled.div<{ $isVisible: boolean }>`

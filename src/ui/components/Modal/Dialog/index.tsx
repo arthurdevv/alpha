@@ -1,8 +1,9 @@
 import { Fragment, memo, useEffect } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { getSettings, setSettings } from 'app/settings';
-import storage from 'src/main/utils/local-storage';
+import { getSettings, setSettings } from 'main/settings';
+import storage from 'main/utils/local-storage';
+import type { ModalProps } from 'ui/types';
 
 import { Container, Content, Tag, Tags } from '../styles';
 import { Title } from './styles';

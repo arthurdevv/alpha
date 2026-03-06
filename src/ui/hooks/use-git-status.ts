@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
-import ipc from 'shared/ipc/renderer';
+
+import type { IGitInfo } from 'shared/types';
+import ipc from 'ui/ipc';
 
 export function useGitStatus(instanceId: string | null): IGitInfo | null {
   const [gitInfo, setGitInfo] = useState<IGitInfo | null>(null);

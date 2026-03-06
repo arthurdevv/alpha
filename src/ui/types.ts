@@ -1,7 +1,8 @@
-import { JSX } from 'preact';
 import type { TFunction } from 'i18next';
+import { JSX } from 'preact';
+import type { StateCreator } from 'zustand';
+
 import type Terminal from 'main/core/terminal';
-import type actions from 'ui/store/actions';
 import type { IForwardPort } from 'main/types';
 import type {
   IInstance,
@@ -10,10 +11,24 @@ import type {
   IViewport,
   IWorkspace,
 } from 'shared/types';
+import type actions from 'ui/store/actions';
 
-var tabIndex: number;
-var id: string | null;
-var menu: { top: number; left: number } | null;
+///
+
+export type StoreActions<S, A> = StateCreator<
+  S,
+  [['zustand/immer', never]],
+  [],
+  A
+>;
+
+///
+
+declare global {
+  var tabIndex: number;
+  var id: string | null;
+  var menu: { top: number; left: number } | null;
+}
 
 export type AlphaState = {
   context: Record<string, IGroup>;
@@ -124,7 +139,7 @@ export type Section =
   | 'Workspaces'
   | 'Config file';
 
-interface TabProps {
+export interface TabProps {
   id: string;
   title: string;
   tabWidth: 'auto' | 'fixed' | undefined;
@@ -133,15 +148,15 @@ interface TabProps {
   onClose(): void;
 }
 
-interface TermDefaultProps extends AlphaStore {
+export interface TermDefaultProps extends AlphaStore {
   current: string[];
 }
 
-interface TermGroupProps extends TermDefaultProps {
+export interface TermGroupProps extends TermDefaultProps {
   group: IGroup;
 }
 
-interface TermProps extends IInstance {
+export interface TermProps extends IInstance {
   id: string;
   current: string[];
   isCurrent: boolean;
@@ -152,21 +167,14 @@ interface TermProps extends IInstance {
   options: Partial<ISettings>;
 }
 
-interface SplitTermProps {
+export interface SplitTermProps {
   orientation: 'vertical' | 'horizontal' | null;
   ratios: number[];
   children: JSX.Element[];
   onResizeGroup(ratios: number[]): void;
 }
 
-interface TabProps {
-  title: string;
-  isCurrent: boolean;
-  onSelect(): void;
-  onClose(): void;
-}
-
-interface ModalProps {
+export interface ModalProps {
   store: AlphaStore;
   modal: string | null;
   isVisible: boolean;
@@ -174,41 +182,41 @@ interface ModalProps {
   handleModal(_?: any, modal?: string | null): void;
 }
 
-interface ViewportProps {
+export interface ViewportProps {
   viewport: Partial<IViewport>;
   instances: Record<string, IInstance>;
 }
 
-interface PopoverProps {
+export interface PopoverProps {
   label: string;
   badge?: string;
   badged?: boolean;
   style?: React.CSSProperties;
 }
 
-interface SearchProps {
+export interface SearchProps {
   isVisible: boolean;
   handleModal(_?: any, modal?: string | undefined): void;
 }
 
-interface SectionProps {
+export interface SectionProps {
   section: Section;
   options: JSX.Element[];
   store: AlphaStore;
   t: TFunction;
 }
 
-interface SettingsProps {
+export interface SettingsProps {
   origin: string | null;
 }
 
-interface ContextMenuSchemaProps {
+export interface ContextMenuSchemaProps {
   term: Terminal | null;
   group: IGroup | null;
   instance: IInstance | null;
 }
 
-interface ProfileFormProps {
+export interface ProfileFormProps {
   schema: any;
   properties: any[] | Record<string, string>;
   profile: IProfile;
@@ -234,7 +242,7 @@ export type ProfileFormSchemaProperty = {
   value: Record<string, Exclude<'export type', IForwardPort>>;
 };
 
-interface ProfileFormOptionProps {
+export interface ProfileFormOptionProps {
   option: ProfileFormSchemaOption;
   profile: IProfile;
   value: any;
@@ -242,7 +250,7 @@ interface ProfileFormOptionProps {
   setAuthType?: (authType: string) => void;
 }
 
-interface EnvironmentFormProps {
+export interface EnvironmentFormProps {
   schema: any;
   profile: IProfile<'shell'>;
   properties: [string, { value: string; hidden: boolean }][];
@@ -250,7 +258,7 @@ interface EnvironmentFormProps {
   handleSave: (modal?: boolean) => void;
 }
 
-interface ConnectionFormProps {
+export interface ConnectionFormProps {
   schema: any;
   profile: IProfile<'ssh' | 'serial'>;
   section: string;
@@ -258,7 +266,7 @@ interface ConnectionFormProps {
   setProfile(profile: IProfile): void;
 }
 
-interface WelcomeProps {
+export interface WelcomeProps {
   setIsFirstRun: any;
   // setIsFirstRun: React.Dispatch<SetStateAction<boolean>>;
   setModal(modal: string | null): void;
@@ -270,7 +278,7 @@ export type WorkspaceContext = {
   prompt: string | undefined;
 };
 
-interface ColorPickerProps {
+export interface ColorPickerProps {
   isPickingColor: boolean;
   currentColor: string;
   handleSelect: (color: string) => void;

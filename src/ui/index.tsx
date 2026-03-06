@@ -1,13 +1,13 @@
 import { Component, render } from 'preact';
 import { ThemeProvider } from 'styled-components';
 
-import settings from 'app/settings';
-import { reportError } from 'src/shared/error-reporter';
+import settings from 'main/settings';
+import { reportError } from 'shared/error-reporter';
+import initRendererAnalytics from 'ui/services/analytics';
+import GlobalStyle from 'ui/styles/global';
+import { theme } from 'ui/styles/theme';
 
-import Alpha from '../components/alpha';
-import GlobalStyle from './styles/global';
-import { theme } from './styles/theme';
-import initRendererAnalytics from './analytics';
+import Alpha from './alpha';
 
 initRendererAnalytics(settings);
 

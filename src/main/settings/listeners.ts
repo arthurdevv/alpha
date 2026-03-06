@@ -1,7 +1,10 @@
 import * as chokidar from 'chokidar';
 import { useEffect, useState } from 'preact/hooks';
-import { userKeymapsPath, userSettingsPath } from './constants';
+
+import type { ISettings } from 'shared/types';
+
 import { getSettings } from '.';
+import { userKeymapsPath, userSettingsPath } from './constants';
 
 const watchers: Record<string, chokidar.FSWatcher | null> = {
   options: null,

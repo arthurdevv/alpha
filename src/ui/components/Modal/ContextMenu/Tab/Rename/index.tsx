@@ -1,4 +1,7 @@
 import { memo, useEffect, useRef } from 'preact/compat';
+import { useTranslation } from 'react-i18next';
+
+import type { ModalProps } from 'ui/types';
 
 import {
   Container,
@@ -7,8 +10,7 @@ import {
   SearchInput,
   Tag,
   Tags,
-} from 'src/ui/components/Modal/styles';
-import { useTranslation } from 'react-i18next';
+} from 'components/Modal/styles';
 
 const Rename: React.FC<ModalProps> = (props: ModalProps) => {
   const input = useRef<HTMLInputElement>(null);

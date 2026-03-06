@@ -1,16 +1,26 @@
-import { v4 as uuidv4 } from 'uuid';
+import type { BrowserWindow } from 'glasstron';
 import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
-import { createWindow } from 'src/main/window';
-import { getSettings } from 'app/settings';
 import { checkForUpdates } from 'src/main/services/updater';
-import getGitInfo from 'app/services/git';
-import { getDefaultProfile, getProfileByKey } from 'app/common/profiles';
-import Shell, { getExternalLaunch } from 'app/common/shell';
-import SSH from 'app/connections/ssh';
-import Serial from 'app/connections/serial';
-import IPC from 'shared/ipc/main';
+import { createWindow } from 'src/main/window';
 import { reportError } from 'src/shared/error-reporter';
-import { sanitizeObject } from 'lib/utils';
+import { v4 as uuidv4 } from 'uuid';
+
+import Serial from 'main/connections/serial';
+import SSH from 'main/connections/ssh';
+import { getDefaultProfile, getProfileByKey } from 'main/core/profiles';
+import Shell, { getExternalLaunch } from 'main/core/shell';
+import IPC from 'main/ipc';
+import getGitInfo from 'main/services/git-info';
+import { getSettings } from 'main/settings';
+import type { InstanceArgs } from 'main/types';
+import { sanitizeObject } from 'main/utils/utils';
+import type {
+  IGitInfo,
+  IInstance,
+  ISession,
+  ISnapshot,
+  IWorkspace,
+} from 'shared/types';
 
 let ipc: IPC;
 
@@ -86,7 +96,7 @@ function createInstance({
   return instance;
 }
 
-export default (mainWindow: Alpha.BrowserWindow) => {
+export default (mainWindow: BrowserWindow) => {
   ipc = new IPC(mainWindow);
 
   ipc.on('terminal:create', (args: InstanceArgs) => {

@@ -1,8 +1,9 @@
 import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { schema, watchKeys } from 'src/main/keymaps/schema';
-import useStore from 'lib/store';
+import { schema, watchKeys } from 'main/keymaps/schema';
+import useStore from 'ui/store';
+import type { PopoverProps } from 'ui/types';
 
 import { Arrow, Container, Content, KeyItem, Keys } from './styles';
 

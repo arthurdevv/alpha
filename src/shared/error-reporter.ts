@@ -1,3 +1,5 @@
+import type { ErrorReporter } from 'shared/types';
+
 let reporter: ErrorReporter = () => {};
 
 export function setErrorReporter(fn: ErrorReporter) {

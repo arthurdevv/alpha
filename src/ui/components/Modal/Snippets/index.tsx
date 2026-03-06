@@ -2,15 +2,17 @@ import { Fragment, memo, useEffect, useRef, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getInstanceProfile } from 'app/common/profiles';
-import storage from 'src/main/utils/local-storage';
+import { getInstanceProfile } from 'main/core/profiles';
+import storage from 'main/utils/local-storage';
 import {
   useKeyboardNavigation,
   useSearch,
-} from 'lib/hooks/useSearchController';
-import { getDateFormatted } from 'lib/utils';
+} from 'ui/hooks/use-search-controller';
+import type { ISnippet, ModalProps } from 'ui/types';
+import { getDateFormatted } from 'ui/utils/utils';
 
-import { TrashIcon } from 'src/ui/components/Icons';
+import { TrashIcon } from 'components/Icons';
+
 import {
   BadgeItem,
   Badges,
@@ -40,7 +42,6 @@ import {
   Title,
   Wrapper,
 } from './styles';
-import { KeyItem } from 'src/ui/components/Header/Popover/styles';
 
 function createSnippet(index: number = 0): ISnippet {
   return {

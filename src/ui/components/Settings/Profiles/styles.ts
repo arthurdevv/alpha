@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+
 import { Placeholder, Separator } from '../styles';
 
 export const Container = styled.div<{ $hidden: boolean; $width?: number }>`

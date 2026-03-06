@@ -1,11 +1,13 @@
 import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { execCommand } from 'src/main/keymaps/commands';
-import storage from 'src/main/utils/local-storage';
-import useStore from 'lib/store';
+import { execCommand } from 'main/keymaps/commands';
+import storage from 'main/utils/local-storage';
+import useStore from 'ui/store';
+import type { TabProps } from 'ui/types';
 
-import { CloseTabIcon, DotsIcon } from 'src/ui/components/Icons';
+import { CloseTabIcon, DotsIcon } from 'components/Icons';
+
 import { Action, Container, Group, Mask, Title } from './styles';
 import Popover from '../Popover';
 

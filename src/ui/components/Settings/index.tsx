@@ -2,12 +2,18 @@ import { createElement } from 'preact';
 import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import { getSettings, setSettings } from 'app/settings';
-import { getGroups } from 'app/common/profiles';
-import listeners from 'app/settings/listeners';
-import storage from 'src/main/utils/local-storage';
-import useStore from 'lib/store';
-import { getAutomaticLanguage } from 'lib/i18n';
+import { getGroups } from 'main/core/profiles';
+import { getSettings, setSettings } from 'main/settings';
+import listeners from 'main/settings/listeners';
+import storage from 'main/utils/local-storage';
+import type { IProfile, IWorkspace, ISettings } from 'shared/types';
+import { getAutomaticLanguage } from 'ui/i18n/setup';
+import useStore from 'ui/store';
+import type {
+  SettingsProps,
+  ISettingsOption,
+  Section as SectionType,
+} from 'ui/types';
 
 import schema from './schema';
 import {
@@ -32,12 +38,12 @@ import {
   Wrapper,
 } from './styles';
 import { SpinnerDownIcon, SpinnerIcon } from '../Icons';
-import Application from './Application';
 import Appearance from './Appearance';
+import Application from './Application';
+import Config from './Config';
 import Keymaps from './Keymaps';
 import Profiles from './Profiles';
 import Workspaces from './Workspaces';
-import Config from './Config';
 
 const initialSettings = getSettings();
 
@@ -61,7 +67,7 @@ function getEntityOptions(entity?: string) {
 }
 
 const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
-  const [section, setSection] = useState<Section>(() =>
+  const [section, setSection] = useState<SectionType>(() =>
     storage.parseItem('section', 'Application'),
   );
 
@@ -71,7 +77,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
 
   const { t } = useTranslation();
 
-  const handleSection = (value: Section) => {
+  const handleSection = (value: SectionType) => {
     if (value !== section) {
       setTransition(false);
 
@@ -287,7 +293,7 @@ const Settings: React.FC<SettingsProps> = (props: SettingsProps) => {
           <NavigationItem
             key={index}
             className={value === section ? 'selected' : undefined}
-            onClick={() => handleSection(value as Section)}
+            onClick={() => handleSection(value as SectionType)}
           >
             {t(value)}
           </NavigationItem>

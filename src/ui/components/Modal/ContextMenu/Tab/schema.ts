@@ -1,3 +1,5 @@
+import type { AlphaStore, IContextMenuSchema } from 'ui/types';
+
 import {
   BlankIcon,
   CloseAllIcon,
@@ -7,7 +9,7 @@ import {
   HistoryIcon,
   PaletteIcon,
   RenameIcon,
-} from 'src/ui/components/Icons';
+} from 'components/Icons';
 
 const initialSchema = [
   {
