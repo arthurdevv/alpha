@@ -21,7 +21,6 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.es2021,
       },
     },
     plugins: {
@@ -30,26 +29,34 @@ export default [
       import: importPlugin,
     },
     settings: {
-      react: {
-        pragma: 'h',
-      },
+      react: { pragma: 'h' },
     },
     rules: {
-      'sort-imports': [
+      'react/prop-types': 0,
+      'react/react-in-jsx-scope': 0,
+      'import/order': [
         'error',
         {
-          ignoreCase: true,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          pathGroups: [
+            { pattern: 'ui/**', group: 'internal' },
+            { pattern: 'main/**', group: 'internal' },
+          ],
+          pathGroupsExcludedImportTypes: ['type'],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+      'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       'import/extensions': 0,
       'import/no-unresolved': 0,
       'import/prefer-default-export': 0,
       'import/no-extraneous-dependencies': 0,
-      'react/prop-types': 0,
-      'react/no-string-refs': 0,
-      'react/react-in-jsx-scope': 0,
       'prettier/prettier': [
         'error',
         {
@@ -71,9 +78,7 @@ export default [
       parser: tsparser,
       parserOptions: {
         project: ['./tsconfig.json'],
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
       },
     },
     plugins: {
@@ -82,44 +87,17 @@ export default [
     rules: {
       'no-undef': 0,
       'no-unused-vars': 0,
-      'prefer-const': 0,
-      'dot-notation': 0,
-      'vars-on-top': 0,
-      'default-case': 0,
-      'consistent-return': 0,
-      'default-param-last': 0,
-      'no-restricted-globals': 0,
-      'class-methods-use-this': 0,
       'prefer-destructuring': [
         'error',
-        {
-          array: false,
-          object: true,
-        },
-        {
-          enforceForRenamedProperties: false,
-        },
+        { array: false, object: true },
+        { enforceForRenamedProperties: false },
       ],
-      'no-var': 0,
-      'no-void': 0,
-      'no-shadow': 0,
-      'no-console': 0,
-      'no-extra-semi': 0,
-      'no-throw-literal': 0,
-      'no-param-reassign': 0,
-      'no-nested-ternary': 0,
-      'no-underscore-dangle': 0,
-      'no-use-before-define': 0,
-      'no-restricted-exports': 0,
-      'no-unused-expressions': 0,
-      '@typescript-eslint/ban-types': 0,
       '@typescript-eslint/require-await': 0,
       '@typescript-eslint/unbound-method': 0,
       '@typescript-eslint/no-unsafe-call': 0,
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unsafe-return': 0,
       '@typescript-eslint/no-unsafe-argument': 0,
-      '@typescript-eslint/no-empty-interface': 0,
       '@typescript-eslint/no-misused-promises': 0,
       '@typescript-eslint/no-unsafe-assignment': 0,
       '@typescript-eslint/no-floating-promises': 0,
