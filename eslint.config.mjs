@@ -44,8 +44,11 @@ export default [
             ['parent', 'sibling', 'index'],
           ],
           pathGroups: [
-            { pattern: 'ui/**', group: 'internal' },
             { pattern: 'main/**', group: 'internal' },
+            { pattern: 'ui/**', group: 'internal' },
+            { pattern: 'components/**', group: 'internal', position: 'after' },
+            { pattern: 'shared/**', group: 'internal' },
+            { pattern: 'cli/**', group: 'internal' },
           ],
           pathGroupsExcludedImportTypes: ['type'],
           'newlines-between': 'always',
