@@ -1,0 +1,29 @@
+name: Crowdin sync
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/locales/app.pot'
+
+jobs:
+  crowdin:
+    name: Sync translations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload source
+        run: crowdin upload
+        env:
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Download translations
+        run: crowdin download
+        env:
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Commit updated translations
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: sync translations'
+          file_pattern: 'src/locales/*.po'
