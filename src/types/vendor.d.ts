@@ -31,3 +31,10 @@ declare module 'socksv5' {
     ) => void,
   ): SocksServer;
 }
+
+declare module 'i18next-conv' {
+  export function gettextToI18next(
+    locale: string,
+    body: Buffer<ArrayBuffer>,
+  ): Promise<string>;
+}
