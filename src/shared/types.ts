@@ -224,6 +224,7 @@ export interface IpcAPI {
 
   app: {
     version: string;
+    isPackaged: () => Promise<boolean>;
   };
 
   settings: {
