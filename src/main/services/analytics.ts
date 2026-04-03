@@ -1,8 +1,6 @@
 import * as Sentry from '@sentry/electron/main';
 
-import { errorLog } from 'main/core/logger';
-import { SENTRY_CONFIG } from 'main/settings/constants';
-import { setErrorReporter } from 'shared/error-reporter';
+import { setErrorReporter, SENTRY_CONFIG } from 'shared/error-reporter';
 
 export function captureException(
   error: unknown,
@@ -11,7 +9,7 @@ export function captureException(
 ): void {
   if (Sentry.isInitialized()) Sentry.captureException(error, hint);
 
-  console.error(errorLog(`[${process} process]:`), error);
+  console.error(`[${process} process]:`, error);
 }
 
 export default (enabled: boolean): void => {

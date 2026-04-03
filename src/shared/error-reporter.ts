@@ -1,4 +1,9 @@
-import type { ErrorReporter } from 'shared/types';
+import type { AnalyticsConfig, ErrorReporter } from 'shared/types';
+
+export const SENTRY_CONFIG: AnalyticsConfig = {
+  dsn: 'https://c737a602ad574456ba2313b229e1e80b@app.glitchtip.com/19339',
+  tracesSampleRate: 0,
+};
 
 let reporter: ErrorReporter = () => {};
 
@@ -7,5 +12,6 @@ export function setErrorReporter(fn: ErrorReporter) {
 }
 
 export function reportError(error: unknown, context?: string) {
-  reporter(process.type === 'browser' ? 'Main' : 'Renderer', error, context);
+  reporter(typeof window === 'undefined' ? 'Main' : 'Renderer', error, context);
+  console.error(error);
 }

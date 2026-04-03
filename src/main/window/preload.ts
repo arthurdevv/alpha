@@ -6,6 +6,7 @@ import type { IpcAPI } from 'shared/types';
 const api: IpcAPI = {
   app: {
     version: process.env.npm_package_version!,
+    isPackaged: () => ipc.invoke('app:is-packaged'),
   },
 
   settings: {

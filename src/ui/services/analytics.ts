@@ -1,9 +1,7 @@
 import * as Sentry from '@sentry/electron/renderer';
 
-import { errorLog } from 'main/core/logger';
-import { isPackaged, SENTRY_CONFIG } from 'main/settings/constants';
-import { setErrorReporter } from 'shared/error-reporter';
-import type { ISettings } from 'shared/types';
+import { setErrorReporter, SENTRY_CONFIG } from 'shared/error-reporter';
+import type { FlatSettings } from 'shared/types';
 
 export function captureException(
   error: unknown,
@@ -12,11 +10,11 @@ export function captureException(
 ): void {
   if (Sentry.isInitialized()) Sentry.captureException(error, hint);
 
-  console.error(errorLog(`[${process} process]:`), error);
+  console.error(`[${process} process]:`, error);
 }
 
-export default ({ enableAnalytics }: ISettings): void => {
-  if (!isPackaged || !enableAnalytics) return;
+export default async ({ enableAnalytics }: FlatSettings): Promise<void> => {
+  if (!(await ipc.app.isPackaged()) || !enableAnalytics) return;
 
   Sentry.init(SENTRY_CONFIG);
 
