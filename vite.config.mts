@@ -1,13 +1,28 @@
+import { builtinModules } from 'node:module';
+import path from 'node:path';
+
+import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import electron from 'vite-plugin-electron';
-import commonjs from 'vite-plugin-commonjs';
+import type { ElectronOptions } from 'vite-plugin-electron';
+import renderer from 'vite-plugin-electron-renderer';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-import renderer, { RendererOptions } from 'vite-plugin-electron-renderer';
-import preact from '@preact/preset-vite';
-import path from 'path';
-import { builtinModules } from 'module';
 
-const isDev = process.env.NODE_ENV === 'development';
+const externals = [
+  ...builtinModules.map(m => `node:${m}`),
+  'glasstron',
+  'node-pty',
+  'native-reg',
+  'native-process-working-directory',
+  'ssh2',
+  'sshpk',
+  'socksv5',
+  '@luminati-io/socksv5',
+  '@serialport/bindings-cpp',
+  '@sentry/electron',
+  '@sentry/electron/main',
+  '@sentry/electron/renderer',
+];
 
 const alias: Record<string, string> = {
   main: path.resolve(__dirname, 'src/main'),
@@ -15,87 +30,67 @@ const alias: Record<string, string> = {
   shared: path.resolve(__dirname, 'src/shared'),
   components: path.resolve(__dirname, 'src/ui/components'),
   cli: path.resolve(__dirname, 'cli'),
-  shallowequal: 'shallowequal/index.js',
 };
 
-const externals: RendererOptions['resolve'] = {
-  'node-pty': { type: 'cjs' },
-  ssh2: { type: 'cjs' },
-  sshpk: { type: 'cjs' },
-  glasstron: { type: 'cjs' },
-  'native-reg': { type: 'cjs' },
-  'native-process-working-directory': { type: 'cjs' },
-  '@serialport/bindings-cpp': { type: 'cjs' },
-  '@luminati-io/socksv5': { type: 'cjs' },
-  socksv5: { type: 'cjs' },
-  '@sentry/electron': { type: 'cjs' },
-  '@sentry/electron/main': { type: 'cjs' },
-  '@sentry/electron/renderer': { type: 'cjs' },
-};
-
-export default defineConfig({
-  server: { port: 4000, strictPort: true },
-  build: {
-    outDir: 'target',
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('xterm')) return 'vendor-xterm';
-          if (id.includes('node_modules')) return 'vendor';
-          return null;
-        },
-      },
-    },
-  },
-  resolve: {
-    alias: {
-      ...alias,
-      react: 'preact/compat',
-      'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime',
-    },
-  },
-  plugins: [
-    commonjs(),
-    preact(),
-    renderer({ resolve: externals }),
-    electron([
-      {
-        entry: path.resolve(__dirname, 'app/window', 'index.ts'),
-        vite: {
-          resolve: { alias },
-          build: {
-            outDir: 'target',
-            rollupOptions: {
-              external: Object.keys(externals).concat(Object.values(alias)),
+function electronConfig(
+  entry: string,
+  fileName: string,
+  isDev: boolean,
+): ElectronOptions {
+  return {
+    entry: path.resolve(__dirname, entry),
+    vite: {
+      resolve: { alias },
+      build: {
+        target: 'node18',
+        outDir: 'target',
+        minify: !isDev,
+        rollupOptions: {
+          external: externals,
+          output: {
+            format: 'cjs',
+            entryFileNames: fileName,
+            manualChunks(id) {
+              if (id.includes('xterm')) return 'vendor-xterm';
+              if (id.includes('node_modules')) return 'vendor';
             },
-            minify: !isDev,
           },
         },
       },
-      {
-        entry: path.resolve(__dirname, 'cli', 'index.ts'),
-        vite: {
-          build: {
-            outDir: 'target',
-            rollupOptions: {
-              output: { entryFileNames: 'cli.js', format: 'cjs' },
-              external: [...builtinModules],
-            },
-            minify: !isDev,
-          },
-        },
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development';
+
+  return {
+    server: { port: 4000, strictPort: true },
+    build: { target: 'esnext', outDir: 'target', minify: !isDev },
+    resolve: {
+      alias: {
+        ...alias,
+        react: 'preact/compat',
+        'react-dom/test-utils': 'preact/test-utils',
+        'react-dom': 'preact/compat',
+        'react/jsx-runtime': 'preact/jsx-runtime',
       },
-    ]),
-    viteStaticCopy({
-      targets: [
-        { src: './app/settings/default.yaml', dest: 'app/settings' },
-        { src: './app/keymaps/default.yaml', dest: 'app/keymaps' },
-        { src: './lib/styles/fonts', dest: 'lib/styles' },
-        { src: './locales/*', dest: 'locales' },
-        { src: './*.json', dest: '' },
-      ],
-    }),
-  ],
+    },
+    plugins: [
+      preact(),
+      renderer(),
+      electron([
+        electronConfig('src/main/window/index.ts', 'index.js', isDev),
+        electronConfig('src/main/window/preload.ts', 'preload.js', isDev),
+        electronConfig('cli/index.ts', 'cli.js', isDev),
+      ]),
+      viteStaticCopy({
+        targets: [
+          { src: './src/ui/fonts', dest: 'src/ui' },
+          { src: './locales/*', dest: 'locales' },
+          { src: './*.json', dest: '' },
+        ],
+      }),
+    ],
+  };
 });

@@ -13,16 +13,15 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "noImplicitAny": false,
-    "baseUrl": ".",
     "paths": {
       "react": ["./node_modules/preact/compat/"],
       "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
       "react-dom": ["./node_modules/preact/compat/"],
       "react-dom/*": ["./node_modules/preact/compat/*"],
-      "main/*": ["src/main/*"],
-      "ui/*": ["src/ui/*"],
-      "shared/*": ["src/shared/*"],
-      "components/*": ["src/ui/components/*"]
+      "main/*": ["./src/main/*"],
+      "ui/*": ["./src/ui/*"],
+      "shared/*": ["./src/shared/*"],
+      "components/*": ["./src/ui/components/*"]
     },
     "typeRoots": ["node_modules/@types", "src/types/*.d.ts"]
   },
@@ -30,6 +29,6 @@
     "src/**/*",
     "cli/**/*",
     "test/**/*",
-    "./vite.config.mts"
+    "vite.config.mts"
   ]
 }
