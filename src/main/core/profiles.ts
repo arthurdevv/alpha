@@ -1,7 +1,5 @@
 import { existsSync } from 'node:fs';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import { defaultOptions as serialOptions } from 'main/connections/serial';
 import { defaultOptions as sshOptions } from 'main/connections/ssh';
 import { getSettings } from 'main/settings';
@@ -136,7 +134,7 @@ function createProfile(t: any, template?: IProfile | null): IProfile {
 
   return {
     ...profile,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: t('{{profile.name}} copy', { profile }),
     group: 'Ungrouped',
   };

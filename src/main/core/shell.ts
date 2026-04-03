@@ -5,7 +5,7 @@ import { getWorkingDirectoryFromPID } from 'native-process-working-directory';
 import * as pty from 'node-pty';
 
 import Logger from 'main/core/logger';
-import type IPC from 'main/ipc';
+import type IPC from 'main/ipc/main';
 import { HOMEDIR } from 'main/settings/constants';
 import type { IShellOptions } from 'main/types';
 import Performance from 'main/utils/performance';

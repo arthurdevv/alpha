@@ -1,14 +1,12 @@
 import { basename, extname, relative, sep } from 'node:path';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import { getDefaultProfile, getProfileByKey } from 'main/core/profiles';
 import systemInfo, { getCurrentBranch } from 'main/utils/system-info';
 import type { ITheme, IWorkspace, IWorkspaceTab } from 'shared/types';
 
 export function createWorkspace(t: any, index: number = 0): IWorkspace {
   return {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: `${t('Workspace')} ${index}`,
     tabs: [createWorkspaceTab(t)],
   };

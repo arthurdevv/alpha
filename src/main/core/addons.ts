@@ -9,7 +9,7 @@ import { WebLinksAddon } from '@xterm/addon-web-links';
 import { WebglAddon } from '@xterm/addon-webgl';
 
 import storage from 'main/utils/local-storage';
-import type { ISettings } from 'shared/types';
+import type { Settings } from 'shared/types';
 import { decorations } from 'ui/styles/theme';
 
 const addons: Record<string, Addons> = {};
@@ -51,7 +51,7 @@ export default class Addons {
 
   RendererAddon: CanvasAddon | WebglAddon | undefined;
 
-  constructor(id: string, options: Partial<ISettings>) {
+  constructor(id: string, options: Partial<Settings>) {
     const { fontLigatures } = options;
 
     if (fontLigatures) {
@@ -63,7 +63,7 @@ export default class Addons {
     addons[id] = this;
   }
 
-  handleOptionalAddons({ renderer, linkHandlerKey }: Partial<ISettings>): void {
+  handleOptionalAddons({ renderer, linkHandlerKey }: Partial<Settings>): void {
     if (renderer !== 'default') {
       this.RendererAddon = new (
         renderer === 'canvas' ? CanvasAddon : WebglAddon
@@ -93,7 +93,7 @@ export default class Addons {
     Object.values(addons || this).forEach(addon => term.loadAddon(addon));
   }
 
-  reload(term: any, options: Partial<ISettings>): void {
+  reload(term: any, options: Partial<Settings>): void {
     this.handleOptionalAddons(options);
 
     this.load(term, [this.RendererAddon, this.WebLinksAddon]);

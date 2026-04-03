@@ -4,7 +4,7 @@ import { ReadlineParser, SerialPort } from 'serialport';
 
 import executeScripts from 'main/connections/scripts';
 import Logger from 'main/core/logger';
-import type IPC from 'main/ipc';
+import type IPC from 'main/ipc/main';
 import type { ISerialOptions } from 'main/types';
 import { reportError } from 'shared/error-reporter';
 import type { IInstance } from 'shared/types';

@@ -7,7 +7,7 @@ import { handleCustomKeys } from 'main/keymaps';
 import { execCommand } from 'main/keymaps/commands';
 import { watchKeymaps } from 'main/keymaps/schema';
 import { getSettings } from 'main/settings';
-import type { ISettings } from 'shared/types';
+import type { Settings } from 'shared/types';
 import type { TermProps } from 'ui/types';
 
 export const terms: Record<string, Terminal | null> = {};
@@ -22,7 +22,7 @@ const defaultOptions: xterm.ITerminalOptions = {
 class Terminal {
   term: xterm.Terminal;
 
-  options: Partial<ISettings>;
+  options: Partial<Settings>;
 
   addons: Addons;
 
@@ -139,7 +139,7 @@ class Terminal {
     this.hasSelection ? this.copy() : this.paste();
   }
 
-  setOptions(options: Partial<ISettings>): void {
+  setOptions(options: Partial<Settings>): void {
     this.term.options = {
       ...options,
       theme: loadTheme(options.theme ?? 'Default'),

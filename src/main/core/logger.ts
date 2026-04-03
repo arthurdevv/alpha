@@ -1,6 +1,6 @@
 import colors from 'ansi-colors';
 
-import type IPC from 'main/ipc';
+import type IPC from 'main/ipc/main';
 import type { IProfile } from 'shared/types';
 
 export function errorLog(text: string): string {

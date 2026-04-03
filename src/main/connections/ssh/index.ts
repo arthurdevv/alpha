@@ -9,7 +9,7 @@ import sshpk from 'sshpk';
 
 import executeScripts, { getUnique } from 'main/connections/scripts';
 import Logger from 'main/core/logger';
-import type IPC from 'main/ipc';
+import type IPC from 'main/ipc/main';
 import type { IForwardPort, ISSHOptions } from 'main/types';
 import { reportError } from 'shared/error-reporter';
 import type { IInstance } from 'shared/types';

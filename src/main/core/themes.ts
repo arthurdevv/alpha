@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resourcesPath } from 'main/settings/constants';
 import { changeOpacity, darkenHex } from 'main/utils/color-utils';
 import { reportError } from 'shared/error-reporter';
-import type { ISettings, ITheme } from 'shared/types';
+import type { Settings, ITheme } from 'shared/types';
 
 function loadTheme(name: any): ITheme {
   let theme = <ITheme>{};
@@ -48,7 +48,7 @@ function listThemes(lowercase = false): string[] {
 
 function setThemeVariables(
   theme: ITheme | string | undefined,
-  { preserveBackground, acrylic }: ISettings,
+  { preserveBackground, acrylic }: Settings,
 ): void {
   if (!theme || typeof theme === 'string') {
     theme = loadTheme(theme);
