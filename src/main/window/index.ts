@@ -80,7 +80,7 @@ function createWindow(): void {
   });
 
   mainWindow.on('close', () => {
-    mainWindow && saveBounds(mainWindow.getBounds());
+    bounds.save(mainWindow.getBounds());
   });
 
   mainWindow.on('closed', () => {

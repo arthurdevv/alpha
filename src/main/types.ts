@@ -94,3 +94,10 @@ export interface InstanceArgs {
   commands?: string[];
   overrideTitle?: boolean;
 }
+
+export interface Bounds {
+  height: number;
+  width: number;
+  x?: number;
+  y?: number;
+}

@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import { app } from 'electron';
 import type { ZodSafeParseResult, ZodType } from 'zod';
 
+import { reportError } from './error-reporter';
+
 export const appPath = app.getAppPath();
 export const userDataPath = app.getPath('userData');
 
@@ -12,9 +14,18 @@ export abstract class ConfigManager<T, U> {
 
   constructor(
     protected readonly file: { JSON: string; YAML: string },
-    protected readonly schema: ZodType<T>,
+    protected readonly schema: ZodType<T> | null,
     protected readonly defaults: T,
   ) {}
+
+  async init(): Promise<void> {
+    // TODO(v1.1.0): remove migration
+    if (app.getVersion() !== '1.0.0') {
+      return await this.migrate();
+    }
+
+    if (!fs.existsSync(this.file.JSON)) this.save(this.defaults);
+  }
 
   load(): T {
     if (this.cache) return this.cache;
@@ -55,6 +66,7 @@ export abstract class ConfigManager<T, U> {
   }
 
   validate(value: T): ZodSafeParseResult<T> {
+    if (!this.schema) return { success: true, data: value };
     return this.schema.safeParse(value);
   }
 
@@ -87,16 +99,28 @@ export abstract class ConfigManager<T, U> {
         const yaml = await import('js-yaml');
 
         const parsed = yaml.load(fs.readFileSync(this.file.YAML, 'utf-8')) as T;
-        this.save({ ...this.defaults, ...parsed });
+        this.migrateSave({ ...this.defaults, ...parsed });
 
         fs.unlinkSync(this.file.YAML);
         return;
       }
 
-      this.save(this.defaults);
+      this.migrateSave(this.defaults);
     } catch (error) {
       reportError(error);
-      this.save(this.defaults);
+      this.migrateSave(this.defaults);
+    }
+  }
+
+  /**
+   * @deprecated YAML support will be removed in 1.1.0. JSON is now the default config format.
+   */
+  private migrateSave(value: T): void {
+    try {
+      this.cache = value;
+      fs.writeFileSync(this.file.JSON, JSON.stringify(value, null, 2), 'utf-8');
+    } catch (error) {
+      reportError(error);
     }
   }
 

@@ -1,52 +1,46 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 
 import { screen } from 'electron';
-import yaml from 'js-yaml';
 
-import { boundsPath } from 'main/settings/constants';
+import type { Bounds } from 'main/types';
+import { ConfigManager, userDataPath } from 'shared/config';
 import { reportError } from 'shared/error-reporter';
 
-function getBounds(
-  center?: boolean,
-): Partial<Electron.Rectangle> & { center?: boolean } {
-  let bounds = <Electron.Rectangle>{};
+const FILE = {
+  JSON: path.join(userDataPath, 'bounds.json'),
+  YAML: path.join(userDataPath, 'bounds.yaml'),
+};
 
-  try {
-    const content = readFileSync(boundsPath, 'utf-8');
+const initialBounds: Bounds = {
+  width: 1050,
+  height: 560,
+};
 
-    bounds = yaml.load(content) as typeof bounds;
-  } catch (error) {
-    reportError(error);
-
-    return bounds;
+class BoundsManager extends ConfigManager<Bounds, Bounds> {
+  constructor() {
+    super(FILE, null, initialBounds);
   }
 
-  const { workAreaSize } = screen.getPrimaryDisplay();
+  get(defaults?: boolean): Bounds {
+    try {
+      const bounds = defaults ? this.defaults : this.load();
+      const { workAreaSize } = screen.getPrimaryDisplay();
 
-  if (
-    bounds.width > workAreaSize.width ||
-    bounds.height > workAreaSize.height ||
-    bounds.x + bounds.width > workAreaSize.width ||
-    bounds.y + bounds.height > workAreaSize.height
-  ) {
-    return {};
-  }
+      if (
+        bounds.width > workAreaSize.width ||
+        bounds.height > workAreaSize.height ||
+        (bounds.x && bounds.x + bounds.width > workAreaSize.width) ||
+        (bounds.y && bounds.y + bounds.height > workAreaSize.height)
+      ) {
+        return this.defaults;
+      }
 
-  return center
-    ? { width: bounds.width, height: bounds.height, center }
-    : bounds;
-}
-
-function saveBounds(bounds: Partial<Electron.Rectangle>): void {
-  try {
-    const content = yaml.dump(bounds, { indent: 2 });
-
-    writeFileSync(boundsPath, content, 'utf-8');
-  } catch (error) {
-    reportError(error);
+      return bounds;
+    } catch (error) {
+      reportError(error);
+      return this.get(true);
+    }
   }
 }
 
-if (!existsSync(boundsPath)) saveBounds({});
-
-export { getBounds, saveBounds };
+export const bounds = new BoundsManager();
