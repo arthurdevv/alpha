@@ -1,32 +1,41 @@
 import { Component, render } from 'preact';
+import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from 'styled-components';
 
-import settings from 'main/settings';
 import { reportError } from 'shared/error-reporter';
-import initRendererAnalytics from 'ui/services/analytics';
 import GlobalStyle from 'ui/styles/global';
 import { theme } from 'ui/styles/theme';
 
 import Alpha from './alpha';
-
-initRendererAnalytics(settings);
+import { setupI18n } from './services/i18n';
 
 class ErrorBoundary extends Component<{ children: React.ReactNode }> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
   componentDidCatch(error: Error) {
     reportError(error);
   }
 
   render() {
-    return this.props.children;
+    return this.state.hasError ? null : this.props.children;
   }
 }
 
-render(
-  <ErrorBoundary>
-    <ThemeProvider theme={theme}>
-      <Alpha />
-      <GlobalStyle />
-    </ThemeProvider>
-  </ErrorBoundary>,
-  document.getElementById('alpha') as HTMLElement,
-);
+async function mount() {
+  await setupI18n();
+
+  createRoot(document.getElementById('alpha') as HTMLElement).render(
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <Alpha />
+        <GlobalStyle />
+      </ThemeProvider>
+    </ErrorBoundary>,
+  );
+}
+
+mount();
