@@ -1,0 +1,103 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font:
+    400 16px "Geist",
+    sans-serif;
+  overflow: hidden;
+  user-select: none;
+  background-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+#alpha {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+html,
+body,
+#alpha {
+  height: 100%;
+}
+
+main {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0;
+  display: flex;
+  overflow: hidden;
+}
+
+input {
+  font: inherit;
+  color: var(--foreground);
+  border: none;
+  outline: none;
+  appearance: none;
+  background: transparent;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+  appearance: none;
+  outline: none;
+  border: none;
+  background: transparent;
+}
+
+*::selection {
+  color: var(--selectionForeground);
+  background: var(--selectionBackground);
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  to {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@font-face {
+  src: url("src/ui/fonts/Geist.ttf") format("truetype");
+  font-family: "Geist";
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  src: url("src/ui/fonts/Hack-Regular.ttf") format("truetype");
+  font-family: "Hack";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  src: url("src/ui/fonts/Hack-Bold.ttf") format("truetype");
+  font-family: "Hack";
+  font-weight: 500 900;
+  font-style: normal;
+  font-display: swap;
+}

@@ -23,7 +23,7 @@
       "shared/*": ["./src/shared/*"],
       "components/*": ["./src/ui/components/*"]
     },
-    "typeRoots": ["node_modules/@types", "src/types/*.d.ts"]
+    "typeRoots": ["node_modules/@types", "src/**/*.d.ts"]
   },
   "include": [
     "src/**/*",

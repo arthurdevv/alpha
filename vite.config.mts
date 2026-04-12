@@ -2,6 +2,7 @@ import { builtinModules } from 'node:module';
 import path from 'node:path';
 
 import preact from '@preact/preset-vite';
+import wyw from '@wyw-in-js/vite';
 import { defineConfig } from 'vite';
 import electron from 'vite-plugin-electron';
 import type { ElectronOptions } from 'vite-plugin-electron';
@@ -77,6 +78,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
+      wyw({ prefixer: false }),
       preact(),
       renderer(),
       electron([
