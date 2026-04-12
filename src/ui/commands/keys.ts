@@ -4,11 +4,11 @@ export const KEY_SYMBOLS: Record<string, string> = {
   enter: '↵',
   tab: '↹',
   capslock: '⇪',
-  arrowup: '↑',
-  arrowdown: '↓',
-  arrowleft: '←',
-  arrowright: '→',
-  ' ': 'space',
+  up: '↑',
+  down: '↓',
+  left: '←',
+  right: '→',
+  space: '⎵',
 };
 
 const NUMPAD_MAP: Record<string, string> = {
