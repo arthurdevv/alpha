@@ -21,7 +21,8 @@
       "main/*": ["./src/main/*"],
       "ui/*": ["./src/ui/*"],
       "shared/*": ["./src/shared/*"],
-      "components/*": ["./src/ui/components/*"]
+      "components/*": ["./src/ui/components/*"],
+      "cli/*": ["./cli/*"]
     },
     "typeRoots": ["node_modules/@types", "src/**/*.d.ts"]
   },
@@ -29,6 +30,6 @@
     "src/**/*",
     "cli/**/*",
     "test/**/*",
-    "vite.config.mts"
+    "./*.mts",
   ]
 }
