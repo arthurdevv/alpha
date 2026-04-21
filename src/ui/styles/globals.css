@@ -39,27 +39,32 @@ main {
   overflow: hidden;
 }
 
-input {
+input,
+button,
+select {
   font: inherit;
-  color: var(--foreground);
   border: none;
   outline: none;
   appearance: none;
   background: transparent;
+}
+
+input {
+  color: var(--foreground);
+}
+
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
 }
 
 button {
   cursor: pointer;
-  font: inherit;
-  appearance: none;
-  outline: none;
-  border: none;
-  background: transparent;
 }
 
 *::selection {
-  color: var(--selectionForeground);
-  background: var(--selectionBackground);
+  color: var(--selection-foreground);
+  background: var(--selection-background);
 }
 
 *::-webkit-scrollbar {

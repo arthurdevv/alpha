@@ -73,22 +73,22 @@ export interface AnalyticsConfig {
   tracesSampleRate: number;
 }
 
-export interface Settings extends DataOptions {
+export interface Settings extends DataSettings {
   application: AppOptions;
-  appearance: AppearanceOptions;
-  terminal: TerminalOptions;
-  window: WindowOptions;
+  appearance: AppearanceSettings;
+  terminal: TerminalSettings;
+  window: WindowSettings;
 }
 
 export type FlatSettings = AppOptions &
-  AppearanceOptions &
-  TerminalOptions &
-  WindowOptions &
-  DataOptions;
+  AppearanceSettings &
+  TerminalSettings &
+  WindowSettings &
+  DataSettings;
 
 export type SettingsFields = Omit<Settings, 'profiles' | 'workspaces'>;
 
-interface DataOptions {
+interface DataSettings {
   profiles: Profile[];
   workspaces: Workspace[];
 }
@@ -110,7 +110,7 @@ interface AppOptions {
     | 'zh-CN';
 }
 
-interface AppearanceOptions {
+interface AppearanceSettings {
   cursorBlink: boolean;
   cursorStyle: 'block' | 'underline' | 'bar';
   drawBoldTextInBrightColors: boolean;
@@ -126,13 +126,13 @@ interface AppearanceOptions {
   preserveBackground: boolean;
 }
 
-interface TerminalOptions extends IndicatorsOptions, ZenModeOptions {
+interface TerminalSettings extends IndicatorsSettings, ZenModeSettings {
   allowProposedApi?: boolean;
   allowTransparency?: boolean;
   copyOnSelect: boolean;
   defaultProfile: string;
   focusOnHover: boolean;
-  linkHandlerKey: 'ctrl' | 'shift' | 'alt' | 'meta' | null;
+  linkHandlerKey: 'ctrl' | 'shift' | 'alt' | null;
   openOnStart: boolean;
   preserveCWD: boolean;
   renderer: 'dom' | 'webgl' | 'canvas';
@@ -145,7 +145,7 @@ interface TerminalOptions extends IndicatorsOptions, ZenModeOptions {
   workspace: string | null;
 }
 
-interface WindowOptions {
+interface WindowSettings {
   acrylic: boolean;
   alwaysOnTop: boolean;
   autoHideOnBlur: boolean;
@@ -158,56 +158,68 @@ interface WindowOptions {
   tabWidth: 'auto' | 'fixed';
 }
 
-interface IndicatorsOptions {
+interface IndicatorsSettings {
   gitStatus: boolean;
   indicatorsMode: 'always' | 'hover' | 'hidden';
 }
 
-interface ZenModeOptions {
+interface ZenModeSettings {
   hideIndicators: boolean;
   showTabs: 'single' | 'multiple' | 'hidden';
 }
 
 export interface Theme extends ITerminalTheme {
-  name?: string;
-}
-
-interface BaseOption {
   name: string;
-  label: string;
-  badges?: string[];
 }
 
-interface TextOption extends BaseOption {
-  type: 'string';
+export interface BaseSetting {
+  key: keyof FlatSettings;
+  name: string;
+  description: string;
+  badges?: { label: string; type: 'info' | 'warning' | 'error' }[];
+}
+
+export interface GeneralSetting extends Omit<BaseSetting, 'key'> {
+  input: 'text' | 'number' | 'range' | 'select' | 'segmented' | 'checkbox';
+  options?: { label: string; value: string | number | null }[];
+  range?: { min: number; max: number; step: number; type?: 'percentage' | 'number' };
+}
+
+interface TextSetting extends BaseSetting {
   input: 'text';
 }
 
-interface NumberOption extends BaseOption {
-  type: 'number';
-  input: 'text';
+interface NumberSetting extends BaseSetting {
+  input: 'number';
   range: { min: number; max: number; step: number };
 }
 
-interface CheckboxOption extends BaseOption {
-  type: 'boolean';
+interface RangeSetting extends BaseSetting {
+  input: 'range';
+  range: { min: number; max: number; step: number; type: 'percentage' | 'number' };
+}
+
+interface SelectSetting extends BaseSetting {
+  input: 'select';
+  options: { label: string; value: string | number | null }[];
+}
+
+interface SegmentedSetting extends BaseSetting {
+  input: 'segmented';
+  options: { label: string; value: string | number | null }[];
+}
+
+interface CheckboxSetting extends BaseSetting {
   input: 'checkbox';
 }
 
-interface SelectorOption<
-  T extends string | number = string | number,
-> extends BaseOption {
-  type: 'string' | 'number';
-  input: 'selector';
-  options: T[];
-  values: (T | null)[];
-}
-
-export type SettingsOption =
-  | TextOption
-  | NumberOption
-  | CheckboxOption
-  | SelectorOption;
+export type Setting =
+  | TextSetting
+  | NumberSetting
+  | RangeSetting
+  | SelectSetting
+  | SegmentedSetting
+  | CheckboxSetting;
 
 export type Keymaps = Record<string, string[]>;
 
@@ -232,10 +244,7 @@ export interface IpcAPI {
     get: () => Promise<FlatSettings>;
     pick: <T extends keyof FlatSettings>(key: T) => Promise<FlatSettings[T]>;
     save: (value: Settings) => void;
-    reset: <S extends keyof SettingsFields>(
-      scope: S,
-      key: keyof SettingsFields[S],
-    ) => void;
+    reset: <S extends keyof SettingsFields>(scope: S, key: keyof SettingsFields[S]) => void;
   };
 
   keymaps: {

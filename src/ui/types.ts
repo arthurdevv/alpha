@@ -1,5 +1,7 @@
 import type { StateCreator } from 'zustand';
 
+import type { Setting } from 'shared/types';
+
 export interface Tab {
   id: UUID;
   title: string;
@@ -43,7 +45,7 @@ export interface SearchFilters {
   caseSensitive: boolean;
 }
 
-export type Section =
+export type SettingsSection =
   | 'Application'
   | 'Appearance'
   | 'Terminal'
@@ -53,9 +55,6 @@ export type Section =
   | 'Workspaces'
   | 'Config file';
 
-export type StoreActions<S, A> = StateCreator<
-  S,
-  [['zustand/immer', never]],
-  [],
-  A
->;
+export type SettingsSchema = Record<SettingsSection, ({ title: string } | Setting)[]>;
+
+export type StoreActions<S, A> = StateCreator<S, [['zustand/immer', never]], [], A>;
