@@ -1,16 +1,16 @@
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import prettierConfig from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import prettier from 'eslint-plugin-prettier';
-import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  react.configs.flat.recommended,
+  reactHooks.configs.flat.recommended,
   prettierConfig,
   {
     files: ['**/*.{ts,tsx,mts}'],
@@ -27,18 +27,16 @@ export default defineConfig(
       import: importPlugin,
     },
     settings: {
-      react: { pragma: 'h' },
+      react: {
+        pragma: 'h',
+        version: 'detect',
+      },
     },
     rules: {
       'import/order': [
         'error',
         {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            ['parent', 'sibling', 'index'],
-          ],
+          groups: ['builtin', 'external', 'internal', ['parent', 'sibling', 'index']],
           pathGroups: [
             { pattern: 'main/**', group: 'internal' },
             { pattern: 'ui/**', group: 'internal' },
@@ -60,10 +58,13 @@ export default defineConfig(
           bracketSpacing: true,
           singleQuote: true,
           semi: true,
+          printWidth: 100,
           tabWidth: 2,
           endOfLine: 'auto',
         },
       ],
+      'react/react-in-jsx-scope': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
