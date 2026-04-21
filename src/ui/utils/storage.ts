@@ -5,7 +5,7 @@ class Storage {
 
   create(key: string, value?: any): any {
     if (!this.store.getItem(key)) {
-      this.store.setItem(key, value ?? '{}');
+      this.store.setItem(key, JSON.stringify(value) ?? '{}');
     }
 
     return value && typeof value !== 'object' ? value : {};
@@ -16,7 +16,11 @@ class Storage {
     if (!item) return this.create(key, fallback);
 
     try {
-      return JSON.parse(item);
+      if (/[{}[\]]/.test(item) || ['true', 'false'].includes(item)) {
+        return JSON.parse(item);
+      }
+
+      return item;
     } catch (error) {
       reportError(error);
       return item;
@@ -25,19 +29,13 @@ class Storage {
 
   update(key: string, value: any, spread?: boolean): void {
     const current = this.parse(key);
-    const next =
-      spread && typeof current === 'object' ? { ...current, ...value } : value;
-
-    this.store.setItem(
-      key,
-      typeof next === 'string' ? next : JSON.stringify(next),
-    );
+    const next = spread && typeof current === 'object' ? { ...current, ...value } : value;
+    this.store.setItem(key, typeof next === 'string' ? next : JSON.stringify(next));
   }
 
   toggle(key: string): boolean {
     const next = !this.parse(key);
     this.store.setItem(key, JSON.stringify(next));
-
     return next;
   }
 
