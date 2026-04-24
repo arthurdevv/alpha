@@ -1,6 +1,10 @@
 import styled, { css, keyframes } from 'styled-components';
 
-export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
+export const Panes = styled.div<{
+  $cursor: string;
+  $isDragging: boolean;
+  $isPreview?: boolean;
+}>`
   position: relative;
   width: 100%;
   height: 100%;
@@ -10,7 +14,7 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
     opacity: 0;
   }
 
-  ${({ $cursor }) =>
+  ${({ $cursor, $isPreview }) =>
     $cursor === 'ew-resize'
       ? css`
           flex-direction: row;
@@ -19,6 +23,15 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
             width: 0.3125rem;
             height: 100%;
             cursor: ${$cursor};
+
+            ${$isPreview &&
+            css`
+              background: linear-gradient(
+                to bottom,
+                var(--header, ${props => props.theme.divider}),
+                transparent
+              );
+            `};
           }
         `
       : css`
@@ -28,6 +41,15 @@ export const Panes = styled.div<{ $cursor: string; $isDragging: boolean }>`
             width: 100%;
             height: 0.3125rem;
             cursor: ${$cursor};
+
+            ${$isPreview &&
+            css`
+              background: linear-gradient(
+                to right,
+                var(--header, ${props => props.theme.divider}),
+                transparent
+              );
+            `};
           }
         `}
 
@@ -43,14 +65,14 @@ export const Pane = styled.div<{ $isCurrent?: boolean }>`
   width: 100%;
   height: 100%;
   display: flex;
-  opacity: ${({ $isCurrent }) => ($isCurrent ? 1 : 0.7)};
+  /* opacity: ${({ $isCurrent }) => ($isCurrent ? 1 : 0.7)}; */
   pointer-events: all;
-  transition: 0.2s ease 0s;
+  /* transition: 0.2s ease 0s; */
   transition-property: opacity, background;
   animation: ${keyframes`
-      0% {
+      /* 0% {
         opacity: 0;
-      }
+      } */
   `} 0.4s ease 0s;
 
   &.expanded {

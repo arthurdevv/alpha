@@ -1,8 +1,14 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'preact/compat';
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'preact/compat';
 
 import Terminal, { terms, zooms } from 'app/common/terminal';
 import { loadTheme } from 'app/common/themes';
-import { getSettings } from 'app/settings';
 import { changeOpacity } from 'app/utils/color-utils';
 
 import { Content, Pane } from './styles';
@@ -24,29 +30,26 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
 
   const onContextMenu = (event: MouseEvent) => {
     const term = terms[props.id];
+    if (!term) return;
 
     event.preventDefault();
 
-    if (term) {
-      const { rightClick } = getSettings();
+    const { rightClick } = options;
 
-      if (rightClick === 'clipboard') {
-        term.handleClipboard();
-      } else if (rightClick === 'contextmenu') {
-        props.onFocus(false);
+    if (rightClick === 'clipboard') {
+      term.handleClipboard();
+    } else if (rightClick === 'contextmenu') {
+      props.onFocus(false);
 
-        global.menu = { top: event.clientY, left: event.clientX };
-        global.handleModal(undefined, 'TerminalContextMenu', { on: 1, off: 1 });
-      }
-
-      global.id = props.id;
+      global.menu = { top: event.clientY, left: event.clientX };
+      global.handleModal(undefined, 'TerminalContextMenu', { on: 1, off: 1 });
     }
+
+    global.id = props.id;
   };
 
   const onMouseEnter = () => {
-    const { focusOnHover } = getSettings();
-
-    if (focusOnHover) props.onFocus();
+    if (options.focusOnHover) props.onFocus();
   };
 
   const onMouseDown = (event: MouseEvent) => {
@@ -104,6 +107,8 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     [props.id],
   );
 
+  const { options, isCurrent, isExpanded } = props;
+
   useEffect(() => {
     const { current } = parent;
 
@@ -126,48 +131,50 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
     };
   }, []);
 
+  const raf = useRef<number | null>(null);
+
   useEffect(() => {
     const term = terms[props.id];
-
     if (!term) return;
 
-    const timeout = setTimeout(() => {
-      term.fit();
-    }, 100);
+    const base = options.fontSize ?? 14;
+    term.setOption('fontSize', base + (zoom ?? 0));
 
-    return () => clearTimeout(timeout);
+    if (raf.current) cancelAnimationFrame(raf.current);
+
+    raf.current = requestAnimationFrame(() => {
+      term.fit();
+    });
+
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
   }, [zoom]);
 
   useEffect(() => {
     const term = terms[props.id];
-
     if (!term) return;
 
-    const { fontSize } = props.options;
+    term.setOptions(options);
 
-    term.setOptions({
-      ...props.options,
-      fontSize: fontSize ? fontSize + (zoom ?? 0) : undefined,
-    });
+    if (isCurrent) term.focus();
+  }, [props.id, options, isCurrent]);
 
-    if (props.isCurrent) term.focus();
-  }, [props.options, props.isCurrent, zoom]);
-
-  const backgroundColor = (() => {
-    const { theme, preserveBackground, acrylic } = props.options;
+  const backgroundColor = useMemo(() => {
+    const { theme, preserveBackground, acrylic } = options;
 
     if (!preserveBackground) {
       const { background } = loadTheme(theme);
 
       return acrylic ? changeOpacity(background, 0.7) : background;
     }
-  })();
+  }, [options.acrylic, options.preserveBackground, options.theme]);
 
   return (
     <Pane
       role="presentation"
-      className={props.isExpanded ? 'expanded' : undefined}
-      $isCurrent={props.isCurrent}
+      className={isExpanded ? 'expanded' : undefined}
+      $isCurrent={isCurrent}
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onContextMenu={onContextMenu}
@@ -175,6 +182,16 @@ const Term: React.FC<TermProps> = (props: TermProps) => {
       onKeyDown={onKeyDown}
       style={{ backgroundColor }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 999,
+          inset: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        {props.id}
+      </div>
       <Content ref={onRef} />
     </Pane>
   );

@@ -1,7 +1,8 @@
-import { memo, useState } from 'preact/compat';
+import { memo, useEffect, useState } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/shallow';
 
-import { setSettings } from 'app/settings';
+import useWorkspacesStore from 'lib/store/workspaces';
 
 import {
   Description,
@@ -28,12 +29,17 @@ import {
 import schema from './schema';
 
 const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
-  const {
-    workspace: { id, name, tabs },
-    options: { workspaces = [{ id, name, tabs }] },
-  } = props.store;
+  const { metadata, index } = props.store.workspace;
 
-  const [tab, setTab] = useState<IWorkspaceTab>(tabs[tabIndex]);
+  const store = useWorkspacesStore(
+    useShallow(s => ({
+      context: s.context,
+      deleteTab: s.deleteTab,
+      updateWorkspace: s.updateWorkspace,
+    })),
+  );
+
+  const [tab, setTab] = useState<IWorkspaceTab>(metadata.tabs[index]);
 
   const handleOption = (key: string, type: string, { currentTarget }) => {
     let { value, classList } = currentTarget;
@@ -49,27 +55,22 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
     });
   };
 
-  const handleSave = (del: boolean) => {
-    const _workspaces = [...workspaces];
+  const handleSave = (dialog: boolean) => {
+    if (dialog) {
+      global.dialog = {
+        source: 'Workspaces',
+        target: tab.title,
+        from: metadata.name,
+      };
 
-    const index = _workspaces.findIndex(w => w.id === id);
-
-    if (index !== -1) {
-      if (del) {
-        global.dialog = {
-          source: 'Workspaces',
-          target: tabs[tabIndex].title,
-          from: name,
-          data: [index],
-        };
-
-        return props.handleModal(undefined, 'Dialog');
-      }
-
-      _workspaces[index].tabs[tabIndex] = tab;
-
-      setSettings('workspaces', _workspaces);
+      return props.handleModal(undefined, 'Dialog');
     }
+
+    const updated = metadata.tabs.map((item, i) =>
+      i === index ? { ...tab } : item,
+    );
+
+    store.updateWorkspace(metadata.id, 'tabs', updated);
 
     props.handleModal();
   };
@@ -79,7 +80,7 @@ const Workspace: React.FC<ModalProps> = (props: ModalProps) => {
   return (
     <Container $isVisible={props.isVisible}>
       <Tags>
-        <Tag $isTitle>{`${t('Workspaces')}: ${name}`}</Tag>
+        <Tag $isTitle>{`${t('Workspaces')}: ${metadata.name}`}</Tag>
         <Tag onClick={props.handleModal}>{t('Cancel')}</Tag>
         <Tag onClick={() => handleSave(false)}>{t('Save')}</Tag>
         <Tag onClick={() => handleSave(true)}>{t('Delete')}</Tag>

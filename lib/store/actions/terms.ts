@@ -17,13 +17,15 @@ function createGroup(pid: string, term = true): IGroup {
   };
 }
 
-function removeChild(id: string, parent: IGroup) {
+export function removeChild<
+  T extends { id: string; children: T[]; ratios: number[]; pid?: any },
+>(id: string, parent: T) {
   const { children, ratios } = parent;
 
   for (let index = 0; index < children.length; index += 1) {
     const group = children[index];
 
-    if (group.pid === id) {
+    if (group.pid === id || group.id === id) {
       children.splice(index, 1);
 
       parent.ratios = equalizeRatios(ratios, children.length, index, -1);
@@ -47,7 +49,7 @@ function removeChild(id: string, parent: IGroup) {
   return false;
 }
 
-function equalizeRatios(
+export function equalizeRatios(
   ratios: number[],
   length: number,
   index: number,

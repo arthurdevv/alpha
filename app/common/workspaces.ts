@@ -1,28 +1,42 @@
 import { v4 as uuidv4 } from 'uuid';
 import { basename, extname, relative, sep } from 'path';
 import { getDefaultProfile, getProfileByKey } from 'app/common/profiles';
-import systemInfo, { getCurrentBranch } from 'app/utils/system-info';
+import systemInfo from 'app/utils/system-info';
 
-function createWorkspace(t: any, index: number = 0): IWorkspace {
+export function createWorkspace(t: any, length = 0): IWorkspace {
   return {
     id: uuidv4(),
-    name: `${t('Workspace')} ${index}`,
-    tabs: [createWorkspaceTab(t)],
+    name: `${t('Workspace')} ${length + 1}`,
+    tabs: [createWorkspaceTab()],
   };
 }
 
-function createWorkspaceTab(t: any, index: number = 1): IWorkspaceTab {
-  const { id } = getDefaultProfile();
+export function createWorkspaceTab(length = 0): IWorkspaceTab {
+  const { id: profile } = getDefaultProfile();
 
   return {
-    title: `${t('Terminal')} ${index}`,
-    profile: id,
-    commands: [],
+    profile,
+    id: uuidv4(),
+    title: `Terminal ${length + 1}`,
     overrideTitle: true,
+    group: createWorkspaceGroup({}),
   };
 }
 
-function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
+export function createWorkspaceGroup({
+  id,
+  commands,
+}: Partial<IWorkspaceGroup>): IWorkspaceGroup {
+  return {
+    id: id ?? uuidv4(),
+    commands: commands ?? [],
+    ratios: [],
+    children: [],
+    orientation: null,
+  };
+}
+
+export function getPreviewPrompt(id: string, theme: ITheme): string[] {
   const profile = getProfileByKey('id', id);
 
   if (profile.type === 'shell') {
@@ -43,14 +57,12 @@ function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
         `PS ${cwd}> <span style="color:${theme.brightYellow};">%</span>`,
       ];
 
-    const branch = getCurrentBranch(cwd);
-
     return [
       `<span style="color:${theme.brightGreen};">${root}</span> <span style="color:${theme.brightYellow};">${
         basename(String.raw`${cwd}`) === username
           ? `~`
           : `~/${relative(home, cwd).split(sep).join('/')}`
-      }</span> ${branch ? `<span style="color:${theme.brightCyan};">(${branch})</span>` : ''}`,
+      }</span>`,
       '$ %',
     ];
   }
@@ -66,5 +78,3 @@ function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
     '> %',
   ];
 }
-
-export { createWorkspace, createWorkspaceTab, getPreviewPrompt };

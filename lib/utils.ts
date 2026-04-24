@@ -1,9 +1,5 @@
 import { cloneDeepWith, isPlainObject, transform } from 'lodash';
 
-export function sortArray(array: any[]) {
-  return array.sort((a, b) => a.name.localeCompare(b.name));
-}
-
 export function onSearch(
   { currentTarget },
   display: string = 'block',
@@ -44,6 +40,30 @@ export function onSearch(
   );
 
   callback && callback(value);
+}
+
+export function onFormSearch({ currentTarget, type }) {
+  const { parentElement, value } = currentTarget;
+
+  switch (type) {
+    case 'click':
+      parentElement.style.width = '12rem';
+      break;
+
+    case 'focusout':
+      if (!value) parentElement.style.width = '5rem';
+      break;
+
+    case 'input': {
+      const { parentElement } = currentTarget.closest('[role="section"]');
+
+      const event = {
+        currentTarget: { value, parentElement: { parentElement } },
+      };
+
+      return onSearch(event, 'flex');
+    }
+  }
 }
 
 export function isNonEmptyObject(target: any): boolean {
@@ -94,6 +114,16 @@ export function sanitizeObject(target: any): any {
         ? sanitizeObject(value)
         : value;
   });
+}
+
+export function sortArray(array: any[]) {
+  return array.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function arrayToRecord<T extends { id: string }>(
+  target: T[],
+): Record<string, T> {
+  return Object.fromEntries(target.map(item => [item.id, item]));
 }
 
 export function getDateFormatted(

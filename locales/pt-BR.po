@@ -1184,3 +1184,9 @@ msgstr "Roxo"
 
 msgid "Pink"
 msgstr "Rosa"
+
+msgid "to split or"
+msgstr "para dividir ou"
+
+msgid "to close the pane"
+msgstr "para fechar o painel"

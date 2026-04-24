@@ -85,7 +85,13 @@ export const Wrapper = styled.div<{ $element?: string }>`
               display: none;
             }
           `
-        : undefined}
+        : $element === 'Workspaces'
+          ? css`
+              @media screen and (max-width: 50.4375rem) {
+                display: none;
+              }
+            `
+          : undefined}
 `;
 
 export const Action = styled.div`

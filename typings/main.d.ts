@@ -182,10 +182,19 @@ declare global {
   };
 
   type IWorkspaceTab = {
+    id: string;
     title: string;
     profile: string;
-    commands: string[];
     overrideTitle: boolean;
+    group: IWorkspaceGroup;
+  };
+
+  type IWorkspaceGroup = {
+    id: string;
+    commands: string[] | null;
+    ratios: number[];
+    children: IWorkspaceGroup[];
+    orientation: 'horizontal' | 'vertical' | null;
   };
 
   type IAnalyticsConfig = {

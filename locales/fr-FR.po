@@ -1184,3 +1184,9 @@ msgstr "Violet"
 
 msgid "Pink"
 msgstr "Rose"
+
+msgid "to split or"
+msgstr "pour diviser ou"
+
+msgid "to close the pane"
+msgstr "pour fermer le volet"

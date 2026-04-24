@@ -1,6 +1,10 @@
 import { execCommand } from 'app/keymaps/commands';
 
-function getNestedObject(target: object, path: string | string[], value: any) {
+export function getNestedObject(
+  target: object,
+  path: string | string[],
+  value: any,
+) {
   if (typeof path === 'string') {
     return { ...target, [path]: value };
   }

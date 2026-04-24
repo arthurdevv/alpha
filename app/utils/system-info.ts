@@ -40,19 +40,6 @@ function getUptime(): string {
   return uptime.join(', ');
 }
 
-export function getCurrentBranch(cwd: string) {
-  try {
-    const branch = execSync('git rev-parse --abbrev-ref HEAD', {
-      cwd: resolve(cwd),
-      stdio: ['ignore'],
-    });
-
-    return branch ? branch.toString().trim() : null;
-  } catch {
-    return null;
-  }
-}
-
 export function renderSystemInfo(color?: string, fw?: string | number) {
   const colorize = (text: string) =>
     `<span style="color:${color};font-weight:${fw};">${text}</span>`;

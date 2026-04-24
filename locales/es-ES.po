@@ -1184,3 +1184,9 @@ msgstr "Morado"
 
 msgid "Pink"
 msgstr "Rosa"
+
+msgid "to split or"
+msgstr "para dividir o"
+
+msgid "to close the pane"
+msgstr "para cerrar el panel"

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const Theme = styled.div`
   display: flex;
@@ -82,21 +82,17 @@ export const Preview = styled.div<{ $code?: boolean }>`
   border: 1px solid ${props => props.theme.border};
   transition: background 0.2s ease 0s;
   font-variant-ligatures: common-ligatures discretionary-ligatures;
+  animation: ${keyframes`
+    0% {
+      opacity: 0;
+    }
+  `} 0.4s ease 0s;
 
   & pre {
     font-family: inherit;
     color: inherit;
     cursor: text;
   }
-
-  ${({ $code }) =>
-    $code &&
-    css`
-      color: ${props => props.theme.foreground};
-      cursor: inherit;
-      outline: none;
-      border: none;
-    `}
 `;
 
 export const Toggle = styled.div`

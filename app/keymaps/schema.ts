@@ -116,6 +116,10 @@ function formatKeys(command: string, initial?: boolean) {
   );
 }
 
+function formatKeysFlat(commands: string[]) {
+  return commands.map(command => formatKeys(command).flat());
+}
+
 function resolveCommand(command: string) {
   if (command in schema) {
     const [keys] = formatKeys(command);
@@ -155,6 +159,7 @@ function watchCommand(command: string, callback: (keymaps: string[]) => void) {
 export {
   parseKeys,
   formatKeys,
+  formatKeysFlat,
   resolveCommand,
   watchKeys,
   watchKeymaps,

@@ -5,7 +5,7 @@ import { throttle } from 'lodash';
 import { Divider, Panes, SplitPane } from './styles';
 
 const SplitTerm: React.FC<SplitTermProps> = (props: SplitTermProps) => {
-  const { orientation, children, ratios } = props;
+  const { orientation, children, ratios, isPreview } = props;
 
   const [dimension, offset, client, cursor] = {
     vertical: ['width', 'left', 'clientX', 'ew-resize'],
@@ -58,10 +58,16 @@ const SplitTerm: React.FC<SplitTermProps> = (props: SplitTermProps) => {
   };
 
   return (
-    <Panes $cursor={cursor} $isDragging={isDragging}>
+    <Panes $cursor={cursor} $isDragging={isDragging} $isPreview={isPreview}>
       {children.map((child, index) => (
         <Fragment key={index}>
-          <SplitPane style={{ [dimension]: `${ratios[index] * 100}%` }}>
+          <SplitPane
+            style={{
+              [dimension]: `${ratios[index] * 100}%`,
+              // pointerEvents: isPreview ? 'all' : 'none',
+              // display: isPreview ? 'flex' : 'block',
+            }}
+          >
             {child}
           </SplitPane>
           {index < children.length - 1 && (

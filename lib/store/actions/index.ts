@@ -134,8 +134,8 @@ export default (set: AlphaSet) => ({
     set(state => state.set('profile', profile));
   },
 
-  setWorkspace(workspace: IWorkspace | null) {
-    set(state => state.set('workspace', workspace));
+  setWorkspace(metadata: IWorkspace | null, index?: number) {
+    set(state => state.set('workspace', { metadata, index }));
   },
 
   setModal(modal: string | null) {

@@ -2,6 +2,8 @@ import { JSX } from 'preact';
 import type { TFunction } from 'i18next';
 import type Terminal from 'app/common/terminal';
 import type actions from 'lib/store/actions';
+import type workspaceActions from 'lib/store/workspaces/actions';
+import type workspaceHelpers from 'lib/store/workspaces/helpers';
 
 declare global {
   type AlphaState = {
@@ -19,11 +21,14 @@ declare global {
       instances: IInstance[];
     };
     viewport: Partial<IViewport>;
-    workspace: IWorkspace;
+    workspace: {
+      metadata: IWorkspace;
+      index: number;
+    };
     modal: string | null;
   };
 
-  type AlphaActions = {
+  type AlphaHelpers = {
     set(path: string | string[], value: any): AlphaStore;
     assign(path: string[], value: any): AlphaStore;
     update(path: string[], value: any): AlphaStore;
@@ -33,6 +38,9 @@ declare global {
     merge<T extends object>(target: T, partial: NestedPartial<T>): T;
     concat(path: string[], value: any): AlphaStore;
     exec(command: string, ...args: any[]);
+  };
+
+  type AlphaActions = AlphaHelpers & {
     getStore(): AlphaStore;
   } & ReturnType<typeof actions>;
 
@@ -150,6 +158,7 @@ declare global {
     ratios: number[];
     children: JSX.Element[];
     onResizeGroup(ratios: number[]): void;
+    isPreview?: boolean;
   }
 
   interface TabProps {
@@ -283,6 +292,76 @@ declare global {
     saturation: number;
     value: number;
   };
+
+  type WorkspacesState = {
+    context: Record<string, IWorkspace>;
+    prompts: Record<string, string | null>;
+    current: { tabs: Record<string, number>; focused: string | null };
+  };
+
+  type WorkspacesHelpers = {
+    set(path: string | string[], value: any): WorkspacesStore;
+    update(path: string[], value: any): WorkspacesStore;
+    without(path: string[]): WorkspacesStore;
+  };
+
+  type WorkspacesStore = WorkspacesState &
+    WorkspacesHelpers &
+    ReturnType<typeof workspaceActions>;
+
+  type WorkspacesSet = (
+    partial:
+      | WorkspacesStore
+      | Partial<WorkspacesStore>
+      | ((
+          state: WorkspacesStore,
+        ) => WorkspacesStore | Partial<WorkspacesStore>),
+    replace?: false,
+  ) => void;
+
+  interface WorkspacesProps {
+    store: WorkspacesStore;
+    settings: ISettings;
+    theme: ITheme;
+  }
+
+  interface WorkspaceGroupProps extends Pick<
+    ISettings,
+    'fontFamily' | 'fontWeight' | 'theme'
+  > {
+    group: IWorkspaceGroup;
+    profile: string;
+    focused: string | null;
+    prompts: Record<string, string | null>;
+    splitPane(
+      group: IWorkspaceGroup,
+      orientation: 'vertical' | 'horizontal',
+    ): void;
+    setGroupRatios(id: string, ratios: number[]): void;
+    setFocusedGroup(id: string): void;
+    clearFocusedGroup(id: string, commands: string[]): void;
+    setPrompt(id: string, data: string): void;
+    closePane(id: string): void;
+  }
+
+  interface WorkspacePaneProps extends Pick<
+    ISettings,
+    'fontFamily' | 'fontWeight' | 'theme'
+  > {
+    prompt: string | null;
+    profile: string;
+    isCurrent: boolean;
+    onFocus(): void;
+    onBlur(commands: string[]): void;
+    onPrompt(data: string): void;
+    onSplit(orientation: 'horizontal' | 'vertical'): void;
+    onClose(): void;
+    splitSets: {
+      horizontal: Set<string>;
+      vertical: Set<string>;
+      close: Set<string>;
+    };
+  }
 
   type NestedPartial<T> = { [K in keyof T]?: NestedPartial<T[K]> };
 

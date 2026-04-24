@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Cursor, Flex } from '../Appearance/styles';
+import parse from 'html-react-parser';
+
+import { Preview } from 'components/Settings/Appearance/styles';
+import { Content, Cursor, Line, Pane } from './styles';
 
 const PROMPT_TEXTS = [
   `git pull
@@ -22,7 +25,10 @@ function getRandomText(ref?: string) {
   return text ?? '';
 }
 
-const PromptExample: React.FC<{ theme: ITheme }> = ({ theme }) => {
+const PromptExample: React.FC<{ settings: ISettings; theme: ITheme }> = ({
+  settings,
+  theme,
+}) => {
   const [displayed, setDisplayed] = useState<string>('');
 
   const prompt = useRef<string>(getRandomText());
@@ -76,23 +82,27 @@ const PromptExample: React.FC<{ theme: ITheme }> = ({ theme }) => {
   }, []);
 
   return (
-    <Flex $column $isCode>
-      {displayed.split('\n').map((command, index, array) => (
-        <Flex $column key={index}>
-          <Flex key={index} $isCode>
-            <pre dangerouslySetInnerHTML={{ __html: `$ ${command}` }} />
+    <Preview
+      style={{
+        fontFamily: settings.fontFamily,
+        fontWeight: settings.fontWeight,
+        color: theme.foreground,
+        border: 'none',
+      }}
+    >
+      <Content style={{ margin: 0 }}>
+        {displayed.split('\n').map((command, index, array) => (
+          <Line key={index}>
+            {parse(`$ ${command}`)}
             {array.length - 1 === index && (
-              <Cursor
-                className="cursor focused"
-                style={{ background: theme.cursor }}
-              >
+              <Cursor className="cursor" style={{ background: theme.cursor }}>
                 &nbsp;
               </Cursor>
             )}
-          </Flex>
-        </Flex>
-      ))}
-    </Flex>
+          </Line>
+        ))}
+      </Content>
+    </Preview>
   );
 };
 

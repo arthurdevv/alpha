@@ -3,7 +3,54 @@ import {
   Arrow as _Arrow,
   Label as _Label,
 } from 'components/Modal/Search/styles';
+import {
+  Pane as _Pane,
+  Content as _PaneContent,
+} from 'components/Terminal/styles';
 import { Placeholder } from '../styles';
+
+export const Toolbar = styled.div<{ $hasFocused: boolean }>`
+  position: relative;
+  min-height: 24px;
+  display: flex;
+  flex: 1 0 1%;
+  justify-content: flex-end;
+
+  & > div:first-child {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  & > div {
+    transition: opacity 0.2s ease 0s;
+  }
+
+  ${({ $hasFocused }) =>
+    $hasFocused
+      ? css`
+          & > div:first-child {
+            opacity: 1;
+            transition-delay: 0.1s;
+          }
+
+          & > div:last-child {
+            opacity: 0;
+            pointer-events: none;
+          }
+        `
+      : css`
+          & > div:first-child {
+            opacity: 0;
+          }
+
+          & > div:last-child {
+            opacity: 1;
+            pointer-events: all;
+            transition-delay: 0.1s;
+          }
+        `}
+`;
 
 export const Name = styled.input`
   font-size: 0.875rem;
@@ -16,6 +63,7 @@ export const Name = styled.input`
 
 export const Window = styled.div`
   position: relative;
+  max-height: 15rem;
   width: 90%;
   border-top: 1px solid ${props => props.theme.borderWindow};
   border-left: 1px solid ${props => props.theme.borderWindow};
@@ -103,11 +151,16 @@ export const Button = styled.div`
 
 export const Label = styled(_Label)`
   top: 4.375rem;
+  background: ${props => props.theme.background};
 `;
 
 export const Arrow = styled(_Arrow)`
   position: absolute;
   top: -0.75rem;
+
+  &::before {
+    border-bottom-color: ${props => props.theme.background};
+  }
 `;
 
 export const Action = styled.div`
@@ -141,7 +194,7 @@ export const Action = styled.div`
 
 export const Header = styled.header`
   width: 100%;
-  height: 2.375rem;
+  min-height: 2.375rem;
   z-index: 100;
   display: flex;
   overflow: hidden;
@@ -267,3 +320,46 @@ export const Workspace = styled.li<{ $isExample?: boolean }>`
       }
     `}
 `;
+
+export const Pane = styled(_Pane)`
+  opacity: 1;
+  outline: none;
+  border: none;
+  user-select: text;
+  font-variant-ligatures: common-ligatures discretionary-ligatures;
+`;
+
+export const Content = styled(_PaneContent)`
+  margin: 0.625rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  line-height: 1.5;
+  font-size: 0.875rem;
+
+  &::-webkit-scrollbar {
+    width: 0.25rem;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-corner,
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${props => props.theme.scrollbarThumb};
+    border-radius: 4px;
+
+    &:hover {
+      background: ${props => props.theme.scrollbarHover};
+    }
+  }
+`;
+
+export const Line = styled.div`
+  cursor: text;
+  color: inherit;
+  font-family: inherit;
+`;
+
+export { Cursor } from 'components/Settings/Appearance/styles';
