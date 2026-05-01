@@ -1,5 +1,5 @@
 {
-  "name": "default",
+  "name": "Default",
   "black": "#000000",
   "red": "#cd0000",
   "green": "#00cd00",
@@ -16,8 +16,8 @@
   "brightMagenta": "#ff00ff",
   "brightCyan": "#00ffff",
   "brightWhite": "#ffffff",
-  "foreground": "#e6e6e6ff",
-  "background": "#0f0f0fff",
-  "cursorColor": "#e6e6e6ff",
-  "selectionBackground": "#e6e6e659"
+  "foreground": "#e6e6e6",
+  "background": "#0a0a0a",
+  "cursorColor": "#e6e6e6",
+  "selectionBackground": "#303030"
 }

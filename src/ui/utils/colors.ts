@@ -1,8 +1,39 @@
-import type { IColor } from 'ui/types';
+import type { Theme } from 'shared/types';
+import type { Color } from 'ui/types';
 
-function changeOpacity(color: string | undefined, opacity: number): string {
+const aliases: Partial<Record<keyof Theme, string>> = {
+  cursorColor: 'Cursor',
+};
+
+const abbreviations: Partial<Record<keyof Theme, string>> = {
+  black: 'BK',
+  red: 'R',
+  green: 'G',
+  yellow: 'Y',
+  blue: 'B',
+  purple: 'P',
+  cyan: 'C',
+  white: 'W',
+  foreground: 'FG',
+  background: 'BG',
+  cursorColor: 'CU',
+  selectionBackground: 'SB',
+};
+
+export function formatColorKey(key: string): string {
+  return aliases[key] ?? key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
+}
+
+export function abbreviateColorKey(key: string): string {
+  return abbreviations[key] ?? key.replace('bright', 'B').slice(0, 2).toUpperCase();
+}
+
+export function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+export function changeOpacity(color: string | undefined, opacity: number): string {
   if (!color) return 'transparent';
-
   let value = color.replace('#', '');
 
   if (value.length === 3) {
@@ -19,9 +50,8 @@ function changeOpacity(color: string | undefined, opacity: number): string {
   return `#${value.slice(0, 6)}${alpha}`;
 }
 
-function darkenHex(color: string | undefined, amount = 10): string {
+export function darkenHex(color: string | undefined, amount = 10): string {
   if (!color) return 'transparent';
-
   let value = color.replace('#', '');
 
   if (value.length === 3) {
@@ -32,7 +62,6 @@ function darkenHex(color: string | undefined, amount = 10): string {
   }
 
   const hasAlpha = value.length === 8;
-
   const r = parseInt(value.slice(0, 2), 16) / 255;
   const g = parseInt(value.slice(2, 4), 16) / 255;
   const b = parseInt(value.slice(4, 6), 16) / 255;
@@ -90,10 +119,6 @@ function darkenHex(color: string | undefined, amount = 10): string {
   return `#${toHex(r2)}${toHex(g2)}${toHex(b2)}${a ?? ''}`;
 }
 
-function clamp(n: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, n));
-}
-
 function rgbaToHex(r: number, g: number, b: number, a: number) {
   const to2 = (n: number) => n.toString(16).padStart(2, '0');
   const aa = to2(Math.round(clamp(a, 0, 1) * 255));
@@ -107,8 +132,7 @@ function hexToHsv(hex: string) {
   const r = parseInt(normalized.slice(0, 2), 16) / 255;
   const g = parseInt(normalized.slice(2, 4), 16) / 255;
   const b = parseInt(normalized.slice(4, 6), 16) / 255;
-  const a =
-    normalized.length === 8 ? parseInt(normalized.slice(6, 8), 16) / 255 : 1;
+  const a = normalized.length === 8 ? parseInt(normalized.slice(6, 8), 16) / 255 : 1;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
@@ -167,18 +191,9 @@ function hsvToRgba(h: number, s: number, v: number, a: number) {
   };
 }
 
-function hsvToHex(c: Pick<IColor, 'hue' | 'saturation' | 'value' | 'alpha'>) {
+function hsvToHex(c: Pick<Color, 'hue' | 'saturation' | 'value' | 'alpha'>) {
   const rgba = hsvToRgba(c.hue, c.saturation, c.value, c.alpha);
-
   return rgbaToHex(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-function abbreviateColorName(name: string): string {
-  const parts: string[] = name.match(/[A-Z]?[a-z]+/g) || [];
-
-  return parts.map(word => word[0].toUpperCase()).join('');
-}
-
-const hsv = { toHex: hsvToHex, toRgba: hsvToRgba, fromHex: hexToHsv };
-
-export { changeOpacity, darkenHex, clamp, hsv, abbreviateColorName };
+export const hsv = { toHex: hsvToHex, toRgba: hsvToRgba, fromHex: hexToHsv };

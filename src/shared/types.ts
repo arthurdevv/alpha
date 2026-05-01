@@ -1,4 +1,4 @@
-import type { FontWeight, ITheme as ITerminalTheme } from '@xterm/xterm';
+import type { FontWeight } from '@xterm/xterm';
 
 import type { SerialOptions, ShellOptions, SSHOptions } from 'main/types';
 
@@ -168,8 +168,37 @@ interface ZenModeSettings {
   showTabs: 'single' | 'multiple' | 'hidden';
 }
 
-export interface Theme extends ITerminalTheme {
+export interface Theme {
   name: string;
+  black: string;
+  red: string;
+  green: string;
+  yellow: string;
+  blue: string;
+  purple: string;
+  cyan: string;
+  white: string;
+  brightBlack: string;
+  brightRed: string;
+  brightGreen: string;
+  brightYellow: string;
+  brightBlue: string;
+  brightPurple: string;
+  brightCyan: string;
+  brightWhite: string;
+  background: string;
+  foreground: string;
+  cursorColor: string;
+  selectionBackground: string;
+}
+
+export interface SystemInfo {
+  username: string;
+  hostname: string;
+  homedir: string;
+  root: string;
+  uptime: string;
+  resolution: string;
 }
 
 export interface BaseSetting {
@@ -202,6 +231,7 @@ interface RangeSetting extends BaseSetting {
 interface SelectSetting extends BaseSetting {
   input: 'select';
   options: { label: string; value: string | number | null }[];
+  source?: string;
 }
 
 interface SegmentedSetting extends BaseSetting {
@@ -253,8 +283,17 @@ export interface IpcAPI {
     reset: (command: string) => void;
   };
 
+  theme: {
+    load: (name: string) => Promise<Partial<Theme>>;
+    list: () => Promise<string[]>;
+  };
+
   window: {
     action: (action: string, ...args: any[]) => void;
+  };
+
+  system: {
+    info: () => Promise<SystemInfo>;
   };
 
   i18n: {
