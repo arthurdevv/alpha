@@ -1,14 +1,14 @@
 import path from 'node:path';
 
-import { ConfigManager, userDataPath } from 'shared/config';
+import { ConfigManager, PATHS } from 'shared/config';
 import { reportError } from 'shared/error-reporter';
 import type { FlatSettings, Settings, SettingsFields } from 'shared/types';
 
 import { defaultSettings, schema } from './defaults';
 
 const FILE = {
-  JSON: path.join(userDataPath, 'settings.json'),
-  YAML: path.join(userDataPath, '.alpha.yaml'),
+  JSON: path.join(PATHS.userData, 'settings.json'),
+  YAML: path.join(PATHS.userData, '.alpha.yaml'),
 };
 
 class SettingsManager extends ConfigManager<Settings, FlatSettings> {
@@ -38,10 +38,7 @@ class SettingsManager extends ConfigManager<Settings, FlatSettings> {
     return this.get()[key];
   }
 
-  reset<S extends keyof SettingsFields>(
-    scope: S,
-    key: keyof SettingsFields[S],
-  ): void {
+  reset<S extends keyof SettingsFields>(scope: S, key: keyof SettingsFields[S]): void {
     try {
       const current = this.load();
       current[scope][key] = this.defaults[scope][key];

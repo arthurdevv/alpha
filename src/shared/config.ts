@@ -5,8 +5,19 @@ import type { ZodSafeParseResult, ZodType } from 'zod';
 
 import { reportError } from './error-reporter';
 
-export const appPath = app.getAppPath();
-export const userDataPath = app.getPath('userData');
+export const PATHS = {
+  get app() {
+    return app.getAppPath();
+  },
+
+  get exe() {
+    return app.getPath('exe');
+  },
+
+  get userData() {
+    return app.getPath('userData');
+  },
+};
 
 export abstract class ConfigManager<T, U> {
   private cache: T | null = null;
@@ -19,7 +30,6 @@ export abstract class ConfigManager<T, U> {
   ) {}
 
   async init(): Promise<void> {
-    // TODO(v1.1.0): remove migration
     if (app.getVersion() !== '1.0.0') {
       return await this.migrate();
     }
@@ -73,11 +83,18 @@ export abstract class ConfigManager<T, U> {
   watch(callback: (value: U) => void): void {
     if (this.watcher) return;
 
+    let debounce: NodeJS.Timeout | null = null;
+
     this.watcher = fs.watch(this.file.JSON, { persistent: false }, event => {
-      if (event === 'change') {
+      if (event !== 'change') return;
+      if (debounce) clearTimeout(debounce);
+
+      debounce = setTimeout(() => {
         this.cache = null;
+        debounce = null;
+
         callback(this.get());
-      }
+      }, 50);
     });
   }
 

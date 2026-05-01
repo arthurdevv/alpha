@@ -3,12 +3,12 @@ import path from 'node:path';
 import { screen } from 'electron';
 
 import type { Bounds } from 'main/types';
-import { ConfigManager, userDataPath } from 'shared/config';
+import { ConfigManager, PATHS } from 'shared/config';
 import { reportError } from 'shared/error-reporter';
 
 const FILE = {
-  JSON: path.join(userDataPath, 'bounds.json'),
-  YAML: path.join(userDataPath, 'bounds.yaml'),
+  JSON: path.join(PATHS.userData, 'bounds.json'),
+  YAML: path.join(PATHS.userData, 'bounds.yaml'),
 };
 
 const initialBounds: Bounds = {

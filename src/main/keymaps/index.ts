@@ -1,13 +1,13 @@
 import path from 'node:path';
 
-import { ConfigManager, userDataPath } from 'shared/config';
+import { ConfigManager, PATHS } from 'shared/config';
 import type { Keymaps } from 'shared/types';
 
 import { defaultKeymaps, schema } from './defaults';
 
 const FILE = {
-  JSON: path.join(userDataPath, 'keymaps.json'),
-  YAML: path.join(userDataPath, 'keymaps.yaml'),
+  JSON: path.join(PATHS.userData, 'keymaps.json'),
+  YAML: path.join(PATHS.userData, 'keymaps.yaml'),
 };
 
 class KeymapsManager extends ConfigManager<Keymaps, Keymaps> {
