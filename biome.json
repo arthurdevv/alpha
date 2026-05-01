@@ -41,8 +41,40 @@
     "enabled": true,
     "actions": {
       "source": {
-        "recommended": true,
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              [
+                ":NODE:"
+              ],
+              ":BLANK_LINE:",
+              [
+                ":PACKAGE:",
+                "!main/**",
+                "!ui/**",
+                "!shared/**",
+                "!components/**",
+                "!cli/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                "main/**",
+                "ui/**",
+                "shared/**",
+                "cli/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                "components/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                ":PATH:"
+              ]
+            ]
+          }
+        }
       }
     }
   }
