@@ -1,6 +1,7 @@
-import { z } from 'zod';
-
+import { version } from 'main/../../package.json';
 import type { Profile, Settings, Workspace } from 'shared/types';
+
+import { z } from 'zod';
 
 export const schema = z.object({
   application: z.object({
@@ -40,7 +41,7 @@ export const schema = z.object({
     scrollback: z.number().min(0).max(50000),
     scrollOnUserInput: z.boolean(),
     rightClick: z.enum(['contextmenu', 'clipboard']).nullable(),
-    linkHandlerKey: z.enum(['ctrl', 'shift', 'alt', 'meta']).nullable(),
+    linkHandlerKey: z.enum(['ctrl', 'shift', 'alt']).nullable(),
     copyOnSelect: z.boolean(),
     trimSelection: z.boolean(),
     wordSeparators: z.string(),
@@ -74,7 +75,7 @@ export const schema = z.object({
 export function defaultSettings(): Settings {
   return {
     application: {
-      version: process.env.npm_package_version!,
+      version,
       language: 'auto',
       autoUpdates: true,
       enableAnalytics: true,
@@ -91,7 +92,7 @@ export function defaultSettings(): Settings {
       minimumContrastRatio: 1,
       cursorStyle: 'block',
       cursorBlink: true,
-      theme: 'default',
+      theme: 'Default',
       preserveBackground: true,
     },
     terminal: {
