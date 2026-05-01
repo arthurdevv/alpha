@@ -55,6 +55,10 @@ export type SettingsSection =
   | 'Workspaces'
   | 'Config file';
 
+export interface SectionProps {
+  content: preact.ComponentChildren;
+}
+
 export type SettingsSchema = Record<SettingsSection, ({ title: string } | Setting)[]>;
 
 export type StoreActions<S, A> = StateCreator<S, [['zustand/immer', never]], [], A>;

@@ -1,15 +1,26 @@
-/* eslint-disable react-hooks/refs */
 import { cx } from '@linaria/core';
-import { useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 
-import type { FlatSettings } from 'shared/types';
 import { useAppStore } from 'ui/store/app/store';
-import type { SettingsSection } from 'ui/types';
+import type { SectionProps, SettingsSection } from 'ui/types';
+import { scrollToTop } from 'ui/utils/misc';
 import { local } from 'ui/utils/storage';
 
+import Appearance from './Appearance';
+import Setting from './Setting';
 import schema from './schema';
-import Setting from './setting';
-import { Container, Section, Navigation, NavigationItem, Title } from './styles';
+import { Container, Navigation, NavigationItem, Section, Title } from './styles';
+
+const sectionMap: Record<SettingsSection, React.ComponentType<SectionProps>> = {
+  // Application,
+  Appearance,
+  // Profiles,
+  // Keymaps,
+  // Workspaces,
+  // 'Config file': Config,
+};
+
+const storedKeys = ['theme', 'profiles', 'workspaces'] as const;
 
 export default function Settings() {
   const settings = useAppStore(s => s.settings);
@@ -18,16 +29,55 @@ export default function Settings() {
     return local.parse('section', 'Application');
   });
 
-  const items = useMemo(() => schema[section], [section]);
-  const settingsRef = useRef<Partial<FlatSettings>>();
+  const [storedOptions, setStoredOptions] = useState<Record<string, any[]>>({});
+
+  const settingsRef = useRef<typeof settings>(settings);
 
   const handleNavigation = (section: SettingsSection) => {
     setSection(section);
+    scrollToTop('section');
     local.update('section', section);
-    document.querySelector('section')?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!settingsRef.current) settingsRef.current = settings;
+  useEffect(() => {
+    const promises = storedKeys.map(async key => {
+      const items = key === 'theme' ? await ipc.theme.list() : (settings[key] ?? []);
+
+      const options = items.map((item: any) => ({
+        label: key === 'theme' ? item : item.name,
+        value: key === 'theme' ? item : item.id,
+      }));
+
+      return [key, options] as const;
+    });
+
+    Promise.all(promises).then(results => {
+      const entries = Object.fromEntries(results);
+      setStoredOptions(entries);
+    });
+  }, [settings]);
+
+  const content = schema[section].map(item => {
+    if ('title' in item) {
+      return <Title key={item.title}>{item.title}</Title>;
+    }
+
+    const options =
+      item.input === 'select' || item.input === 'segmented'
+        ? item.options.concat(
+            item.input === 'select' && item.source ? (storedOptions[item.source] ?? []) : [],
+          )
+        : undefined;
+
+    const value = settings[item.key];
+    const valueRef = settingsRef.current[item.key];
+    const changed = value !== valueRef;
+
+    return <Setting {...item} _key={item.key} value={value} changed={changed} options={options} />;
+  });
+
+  const SectionComponent = sectionMap[section];
+  const children = SectionComponent ? <SectionComponent content={content} /> : content;
 
   return (
     <Container>
@@ -42,21 +92,7 @@ export default function Settings() {
           </NavigationItem>
         ))}
       </Navigation>
-      <Section>
-        {items.map((item, index) => {
-          if ('title' in item) {
-            return <Title key={index}>{item.title}</Title>;
-          }
-
-          const value = settings[item.key];
-          const valueRef = settingsRef.current?.[item.key];
-          const changed = value !== valueRef;
-
-          return (
-            <Setting {...item} key={item.key} _key={item.key} value={value} changed={changed} />
-          );
-        })}
-      </Section>
+      <Section>{children}</Section>
     </Container>
   );
 }

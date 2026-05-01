@@ -128,7 +128,8 @@ const schema: SettingsSchema = {
       name: 'Theme',
       description: 'Sets the color theme of the terminal.',
       input: 'select',
-      options: [{ label: 'Default', value: 'default' }],
+      options: [],
+      source: 'theme',
     },
     {
       key: 'preserveBackground',
@@ -292,7 +293,8 @@ const schema: SettingsSchema = {
       name: 'Default profile',
       description: 'Sets the profile for new terminals.',
       input: 'select',
-      options: [],
+      options: [{ label: 'None', value: null }],
+      source: 'profiles',
     },
   ],
 
@@ -405,6 +407,7 @@ const schema: SettingsSchema = {
       description: 'Sets the workspace loaded at startup.',
       input: 'select',
       options: [{ label: 'None', value: null }],
+      source: 'workspaces',
     },
   ],
 

@@ -1,68 +1,33 @@
-import { cloneDeepWith } from 'lodash';
-
-export function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(k => [k, obj[k]])) as Pick<T, K>;
 }
 
 export function sortArray(array: any[]) {
   return array.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function isNonEmptyObject(target: any): boolean {
-  const keys = Object.keys(target);
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
-  if (keys.length === 0) {
-    return false;
+export function scrollToTop(selector: keyof HTMLElementTagNameMap) {
+  const element = document.querySelector(selector);
+  if (element) {
+    element.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+export function manipulateClassList(element: Element, token: string, action: 'add' | 'toggle') {
+  if (action === 'toggle') {
+    return element.classList.toggle(token);
   }
 
-  return keys.every(key => {
-    const value = target[key];
+  element.classList.add(token);
+  const { parentElement } = element;
 
-    return Object.keys(value).length > 0;
-  });
-}
-
-export function countTrueProperties<T extends object>(
-  target: T,
-  keys: (keyof T)[],
-): number {
-  return keys.reduce((count, key) => count + (target[key] === true ? 1 : 0), 0);
-}
-
-export function serialize<T extends object>(target: T): T {
-  return cloneDeepWith(target, val =>
-    typeof val === 'function' ||
-    typeof val === 'symbol' ||
-    val === undefined ||
-    Buffer?.isBuffer?.(val)
-      ? undefined
-      : undefined,
-  );
-}
-
-export function getDateFormatted(
-  language: string = 'en-US',
-  value?: number | string | Date,
-): string {
-  let date = new Date();
-
-  let options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  };
-
-  if (value) {
-    date = new Date(value);
-
-    options = {
-      day: '2-digit',
-      month: 'short',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    };
+  if (parentElement) {
+    parentElement.childNodes.forEach(child => {
+      if (child !== element) (child as Element).classList.remove('s');
+    });
   }
-
-  return new Intl.DateTimeFormat(language, options).format(date);
 }
