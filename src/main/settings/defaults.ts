@@ -1,7 +1,7 @@
-import { version } from 'main/../../package.json';
-import type { Profile, Settings, Workspace } from 'shared/types';
-
 import { z } from 'zod';
+
+import { version } from 'main/../../package.json';
+import type { FlatSettings, Profile, Settings, Workspace } from 'shared/types';
 
 export const schema = z.object({
   application: z.object({
@@ -131,3 +131,25 @@ export function defaultSettings(): Settings {
     workspaces: [],
   } satisfies Settings;
 }
+
+const defaultEntries = Object.entries(defaultSettings());
+
+export const scopes = {
+  key: defaultEntries.reduce(
+    (acc, [scope, value]) => {
+      if (Array.isArray(value)) {
+        acc[scope] = scope;
+      } else if (typeof value === 'object' && value !== null) {
+        Object.keys(value).forEach(key => {
+          acc[key] = scope;
+        });
+      }
+
+      return acc;
+    },
+    {} as Record<keyof FlatSettings, string>,
+  ),
+  array: new Set(
+    defaultEntries.filter(([, value]) => Array.isArray(value)).map(([scope]) => scope),
+  ),
+};

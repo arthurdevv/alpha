@@ -1,6 +1,7 @@
 import { cx } from '@linaria/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 
+import type { FlatSettings } from 'shared/types';
 import { useAppStore } from 'ui/store/app/store';
 import type { SectionProps, SettingsSection } from 'ui/types';
 import { scrollToTop } from 'ui/utils/misc';
@@ -55,6 +56,12 @@ export default function Settings() {
       const entries = Object.fromEntries(results);
       setStoredOptions(entries);
     });
+
+    const timeout = setTimeout(() => {
+      ipc.settings.save(settings as FlatSettings);
+    }, 500);
+
+    return () => clearTimeout(timeout);
   }, [settings]);
 
   const content = schema[section].map(item => {

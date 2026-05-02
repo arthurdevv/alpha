@@ -273,7 +273,7 @@ export interface IpcAPI {
     load: () => Promise<Settings>;
     get: () => Promise<FlatSettings>;
     pick: <T extends keyof FlatSettings>(key: T) => Promise<FlatSettings[T]>;
-    save: (value: Settings) => void;
+    save: (value: FlatSettings) => void;
     reset: <S extends keyof SettingsFields>(scope: S, key: keyof SettingsFields[S]) => void;
   };
 
