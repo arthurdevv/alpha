@@ -12,8 +12,6 @@ export const Color = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.4375rem;
-  height: 1.4375rem;
   font-size: 0.5625rem;
   font-weight: 900;
   border: 1px solid var(--border);
@@ -63,8 +61,8 @@ export const Colors = styled.div`
     transition-delay: 0s;
 
     ${Color} {
-      width: 1.4375rem;
-      height: 1.4375rem;
+      width: 1.5625rem;
+      height: 1.5625rem;
       opacity: 1;
       transition:
         width 0.2s ease 0s,
@@ -104,7 +102,7 @@ export const Button = styled.button`
   right: 0.75rem;
   cursor: pointer;
   font:
-    400 0.6875rem 'Geist',
+    400 0.8125rem 'Geist',
     sans-serif;
   color: var(--muted);
   transition: color 0.2s ease 0s;

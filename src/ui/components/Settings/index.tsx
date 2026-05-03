@@ -83,7 +83,7 @@ export default function Settings() {
     return <Setting {...item} _key={item.key} value={value} changed={changed} options={options} />;
   });
 
-  const SectionComponent = sectionMap[section];
+  const SectionComponent = sections[section];
   const children = SectionComponent ? <SectionComponent content={content} /> : content;
 
   return (
@@ -92,14 +92,14 @@ export default function Settings() {
         {Object.keys(schema).map(item => (
           <NavigationItem
             key={item}
-            className={cx(item === section && 's')}
+            className={cx(item === section && 'selected')}
             onClick={() => handleNavigation(item as SettingsSection)}
           >
             {item}
           </NavigationItem>
         ))}
       </Navigation>
-      <Section>{children}</Section>
+      <Section key={section}>{children}</Section>
     </Container>
   );
 }

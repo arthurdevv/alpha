@@ -21,6 +21,7 @@ export const Section = styled.section`
   width: 100%;
   padding: 1rem 1.5rem 1.5rem 0.625rem;
   transition: opacity 0.1s linear 0s;
+  animation: fade-in 0.2s ease-in-out;
 `;
 
 export const Navigation = styled.nav`
@@ -36,7 +37,7 @@ export const NavigationItem = styled.button`
   min-height: 2.0625rem;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
@@ -44,7 +45,7 @@ export const NavigationItem = styled.button`
   transition: 0.2s ease 0s;
 
   &:hover,
-  &.s {
+  &.selected {
     color: var(--foreground);
   }
 `;
@@ -53,8 +54,8 @@ export const Title = styled.span`
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  margin: 1rem 0 1rem 0;
-  font-size: 1.125rem;
+  margin: 0.875rem 0 0.875rem 0;
+  font-size: 1.25rem;
 
   &:first-of-type {
     margin-top: 0;

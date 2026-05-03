@@ -6,7 +6,7 @@ export const Item = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1.25rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 
   &:last-of-type {
     margin-bottom: 0;
@@ -30,7 +30,7 @@ export const Name = styled.div`
 
 export const Description = styled.span`
   margin-top: 0.125rem;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--muted);
 
   @media screen and (max-width: 37.5rem) {
@@ -75,7 +75,7 @@ export const Progress = styled.div`
     min-height: unset;
 
     & span {
-      font-size: 0.6875rem;
+      font-size: 0.75rem;
     }
   }
 `;
@@ -88,14 +88,14 @@ export const Ranges = styled.div`
   width: 100%;
 
   & > span {
-    font-size: 11px;
+    font-size: 0.75rem;
     color: var(--muted);
     transition: color 0.2s ease 0s;
   }
 `;
 
 export const Input = styled.input`
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   text-align: end;
   text-overflow: ellipsis;
   color: var(--muted);
@@ -108,6 +108,9 @@ export const Input = styled.input`
   }
 
   &[type='range'] {
+    --progress: 0%;
+    --bg: var(--muted);
+
     width: 6.875rem;
     height: 0.375rem;
     cursor: grab;
@@ -136,6 +139,8 @@ export const Input = styled.input`
     }
 
     &:hover {
+      --bg: var(--foreground);
+
       & ~ ${Progress} div {
         opacity: 1;
       }
@@ -143,12 +148,7 @@ export const Input = styled.input`
       & ~ ${Ranges} span {
         color: var(--foreground);
       }
-
-      --bg: var(--foreground);
     }
-
-    --progress: 0%;
-    --bg: var(--muted);
   }
 
   &:hover,
@@ -158,20 +158,20 @@ export const Input = styled.input`
 `;
 
 export const Slider = styled.div`
-  width: 0.875rem;
+  width: 1.125rem;
   height: 0.875rem;
   background: var(--muted);
   transition:
     background 0.1s ease 0.1s,
     transform 0.2s ease 0s;
-  transform: translateX(2px);
+  transform: translateX(0.125rem);
   will-change: transform;
   border-radius: 100px;
 `;
 
 export const Switch = styled.div`
   position: relative;
-  width: 1.875rem;
+  width: 2.125rem;
   height: 1.125rem;
   padding-block: 0.125rem;
   cursor: pointer;
@@ -184,7 +184,7 @@ export const Switch = styled.div`
 
     ${Slider} {
       background: var(--background);
-      transform: translateX(13px);
+      transform: translateX(0.875rem);
     }
   }
 `;
@@ -222,7 +222,7 @@ export const Segmented = styled.div`
     justify-content: center;
     height: 100%;
     padding: 0 0.5rem;
-    font-size: 0.688rem;
+    font-size: 0.75rem;
     cursor: pointer;
     text-transform: uppercase;
     color: var(--muted);
@@ -258,3 +258,100 @@ export const Spinner = styled.div`
     color: var(--foreground);
   }
 `;
+
+// export const Form = styled.div`
+//   position: relative;
+//   height: 1.5rem;
+//   margin-left: auto;
+//   display: inline-flex;
+//   align-items: center;
+//   overflow: hidden;
+//   white-space: nowrap;
+//   text-overflow: ellipsis;
+//   border: 1px solid ${props => props.theme.border};
+//   border-radius: 4px;
+// `;
+
+// export const FormItem = styled.div`
+//   position: relative;
+//   height: 100%;
+//   padding: 0 0.5rem;
+//   display: flex;
+//   align-items: center;
+//   cursor: pointer;
+//   font-size: 0.6875rem;
+//   text-transform: uppercase;
+//   color: ${props => props.theme.disabled};
+//   transition: 0.2s ease 0s;
+//   transition-property: color, width;
+
+//   &:first-of-type {
+//     padding: 0;
+//     border-right: 1px solid ${props => props.theme.border};
+
+//     & input {
+//       height: 100%;
+//       width: 100%;
+//       padding: 0 0.5rem 0 1.625rem;
+//       font: inherit;
+//       text-transform: inherit;
+
+//       & ~ svg {
+//         position: absolute;
+//         cursor: text;
+//         width: 0.75rem;
+//         height: 0.75rem;
+//         left: 0.5rem;
+//         color: ${props => props.theme.disabled};
+//         transition: color 0.2s ease 0s;
+//       }
+
+//       &:focus ~ svg {
+//         color: ${props => props.theme.foreground};
+//       }
+//     }
+//   }
+
+//   &:hover {
+//     color: ${props => props.theme.foreground};
+//   }
+// `;
+
+// export const Placeholder = styled.div`
+//   margin-bottom: 0.625rem;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   flex-direction: column;
+//   overflow: hidden;
+//   white-space: normal;
+//   text-align: center;
+//   text-overflow: ellipsis;
+//   font-size: 0.875rem;
+//   line-height: 1.25rem;
+//   color: ${props => props.theme.disabled};
+//   animation: ${keyframes`
+//       0% {
+//         opacity: 0;
+//       }
+
+//       100% {
+//         opacity: 1;
+//       }
+//     `} 0.4s ease 0s forwards;
+
+//   & svg {
+//     width: 1.625rem;
+//     height: 1.625rem;
+//     margin-bottom: 0.375rem;
+//   }
+
+//   & span:first-of-type {
+//     font-weight: 600;
+//   }
+
+//   & span:last-of-type {
+//     margin-top: 0.125rem;
+//     font-weight: 400;
+//   }
+// `;
