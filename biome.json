@@ -25,6 +25,9 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
       }
     }
   },
