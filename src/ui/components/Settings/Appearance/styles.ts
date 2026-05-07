@@ -12,7 +12,7 @@ export const Color = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.5625rem;
+  font-size: 0.625rem;
   font-weight: 900;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -76,13 +76,12 @@ export const Colors = styled.div`
 export const Preview = styled.div`
   position: relative;
   padding: 0.625rem;
+  font: 400 1rem / 1.3 var(--font-family);
+  font-variant-ligatures: var(--font-ligatures);
   cursor: text;
-  line-height: 1.5;
-  font-size: 0.8125rem;
   border-radius: 4px;
   border: 1px solid var(--border);
   transition: background 0.2s ease 0s;
-  font-variant-ligatures: common-ligatures discretionary-ligatures;
 
   & pre {
     cursor: text;

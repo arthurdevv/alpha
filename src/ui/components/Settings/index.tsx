@@ -58,7 +58,7 @@ export default function Settings() {
     });
 
     const timeout = setTimeout(() => {
-      ipc.settings.save(settings as FlatSettings);
+      ipc.settings.save(settings as FlatSettings, true);
     }, 500);
 
     return () => clearTimeout(timeout);
@@ -99,7 +99,19 @@ export default function Settings() {
           </NavigationItem>
         ))}
       </Navigation>
-      <Section key={section}>{children}</Section>
+      <Section
+        key={section}
+        style={{
+          '--font-size': settings.fontSize,
+          '--font-family': settings.fontFamily || 'Fira Code, Consolas, monospace',
+          '--line-height': (settings.lineHeight ?? 1.0) + 0.3,
+          '--font-ligatures': settings.fontLigatures
+            ? 'common-ligatures discretionary-ligatures'
+            : 'none',
+        }}
+      >
+        {children}
+      </Section>
     </Container>
   );
 }

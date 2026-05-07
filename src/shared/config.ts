@@ -37,7 +37,8 @@ export abstract class ConfigManager<T, U> {
     if (!fs.existsSync(this.file.JSON)) this.save(this.defaults);
   }
 
-  load(): T {
+  load(defaults?: boolean): T {
+    if (defaults) return this.defaults;
     if (this.cache) return this.cache;
 
     try {
@@ -80,12 +81,10 @@ export abstract class ConfigManager<T, U> {
     return this.schema.safeParse(value);
   }
 
-  watch(callback: (value: U) => void): void {
-    if (this.watcher) return;
-
+  subscribe(callback: (value: U) => void): void {
     let debounce: NodeJS.Timeout | null = null;
 
-    this.watcher = fs.watch(this.file.JSON, { persistent: false }, event => {
+    this.watcher = fs.watch(this.file.JSON, event => {
       if (event !== 'change') return;
       if (debounce) clearTimeout(debounce);
 
@@ -94,11 +93,11 @@ export abstract class ConfigManager<T, U> {
         debounce = null;
 
         callback(this.get());
-      }, 50);
+      }, 100);
     });
   }
 
-  unwatch(): void {
+  unsubscribe(): void {
     this.watcher?.close();
     this.watcher = null;
   }

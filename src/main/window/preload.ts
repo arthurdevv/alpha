@@ -11,10 +11,10 @@ const api: IpcAPI = {
   },
 
   settings: {
-    load: () => ipc.invoke('settings:load'),
+    load: defaults => ipc.invoke('settings:load', defaults),
     get: () => ipc.invoke('settings:get'),
     pick: key => ipc.invoke('settings:pick', key),
-    save: value => ipc.send('settings:save', value),
+    save: (value, flat) => ipc.send('settings:save', value, flat),
     reset: (scope, key) => ipc.send('settings:reset', scope, key),
   },
 

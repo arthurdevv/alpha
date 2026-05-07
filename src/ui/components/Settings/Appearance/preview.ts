@@ -37,7 +37,7 @@ export function getPreviewText(
 
   return {
     cursor: renderCursor(cursorChar, theme.cursorColor, cursorBlink),
-    prompt: `PS W:\\Users\\${systemInfo.username}> ${c('winfetch', 'brightYellow')}\n    `,
+    prompt: `${c(`PS W:\\Users\\${systemInfo.username}>`, 'foreground', fontWeight)} ${c('winfetch', 'brightYellow')}\n    `,
     windows: [
       c('lllllllllll  lllllllllll', 'brightBlue', fontWeightBold),
       c('lllllllllll  lllllllllll', 'brightBlue', fontWeightBold),
@@ -50,12 +50,12 @@ export function getPreviewText(
       c('lllllllllll  lllllllllll', 'brightBlue', fontWeightBold),
     ].join('\n'),
     infos: [
-      `  ${c(systemInfo.username, 'brightYellow', fontWeightBold)}@${c(systemInfo.hostname, 'brightYellow')}`,
+      `  ${c(systemInfo.username, 'brightYellow', fontWeightBold)}${c('@', 'foreground', fontWeightBold)}${c(systemInfo.hostname, 'brightYellow', fontWeightBold)}`,
       `  ${c('-'.repeat(systemInfo.root.length), 'foreground', fontWeightBold)}`,
-      `  ${c('Uptime', 'brightYellow', fontWeightBold)}: ${systemInfo.uptime}`,
-      `  ${c('Shell', 'brightYellow', fontWeightBold)}: Powershell v10.0.26200.8328`,
-      `  ${c('Resolution', 'brightYellow', fontWeightBold)}: ${systemInfo.resolution}`,
-      `  ${c('Terminal', 'brightYellow', fontWeightBold)}: Alpha`,
+      `  ${c('Uptime', 'brightYellow', fontWeightBold)}: ${c(systemInfo.uptime, 'foreground', fontWeight)}`,
+      `  ${c('Shell', 'brightYellow', fontWeightBold)}: ${c('Powershell v10.0.26200.8328', 'foreground', fontWeight)}`,
+      `  ${c('Resolution', 'brightYellow', fontWeightBold)}: ${c(systemInfo.resolution, 'foreground', fontWeight)}`,
+      `  ${c('Terminal', 'brightYellow', fontWeightBold)}: ${c('Alpha', 'foreground', fontWeight)}`,
     ].join('\n'),
     colors: [
       `  ${slicedColors(theme, fontSize, { start: 1, end: 9 })}`,

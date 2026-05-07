@@ -49,9 +49,14 @@ class SettingsManager extends ConfigManager<Settings, FlatSettings> {
     }
   }
 
-  save(value: Settings): void {
-    const unflatten = this.unflatten(value as unknown as FlatSettings);
-    super.save(unflatten);
+  save(value: Settings, flat = false): void {
+    if (flat) {
+      const unflatten = this.unflatten(value as unknown as FlatSettings);
+      super.save(unflatten);
+      return;
+    }
+
+    super.save(value);
   }
 
   private unflatten(flat: FlatSettings): Settings {

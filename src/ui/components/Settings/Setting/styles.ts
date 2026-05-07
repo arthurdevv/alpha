@@ -158,7 +158,7 @@ export const Input = styled.input`
 `;
 
 export const Slider = styled.div`
-  width: 1.125rem;
+  width: 0.875rem;
   height: 0.875rem;
   background: var(--muted);
   transition:
@@ -171,7 +171,7 @@ export const Slider = styled.div`
 
 export const Switch = styled.div`
   position: relative;
-  width: 2.125rem;
+  width: 1.75rem;
   height: 1.125rem;
   padding-block: 0.125rem;
   cursor: pointer;
@@ -184,7 +184,7 @@ export const Switch = styled.div`
 
     ${Slider} {
       background: var(--background);
-      transform: translateX(0.875rem);
+      transform: translateX(0.75rem);
     }
   }
 `;
@@ -211,7 +211,7 @@ export const Segmented = styled.div`
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  height: 1.5rem;
+  height: 1.625rem;
   margin-left: auto;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -258,100 +258,3 @@ export const Spinner = styled.div`
     color: var(--foreground);
   }
 `;
-
-// export const Form = styled.div`
-//   position: relative;
-//   height: 1.5rem;
-//   margin-left: auto;
-//   display: inline-flex;
-//   align-items: center;
-//   overflow: hidden;
-//   white-space: nowrap;
-//   text-overflow: ellipsis;
-//   border: 1px solid ${props => props.theme.border};
-//   border-radius: 4px;
-// `;
-
-// export const FormItem = styled.div`
-//   position: relative;
-//   height: 100%;
-//   padding: 0 0.5rem;
-//   display: flex;
-//   align-items: center;
-//   cursor: pointer;
-//   font-size: 0.6875rem;
-//   text-transform: uppercase;
-//   color: ${props => props.theme.disabled};
-//   transition: 0.2s ease 0s;
-//   transition-property: color, width;
-
-//   &:first-of-type {
-//     padding: 0;
-//     border-right: 1px solid ${props => props.theme.border};
-
-//     & input {
-//       height: 100%;
-//       width: 100%;
-//       padding: 0 0.5rem 0 1.625rem;
-//       font: inherit;
-//       text-transform: inherit;
-
-//       & ~ svg {
-//         position: absolute;
-//         cursor: text;
-//         width: 0.75rem;
-//         height: 0.75rem;
-//         left: 0.5rem;
-//         color: ${props => props.theme.disabled};
-//         transition: color 0.2s ease 0s;
-//       }
-
-//       &:focus ~ svg {
-//         color: ${props => props.theme.foreground};
-//       }
-//     }
-//   }
-
-//   &:hover {
-//     color: ${props => props.theme.foreground};
-//   }
-// `;
-
-// export const Placeholder = styled.div`
-//   margin-bottom: 0.625rem;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   flex-direction: column;
-//   overflow: hidden;
-//   white-space: normal;
-//   text-align: center;
-//   text-overflow: ellipsis;
-//   font-size: 0.875rem;
-//   line-height: 1.25rem;
-//   color: ${props => props.theme.disabled};
-//   animation: ${keyframes`
-//       0% {
-//         opacity: 0;
-//       }
-
-//       100% {
-//         opacity: 1;
-//       }
-//     `} 0.4s ease 0s forwards;
-
-//   & svg {
-//     width: 1.625rem;
-//     height: 1.625rem;
-//     margin-bottom: 0.375rem;
-//   }
-
-//   & span:first-of-type {
-//     font-weight: 600;
-//   }
-
-//   & span:last-of-type {
-//     margin-top: 0.125rem;
-//     font-weight: 400;
-//   }
-// `;

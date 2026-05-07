@@ -50,9 +50,6 @@ export default function Appearance({ content }: SectionProps) {
         style={{
           backgroundColor,
           color: theme.foreground,
-          fontSize: settings.fontSize,
-          fontFamily: settings.fontFamily,
-          lineHeight: (settings.lineHeight ?? 1.0) + 0.3,
           '--selection-background': theme.selectionBackground,
         }}
       >
