@@ -286,8 +286,6 @@ const schema: SettingsSchema = {
   ],
 
   Profiles: [
-    { title: 'Profiles' },
-
     {
       key: 'defaultProfile',
       name: 'Default profile',
@@ -298,7 +296,7 @@ const schema: SettingsSchema = {
     },
   ],
 
-  Keymaps: [{ title: 'Keymaps' }],
+  Keymaps: [],
 
   Window: [
     { title: 'Transparency' },
@@ -399,8 +397,6 @@ const schema: SettingsSchema = {
   ],
 
   Workspaces: [
-    { title: 'Workspaces' },
-
     {
       key: 'workspace',
       name: 'Workspace',

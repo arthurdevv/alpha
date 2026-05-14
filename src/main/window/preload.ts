@@ -24,6 +24,10 @@ const api: IpcAPI = {
     reset: command => ipc.send('keymaps:reset', command),
   },
 
+  profiles: {
+    defaults: connections => ipc.invoke('profiles:defaults', connections),
+  },
+
   theme: {
     load: name => ipc.invoke('theme:load', name),
     list: () => ipc.invoke('theme:list'),

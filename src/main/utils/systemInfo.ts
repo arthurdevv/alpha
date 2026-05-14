@@ -1,9 +1,9 @@
 import { homedir, hostname, uptime as uptimesecs, userInfo } from 'node:os';
+
 import { screen } from 'electron';
 
 import type { SystemInfo } from 'shared/types';
-
-const unit = (n: number, label: string) => (n > 0 ? `${n} ${label}${n > 1 ? 's' : ''}` : '');
+import { unit } from 'ui/utils/misc';
 
 function getUptime(): string {
   const seconds = uptimesecs();
@@ -12,7 +12,7 @@ function getUptime(): string {
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
-  return [unit(days, 'day'), unit(hours, 'hour'), `${minutes} minute${minutes > 1 ? 's' : ''}`]
+  return [unit(days, 'day'), unit(hours, 'hour'), unit(minutes, 'minute')]
     .filter(Boolean)
     .join(', ');
 }

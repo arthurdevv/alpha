@@ -1,5 +1,6 @@
 import { cx } from '@linaria/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { useShallow } from 'zustand/shallow';
 
 import type { FlatSettings } from 'shared/types';
 import { useAppStore } from 'ui/store/app/store';
@@ -8,23 +9,30 @@ import { scrollToTop } from 'ui/utils/misc';
 import { local } from 'ui/utils/storage';
 
 import Appearance from './Appearance';
+import Application from './Application';
+import ConfigFile from './Config File';
+import Keymaps from './Keymaps';
+import Profiles from './Profiles';
 import Setting from './Setting';
 import schema from './schema';
 import { Container, Navigation, NavigationItem, Section, Title } from './styles';
 
-const sectionMap: Record<SettingsSection, React.ComponentType<SectionProps>> = {
-  // Application,
+// const sections: Record<SettingsSection, React.ComponentType<SectionProps>> = {
+const sections = {
+  Application,
   Appearance,
-  // Profiles,
-  // Keymaps,
+  Profiles,
+  Keymaps,
   // Workspaces,
-  // 'Config file': Config,
+  'Config file': ConfigFile,
 };
 
 const storedKeys = ['theme', 'profiles', 'workspaces'] as const;
 
 export default function Settings() {
-  const settings = useAppStore(s => s.settings);
+  const { settings, setSettings } = useAppStore(
+    useShallow(s => ({ settings: s.settings, setSettings: s.setSettings })),
+  );
 
   const [section, setSection] = useState<SettingsSection>(() => {
     return local.parse('section', 'Application');
@@ -33,6 +41,7 @@ export default function Settings() {
   const [storedOptions, setStoredOptions] = useState<Record<string, any[]>>({});
 
   const settingsRef = useRef<typeof settings>(settings);
+  const isExternalChange = useRef<boolean>(false);
 
   const handleNavigation = (section: SettingsSection) => {
     setSection(section);
@@ -40,7 +49,19 @@ export default function Settings() {
     local.update('section', section);
   };
 
+  // useEffect(() => {
+  //   ipc.subscribe('settings:changed', settings => {
+  //     isExternalChange.current = true;
+  //     setSettings(settings);
+  //   });
+  // }, []);
+
   useEffect(() => {
+    // if (isExternalChange.current) {
+    //   isExternalChange.current = false;
+    //   return;
+    // }
+
     const promises = storedKeys.map(async key => {
       const items = key === 'theme' ? await ipc.theme.list() : (settings[key] ?? []);
 
@@ -84,11 +105,11 @@ export default function Settings() {
   });
 
   const SectionComponent = sections[section];
-  const children = SectionComponent ? <SectionComponent content={content} /> : content;
+  const children = SectionComponent ? <SectionComponent children={content} /> : content;
 
   return (
     <Container>
-      <Navigation>
+      <Navigation role="menu">
         {Object.keys(schema).map(item => (
           <NavigationItem
             key={item}

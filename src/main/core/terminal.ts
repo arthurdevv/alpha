@@ -1,14 +1,14 @@
-import { clipboard } from '@electron/remote';
-import * as xterm from '@xterm/xterm';
+import { clipboard } from "@electron/remote";
+import * as xterm from "@xterm/xterm";
 
-import Addons from 'main/core/addons';
-import { loadTheme } from 'main/core/themes';
-import { handleCustomKeys } from 'main/keymaps';
-import { execCommand } from 'main/keymaps/commands';
-import { watchKeymaps } from 'main/keymaps/schema';
-import { getSettings } from 'main/settings';
-import type { Settings } from 'shared/types';
-import type { TermProps } from 'ui/types';
+import Addons from "main/core/addons";
+import { loadTheme } from "main/core/themes";
+import { handleCustomKeys } from "main/keymaps";
+import { execCommand } from "main/keymaps/commands";
+import { watchKeymaps } from "main/keymaps/schema";
+import { getSettings } from "main/settings";
+import type { Settings } from "shared/types";
+import type { TermProps } from "ui/types";
 
 export const terms: Record<string, Terminal | null> = {};
 
@@ -34,7 +34,7 @@ class Terminal {
     this.addons = new Addons(props.id, this.options);
 
     Object.entries(props).forEach(([key, value]) => {
-      if (key in this.term && typeof value === 'function') {
+      if (key in this.term && typeof value === "function") {
         this.term[key](value);
       }
     });
@@ -45,32 +45,32 @@ class Terminal {
       if (copyOnSelect) this.copy();
     });
 
-    let buffer: string = '';
+    let buffer: string = "";
 
-    watchKeymaps(keymaps => {
+    watchKeymaps((keymaps) => {
       this.term.attachCustomKeyEventHandler((event: KeyboardEvent) => {
-        const isKeyDown = event.type === 'keydown';
+        const isKeyDown = event.type === "keydown";
 
         const key = event.key.toLowerCase();
 
         if (
           !isKeyDown ||
-          (props.profile.type === 'shell' && event.ctrlKey && key === 'c')
+          (props.profile.type === "shell" && event.ctrlKey && key === "c")
         ) {
           return true;
         }
 
         if (key.length === 1) buffer += event.key;
 
-        if (key === 'backspace') buffer = buffer.slice(0, -1);
+        if (key === "backspace") buffer = buffer.slice(0, -1);
 
-        if (key === 'enter' && buffer !== '') {
-          execCommand('terminal:prepare-history', { id: props.id, buffer });
+        if (key === "enter" && buffer !== "") {
+          execCommand("terminal:prepare-history", { id: props.id, buffer });
 
-          buffer = '';
+          buffer = "";
         }
 
-        if (key === 'escape') global.handleModal();
+        if (key === "escape") global.handleModal();
 
         return !keymaps.has(handleCustomKeys(event));
       });
@@ -84,7 +84,7 @@ class Terminal {
 
     this.addons.load(this.term);
 
-    this.term.unicode.activeVersion = '11';
+    this.term.unicode.activeVersion = "11";
   }
 
   write(data: string): void {
@@ -115,7 +115,7 @@ class Terminal {
     const text = clipboard.readText();
 
     if (/\n/.test(text)) {
-      execCommand('app:modal', 'Warning');
+      execCommand("app:modal", "Warning");
     } else {
       this.term.paste(text);
 
@@ -123,7 +123,7 @@ class Terminal {
     }
   }
 
-  'select-all'(): void {
+  "select-all"(): void {
     this.term.selectAll();
   }
 
@@ -142,11 +142,11 @@ class Terminal {
   setOptions(options: Partial<Settings>): void {
     this.term.options = {
       ...options,
-      theme: loadTheme(options.theme ?? 'Default'),
+      theme: loadTheme(options.theme ?? "Default"),
     };
 
-    const shouldReloadAddons = ['linkHandlerKey', 'renderer'].some(
-      key => this.options[key] !== options[key],
+    const shouldReloadAddons = ["linkHandlerKey", "renderer"].some(
+      (key) => this.options[key] !== options[key],
     );
 
     if (shouldReloadAddons) {

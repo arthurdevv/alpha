@@ -2,9 +2,9 @@ import { autoDetect } from '@serialport/bindings-cpp';
 import { SerialPortStream } from '@serialport/stream';
 import { ReadlineParser, SerialPort } from 'serialport';
 
-import executeScripts from 'main/connections/scripts';
 import Logger from 'main/core/logger';
 import type IPC from 'main/ipc/main';
+import executeScripts from 'main/profiles/scripts';
 import type { ISerialOptions } from 'main/types';
 import { reportError } from 'shared/error-reporter';
 import type { IInstance } from 'shared/types';
@@ -41,11 +41,7 @@ class Serial extends Logger {
 
   private connected: boolean = false;
 
-  constructor(
-    options: Partial<ISerialOptions>,
-    { id, profile }: IInstance,
-    ipc: IPC,
-  ) {
+  constructor(options: Partial<ISerialOptions>, { id, profile }: IInstance, ipc: IPC) {
     super(id, profile, ipc);
 
     this.options = <ISerialOptions>Object.assign(defaultOptions, options, {
@@ -68,7 +64,7 @@ class Serial extends Logger {
     this.port = new SerialPortStream(this.options);
 
     if (inputBehavior === 'utf8') {
-      let buffer = '';
+      const buffer = '';
 
       this.port.on('data', (chunk: any) => {
         executeScripts({ chunk, buffer }, scripts, execute =>

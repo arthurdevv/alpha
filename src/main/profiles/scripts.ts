@@ -1,6 +1,6 @@
 import { isEqual } from 'lodash';
 
-import type { IScript } from 'main/types';
+import type { Script } from 'main/types';
 
 function getUnique<T>(target: T[]): T[] {
   const result: typeof target = [];
@@ -14,15 +14,13 @@ function getUnique<T>(target: T[]): T[] {
 
 export default (
   { chunk, buffer }: { chunk: any; buffer: string },
-  scripts: IScript[],
+  scripts: Script[],
   callback: (execute: string) => void,
 ) => {
   buffer += chunk;
 
   getUnique(scripts).forEach(({ type, match, execute }) => {
-    const matched = (
-      type === 'exact' ? new RegExp(`\\b${match}\\b`, 'i') : match
-    ).test(buffer);
+    const matched = (type === 'exact' ? new RegExp(`\\b${match}\\b`, 'i') : match).test(buffer);
 
     if (matched) {
       buffer = '';

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'preact/hooks';
 
-import type { IGitInfo } from 'shared/types';
-import ipc from 'ui/ipc';
+import type { GitInfo } from 'shared/types';
 
-export function useGitStatus(instanceId: string | null): IGitInfo | null {
-  const [gitInfo, setGitInfo] = useState<IGitInfo | null>(null);
+export function useGitStatus(instanceId: string | null): GitInfo | null {
+  const [gitInfo, setGitInfo] = useState<GitInfo | null>(null);
 
   useEffect(() => {
     if (!instanceId) {
@@ -12,14 +11,11 @@ export function useGitStatus(instanceId: string | null): IGitInfo | null {
       return;
     }
 
-    ipc.on(
-      'terminal:git-info',
-      (data: { id: string; info: IGitInfo | null }) => {
-        if (data.id !== instanceId) return;
+    ipc.on('terminal:git-info', (data: { id: string; info: GitInfo | null }) => {
+      if (data.id !== instanceId) return;
 
-        setGitInfo(data.info);
-      },
-    );
+      setGitInfo(data.info);
+    });
 
     ipc.send('terminal:get-git-info', { id: instanceId });
 

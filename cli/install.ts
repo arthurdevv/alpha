@@ -1,33 +1,69 @@
+// import { binPath, firstRunFlag } from 'main/settings/constants';
 import * as Registry from 'native-reg';
 
-import { binPath, firstRunFlag } from 'main/settings/constants';
-import enableShellIntegration from 'main/utils/shell-integration';
+import { exePath } from 'shared/config';
+import { reportError } from 'shared/error-reporter';
 
-function installCLI(): void {
+const { HKCU, Access, ValueType } = Registry;
+
+const registres: { key: string; arg: string }[] = [
+  { key: 'Software\\Classes\\Drive\\shell\\Alpha', arg: '%1' },
+  { key: 'Software\\Classes\\Directory\\shell\\Alpha', arg: '%1' },
+  { key: 'Software\\Classes\\Directory\\Background\\shell\\Alpha', arg: '%V' },
+];
+
+function enableShellIntegration(): void {
+  try {
+    registres.forEach(({ key, arg }) => {
+      let regKey = Registry.openKey(HKCU, key, Access.ALL_ACCESS);
+
+      if (!regKey) {
+        regKey = Registry.createKey(HKCU, key, Access.ALL_ACCESS);
+
+        const cmdKey = Registry.createKey(HKCU, `${key}\\command`, Access.ALL_ACCESS);
+
+        Registry.setValueSZ(regKey, 'Icon', exePath);
+        Registry.setValueSZ(regKey, null, 'Open Alpha here');
+        Registry.setValueSZ(cmdKey, null, `"${exePath}" "${arg}"`);
+        Registry.closeKey(cmdKey);
+      }
+
+      Registry.closeKey(regKey);
+    });
+  } catch (error) {
+    reportError(error);
+  }
+}
+
+export function installCLI(): void {
   if (!firstRunFlag) return;
 
-  const { HKCU, Access, ValueType } = Registry;
+  try {
+    const envKey = Registry.openKey(HKCU, 'Environment', Access.ALL_ACCESS);
 
-  const envKey = Registry.openKey(HKCU, 'Environment', Access.ALL_ACCESS)!;
+    if (envKey) {
+      const pathValue = Registry.queryValue(envKey, 'Path') as string | null;
 
-  let value = Registry.queryValue(envKey, 'Path') as string;
+      if (pathValue) {
+        const isInstalled = pathValue.split(';').includes(binPath);
 
-  const isInstalled = value.split(';').includes(binPath);
+        if (!isInstalled) {
+          const newPathValue = pathValue.concat(`;${binPath}`);
 
-  if (!isInstalled) {
-    value = value.concat(`;${binPath}`);
+          Registry.setValueRaw(
+            envKey,
+            'Path',
+            ValueType.EXPAND_SZ,
+            Registry.formatString(newPathValue),
+          );
+        }
+      }
+    }
 
-    Registry.setValueRaw(
-      envKey,
-      'Path',
-      ValueType.EXPAND_SZ,
-      Registry.formatString(value),
-    );
+    Registry.closeKey(envKey);
+  } catch (error) {
+    reportError(error);
   }
-
-  Registry.closeKey(envKey);
 
   enableShellIntegration();
 }
-
-export default installCLI;

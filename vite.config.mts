@@ -7,7 +7,7 @@ import { defineConfig } from 'vite';
 import electron from 'vite-plugin-electron';
 import type { ElectronOptions } from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+// import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const externals = [
   ...builtinModules.map(m => `node:${m}`),
@@ -33,11 +33,7 @@ const alias: Record<string, string> = {
   cli: path.resolve(__dirname, 'cli'),
 };
 
-function electronConfig(
-  entry: string,
-  fileName: string,
-  isDev: boolean,
-): ElectronOptions {
+function electronConfig(entry: string, fileName: string, isDev: boolean): ElectronOptions {
   return {
     entry: path.resolve(__dirname, entry),
     vite: {
@@ -52,7 +48,7 @@ function electronConfig(
             format: 'cjs',
             entryFileNames: fileName,
             manualChunks(id) {
-              if (id.includes('xterm')) return 'vendor-xterm';
+              // if (id.includes('xterm')) return 'vendor-xterm';
               if (id.includes('node_modules')) return 'vendor';
             },
           },
@@ -84,15 +80,15 @@ export default defineConfig(({ mode }) => {
       electron([
         electronConfig('src/main/window/index.ts', 'index.js', isDev),
         electronConfig('src/main/window/preload.ts', 'preload.js', isDev),
-        electronConfig('cli/index.ts', 'cli.js', isDev),
+        // electronConfig('cli/index.ts', 'cli.js', isDev),
       ]),
-      viteStaticCopy({
-        targets: [
-          { src: './src/ui/fonts', dest: 'src/ui' },
-          { src: './locales/*', dest: 'locales' },
-          { src: './*.json', dest: '' },
-        ],
-      }),
+      // viteStaticCopy({
+      //   targets: [
+      //     { src: './src/ui/fonts', dest: 'src/ui' },
+      //     { src: './locales/*', dest: 'locales' },
+      //     { src: './*.json', dest: '' },
+      //   ],
+      // }),
     ],
   };
 });

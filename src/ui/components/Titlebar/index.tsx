@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/compat';
 
 import { executeCommand } from 'ui/commands/registry';
-import { useFormattedKeymaps } from 'ui/hooks/use-formatted-keymaps';
+import { useFormattedKeymaps } from 'ui/hooks/useFormattedKeymaps';
 
 import {
   CloseIcon,
@@ -34,7 +34,8 @@ export default function Titlebar({ isFirstRun }: TitlebarProps) {
       {!isFirstRun && (
         <Actions role="toolbar">
           <Tooltip label="New terminal" keys={formattedKeymaps['terminal:create']}>
-            <Action onClick={() => executeCommand('terminal:create')}>
+            <Action onClick={() => executeCommand('terminal:request')}>
+            {/* <Action onClick={() => executeCommand('terminal:create')}> */}
               <PlusIcon />
             </Action>
           </Tooltip>

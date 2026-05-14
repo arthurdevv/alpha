@@ -12,7 +12,7 @@ import { abbreviateColorKey, changeOpacity, formatColorKey } from 'ui/utils/colo
 import { getPreviewText } from './preview';
 import { Button, Color, Colors, Preview, Wrapper } from './styles';
 
-export default function Appearance({ content }: SectionProps) {
+export default function Appearance({ children }: SectionProps) {
   const settings = useAppStore(s => s.settings);
 
   const [theme, colors] = useTheme();
@@ -38,7 +38,7 @@ export default function Appearance({ content }: SectionProps) {
 
   return (
     <>
-      {content}
+      {children}
       <Colors className={cx(showColors && 'visible')}>
         {colors.map(key => (
           <Tooltip key={key} label={formatColorKey(key)} keys={[theme[key]]} position="top">

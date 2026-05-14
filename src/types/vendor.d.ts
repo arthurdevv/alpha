@@ -3,10 +3,11 @@ declare module 'glasstron' {
     constructor(options: Electron.BrowserWindowConstructorOptions);
 
     blurType: 'acrylic' | 'blurbehind' | 'transparent';
+
     setBlur(value: boolean): void;
   }
 
-  export { BrowserWindow };
+  export type { BrowserWindow };
 }
 
 declare module 'socksv5' {
@@ -33,8 +34,5 @@ declare module 'socksv5' {
 }
 
 declare module 'i18next-conv' {
-  export function gettextToI18next(
-    locale: string,
-    body: Buffer<ArrayBuffer>,
-  ): Promise<string>;
+  export function gettextToI18next(locale: string, body: Buffer<ArrayBuffer>): Promise<string>;
 }

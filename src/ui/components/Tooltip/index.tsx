@@ -10,7 +10,7 @@ interface TooltipProps {
   children?: preact.ComponentChildren;
 }
 
-export default function Tooltip({ label, keys, position, children }: TooltipProps) {
+export default function Tooltip({ label, keys, position = 'top', children }: TooltipProps) {
   const [visible, setVisible] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,9 +39,9 @@ export default function Tooltip({ label, keys, position, children }: TooltipProp
   return (
     <Container onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {children}
-      <Content className={cx(visible && 'v')} role="tooltip">
+      <Content className={cx(visible && 'visible')} role="tooltip">
         <Arrow className={position} />
-        <Wrapper className={cx(keys && 'k')}>
+        <Wrapper className={cx(keys && 'keys')}>
           <Label>{label}</Label>
           {keys && (
             <Keys>

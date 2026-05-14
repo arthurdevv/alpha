@@ -1,12 +1,12 @@
 import { execFile } from 'node:child_process';
 import { resolve } from 'node:path';
 
-import type { AheadBehind, CacheEntry, StatusCounts } from 'main/types';
+import type { GitAheadBehind, GitCacheEntry, GitStatusCounts } from 'main/types';
 import { reportError } from 'shared/error-reporter';
-import type { IGitInfo } from 'shared/types';
+import type { GitInfo } from 'shared/types';
 
 const CACHE_TTL = 500;
-const cache = new Map<string, CacheEntry>();
+const cache = new Map<string, GitCacheEntry>();
 
 function execGit(args: string[], cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -24,7 +24,7 @@ async function getBranch(cwd: string): Promise<string> {
   return execGit(['rev-parse', '--abbrev-ref', 'HEAD'], cwd);
 }
 
-async function getStatus(cwd: string): Promise<StatusCounts> {
+async function getStatus(cwd: string): Promise<GitStatusCounts> {
   const output = await execGit(['status', '--porcelain'], cwd);
 
   let modified = 0;
@@ -58,7 +58,7 @@ async function getStatus(cwd: string): Promise<StatusCounts> {
   return { modified, staged, untracked };
 }
 
-async function getAheadBehind(cwd: string): Promise<AheadBehind> {
+async function getAheadBehind(cwd: string): Promise<GitAheadBehind> {
   try {
     const output = await execGit(
       ['rev-list', '--left-right', '--count', 'HEAD...@{upstream}'],
@@ -79,7 +79,7 @@ async function getAheadBehind(cwd: string): Promise<AheadBehind> {
   return { ahead: 0, behind: 0 };
 }
 
-async function getGitInfo(cwd: string): Promise<IGitInfo | null> {
+async function getGitInfo(cwd: string): Promise<GitInfo | null> {
   const resolvedCwd = resolve(cwd);
   const cached = cache.get(resolvedCwd);
 
@@ -92,7 +92,7 @@ async function getGitInfo(cwd: string): Promise<IGitInfo | null> {
       getAheadBehind(resolvedCwd),
     ]);
 
-    const info: IGitInfo = {
+    const info: GitInfo = {
       branch,
       modified: status.modified,
       staged: status.staged,

@@ -14,6 +14,7 @@ export interface AppActions {
   setSetting: <K extends keyof FlatSettings>(
     key: K,
     value: FlatSettings[K],
+    assign?: boolean,
   ) => void;
   setSettings: (partial: Partial<FlatSettings>) => void;
   setKeymap: (command: string, combo: string) => void;

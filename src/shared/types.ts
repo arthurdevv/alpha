@@ -17,7 +17,7 @@ export interface Instance {
 }
 
 interface BaseProfile {
-  id: UUID;
+  id: string;
   name: string;
   group: string;
   useNameAsTitle: boolean;
@@ -39,6 +39,15 @@ export interface SSHProfile extends BaseProfile {
 }
 
 export type Profile = ShellProfile | SerialProfile | SSHProfile;
+
+export interface DetectableProfile {
+  id: string;
+  name: string;
+  registryKey: string;
+  registryValue: string;
+  bin: string;
+  args: string[];
+}
 
 export interface Workspace {
   id: UUID;
@@ -281,6 +290,10 @@ export interface IpcAPI {
     load: () => Promise<Keymaps>;
     save: (value: Keymaps) => void;
     reset: (command: string) => void;
+  };
+
+  profiles: {
+    defaults: (connections?: boolean) => Promise<Profile[]>;
   };
 
   theme: {

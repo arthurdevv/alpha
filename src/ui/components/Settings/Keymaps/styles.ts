@@ -2,18 +2,6 @@ import { styled } from '@linaria/react';
 
 import { Action } from 'components/Settings/styles';
 
-export const Content = styled.ul`
-  flex: 1 0 1%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  &.empty {
-    align-items: center;
-    justify-content: center;
-  }
-`;
-
 export const Item = styled.li`
   display: flex;
   align-items: center;

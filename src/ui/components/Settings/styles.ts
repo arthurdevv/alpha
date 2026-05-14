@@ -154,6 +154,17 @@ export const FormItem = styled.div`
   }
 `;
 
+export const Content = styled.ul`
+  flex: 1 0 1%;
+  display: flex;
+  flex-direction: column;
+
+  &.empty {
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
 export const NoResults = styled.div`
   display: flex;
   align-items: center;

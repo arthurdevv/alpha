@@ -1,44 +1,68 @@
-import { unlink } from 'fs';
+import { useEffect } from 'preact/hooks';
+import { useShallow } from 'zustand/shallow';
 
-import { Fragment, memo, useEffect, useState } from 'preact/compat';
+import { useAppStore } from 'ui/store/app/store';
 
-import { firstRunFlag, firstRunFlagPath } from 'main/settings/constants';
-import invokeEvents from 'ui/ipc/events';
-import useStore from 'ui/store';
-import { Content } from 'ui/styles/global';
-import 'ui/i18n';
+import Home from './components/Home';
+import Settings from './components/Settings';
+// import Terminal from './components/Terminal';
+import Titlebar from './components/Titlebar';
 
-import Header from './components/Header';
-import Modal from './components/Modal';
-import Terminal from './components/Terminal';
-import Watermark from './components/Watermark';
-import Welcome from './components/Welcome';
+export default function Alpha() {
+  // const [isFirstRun, setIsFirstRun] = useState(firstRunFlag);
 
-const Alpha: React.FC = () => {
-  const { getStore, setModal } = useStore();
+  // useEffect(() => {
+  //   if (!isFirstRun) return invokeEvents(useTermsStore);
 
-  const [isFirstRun, setIsFirstRun] = useState(firstRunFlag);
+  //   // unlink(firstRunFlagPath, error => error && reportError(error));
+  // }, [isFirstRun]);
+
+  // const { theme, acrylic, preserveBackground } = useAppStore(
+  //   useShallow(s => ({
+  //     theme: s.settings.theme,
+  //     acrylic: s.settings.acrylic,
+  //     preserveBackground: s.settings.preserveBackground,
+  //   })),
+  // );
+
+  // useEffect(() => {
+  //   if (theme === 'default') return;
+
+  //   if (!origin || preserveBackground) {
+  //     // removeThemeVariables();
+  //   } else {
+  //     // setThemeVariables(theme, { acrylic, preserveBackground });
+  //   }
+  // }, [origin, preserveBackground]);
+
+  const { settings, setSetting, setSettings } = useAppStore(
+    useShallow(s => ({
+      settings: s.settings,
+      setSetting: s.setSetting,
+      setSettings: s.setSettings,
+    })),
+  );
 
   useEffect(() => {
-    if (!isFirstRun) return invokeEvents(getStore);
+    ipc.settings.get().then(setSettings);
+    ipc.profiles.defaults(true).then(profiles => setSetting('profiles', profiles));
+  }, []);
 
-    unlink(firstRunFlagPath, error => error && reportError(error));
-  }, [isFirstRun]);
+  // if (!settings.version) return null;
 
-  return isFirstRun ? (
-    <Welcome setIsFirstRun={setIsFirstRun} setModal={setModal} />
-  ) : (
-    <Fragment>
-      <Content>
-        <Header />
-        <Content>
-          <Watermark />
-          <Terminal />
-        </Content>
-      </Content>
-      <Modal />
-    </Fragment>
+  return (
+    // 1 > 2 ? (
+    // <Welcome setIsFirstRun={setIsFirstRun} setModal={setModal} />
+    // <></>
+    // ) : (
+    <>
+      <Titlebar isFirstRun={false} />
+      <main>
+        <Home />
+        {/* <Terminal /> */}
+        {/* <Settings /> */}
+      </main>
+      {/* <Modal /> */}
+    </>
   );
-};
-
-export default memo(Alpha);
+}

@@ -27,7 +27,7 @@ export const Arrow = styled.div`
   }
 
   &.bottom {
-    top: 1.4375rem;
+    top: 1.5625rem;
     border-top-color: var(--border);
 
     &::before {
@@ -47,13 +47,14 @@ export const Arrow = styled.div`
 
 export const Content = styled.div`
   position: absolute;
+  z-index: 10;
   display: flex;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease 0s;
 
-  &.v {
+  &.visible {
     opacity: 1;
   }
 `;
@@ -69,7 +70,7 @@ export const Wrapper = styled.div`
   border-radius: 3px;
   box-shadow: 0 2px 10px var(--box-shadow);
 
-  &.k {
+  &.keys {
     padding: 0.25rem 0.25rem 0.25rem 0.5rem;
   }
 `;

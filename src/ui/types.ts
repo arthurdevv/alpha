@@ -56,7 +56,7 @@ export type SettingsSection =
   | 'Config file';
 
 export interface SectionProps {
-  content: preact.ComponentChildren;
+  children: preact.ComponentChildren;
 }
 
 export type SettingsSchema = Record<SettingsSection, ({ title: string } | Setting)[]>;

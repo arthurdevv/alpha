@@ -4,15 +4,24 @@ import { FitAddon } from '@xterm/addon-fit';
 import { ImageAddon } from '@xterm/addon-image';
 import { LigaturesAddon } from '@xterm/addon-ligatures';
 import { SearchAddon } from '@xterm/addon-search';
+import type { ISearchDecorationOptions } from '@xterm/addon-search';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { WebglAddon } from '@xterm/addon-webgl';
 
 import storage from 'main/utils/local-storage';
 import type { Settings } from 'shared/types';
-import { decorations } from 'ui/styles/theme';
 
 const addons: Record<string, Addons> = {};
+
+const decorations: ISearchDecorationOptions = {
+  matchBorder: '#00000000',
+  matchBackground: '#464646',
+  matchOverviewRuler: '#00000000',
+  activeMatchBorder: '#00000000',
+  activeMatchBackground: '#C3C346',
+  activeMatchColorOverviewRuler: '#00000000',
+} as const;
 
 function findResult(id: string, term: string, action: string) {
   const { SearchAddon } = addons[id];
@@ -65,9 +74,7 @@ export default class Addons {
 
   handleOptionalAddons({ renderer, linkHandlerKey }: Partial<Settings>): void {
     if (renderer !== 'default') {
-      this.RendererAddon = new (
-        renderer === 'canvas' ? CanvasAddon : WebglAddon
-      )();
+      this.RendererAddon = new (renderer === 'canvas' ? CanvasAddon : WebglAddon)();
 
       if (this.RendererAddon instanceof WebglAddon) {
         this.RendererAddon.onContextLoss(this.RendererAddon.dispose);

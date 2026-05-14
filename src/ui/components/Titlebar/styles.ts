@@ -1,9 +1,10 @@
 import { styled } from '@linaria/react';
 
+// import { List as Tabs } from 'components/Titlebar/Tabs/styles';
 import {
+  Arrow as TooltipArrow,
   Container as TooltipContainer,
   Content as TooltipContent,
-  Arrow as TooltipArrow,
 } from 'components/Tooltip/styles';
 
 export const DragRegion = styled.div`
@@ -63,9 +64,9 @@ export const Container = styled.header`
   display: flex;
   width: 100%;
   height: 2.375rem;
-  opacity: 0;
-  pointer-events: none;
-  animation: fade-in 1s ease 3.5s forwards;
+  /* opacity: 0; */
+  /* pointer-events: none; */
+  /* animation: fade-in 1s ease 3.5s forwards; */
 
   ${TooltipContent} {
     top: 2.75rem;
@@ -81,3 +82,68 @@ export const Container = styled.header`
     }
   }
 `;
+
+//   &:has(${Tabs} > *) ${Actions}:first-of-type ${TooltipContent} {
+//   left: auto !important;
+
+//   & ${TooltipArrow} {
+//     left: unset !important;
+//   }
+// }
+
+// export const ZenModeGlobalStyles = createGlobalStyle`
+//   html {
+//     &[zen-mode='true'] {
+//       ${Actions} {
+//         display: none;
+//       }
+//     }
+
+//     &[zen-mode-show-tabs='single'] {
+//       ${List} {
+//         position: fixed;
+//         height: 2.375rem;
+//         width: 100%;
+//         justify-content: center;
+//         transition: width .2s ease 0s;
+//       }
+
+//       ${DragRegion} {
+//         position: fixed;
+//         width: 100%;
+//         height: 2.375rem;
+//         z-index: 999;
+//       }
+
+//       ${Tab}:not(.current) {
+//         width: 0;
+//         opacity: 0;
+//         pointer-events: none;
+//         transform: scaleX(0.98);
+//         transition: opacity .2s ease 0s, transform .2s ease 0s;
+//       }
+//     }
+
+//     &[zen-mode-show-tabs='hidden'] {
+//       ${Header} {
+//         position: fixed;
+//         opacity: 0 !important;
+//         pointer-events: none;
+//         transition: opacity .2s ease 0s;
+//       }
+
+//       ${TermContent} {
+//         margin: 1rem 0.75rem 0.75rem 1rem;
+//       }
+//     }
+
+//     &[zen-mode-hide-indicators='true'] {
+//       ${Indicators} {
+//         opacity: 0;
+//         transform: translateY(-2px);
+//         pointer-events: none;
+//         transition: opacity .2s ease 0s;
+//       }
+//     }
+//   }
+// `

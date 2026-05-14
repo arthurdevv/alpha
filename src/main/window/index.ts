@@ -1,51 +1,56 @@
-import { enable, initialize } from '@electron/remote/main';
-import { app, BrowserWindow, globalShortcut, Menu } from 'electron';
-import * as glasstron from 'glasstron';
+import path from 'node:path';
 
-import installCLI from 'cli/install';
+import { app, BrowserWindow, Menu } from 'electron';
+
+// import * as glasstron from 'glasstron';
+
+// import installCLI from 'cli/install';
 import invokeEvents from 'main/ipc/events';
-import initMainAnalytics from 'main/services/analytics';
-import checkForUpdates from 'main/services/updater';
-import settings, { getSettings } from 'main/settings';
-import { iconPath, isPackaged } from 'main/settings/constants';
+import { keymaps } from 'main/keymaps';
+import { settings } from 'main/settings';
+import { PATHS } from 'shared/config';
 
-import { getBounds, saveBounds } from './bounds';
+import { bounds } from './bounds';
 
-const { autoUpdates, enableAnalytics, acrylic, launchMode, centerOnLaunch } =
-  settings;
+// import { migrateSettings } from 'main/settings';
+// import { getSettings } from 'main/settings';
+// import initMainAnalytics from 'main/services/analytics';
+// import checkForUpdates from 'main/services/updater';
+// import { iconPath, isPackaged } from 'main/settings/constants';
 
-if (isPackaged) initMainAnalytics(enableAnalytics);
+// import { getBounds, saveBounds } from './bounds';
 
-let isSingleInstance: boolean = true;
+// if (isPackaged) initMainAnalytics(enableAnalytics);
 
-function handleInitialization(): void {
-  const { onSecondInstance } = settings;
+const isSingleInstance: boolean = true;
 
-  if (onSecondInstance === 'attach') {
-    isSingleInstance = app.requestSingleInstanceLock();
+// function handleInitialization(): void {
+//   const { onSecondInstance } = settings;
 
-    if (!isSingleInstance) {
-      app.quit();
-    } else {
-      app.on('second-instance', async (event, _, cwd) => {
-        event.preventDefault();
+//   if (onSecondInstance === 'attach') {
+//     isSingleInstance = app.requestSingleInstanceLock();
 
-        if (mainWindow) {
-          mainWindow.webContents.send('second-instance', { cwd });
-        }
-      });
-    }
-  }
+//     if (!isSingleInstance) {
+//       app.quit();
+//     } else {
+//       app.on('second-instance', async (event, _, cwd) => {
+//         event.preventDefault();
 
-  initialize();
-}
+//         if (mainWindow) {
+//           // tava no ipc renderer
+//           mainWindow.webContents.send('second-instance', { cwd });
+//         }
+//       });
+//     }
+//   }
+// }
 
-let mainWindow: glasstron.BrowserWindow | null = null;
+export function createWindow() {
+  const { acrylic, alwaysOnTop, centerOnLaunch: center, launchMode } = settings.get();
 
-function createWindow(): void {
-  mainWindow = new (acrylic ? glasstron.BrowserWindow : BrowserWindow)({
-    width: 1050,
-    height: 560,
+  // const mainWindow = new (acrylic ? glasstron.BrowserWindow : BrowserWindow)({
+  const mainWindow = new BrowserWindow({
+    icon: path.join(PATHS.app, 'build/icon.ico'),
     minWidth: 400,
     minHeight: 300,
     show: false,
@@ -58,24 +63,31 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: true,
       contextIsolation: true,
+      spellcheck: false,
     },
-    ...settings,
-    ...getBounds(centerOnLaunch),
-  }) as glasstron.BrowserWindow;
+    center,
+    alwaysOnTop: true,
+    // alwaysOnTop,
+    ...bounds.get(),
+  });
 
-  enable(mainWindow.webContents);
-
-  if (!isPackaged) mainWindow.setIcon(iconPath);
-
-  mainWindow.loadURL(
-    isPackaged ? `file://${__dirname}/index.html` : 'http://localhost:4000',
-  );
+  mainWindow.loadURL(app.isPackaged ? `file://${__dirname}/index.html` : 'http://localhost:4000');
 
   mainWindow.on('ready-to-show', () => {
-    if (mainWindow) {
-      mainWindow.show();
+    if (launchMode === 'fullscreen') {
+      mainWindow.setFullScreen(true);
+    } else if (launchMode === 'maximized') {
+      mainWindow.maximize();
+    }
 
-      if (!isPackaged) mainWindow.webContents.openDevTools();
+    mainWindow.show();
+  });
+
+  mainWindow.on('blur', () => {
+    const { alwaysOnTop, autoHideOnBlur } = settings.get();
+
+    if (!alwaysOnTop && !mainWindow.isFocused()) {
+      mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
     }
   });
 
@@ -83,64 +95,28 @@ function createWindow(): void {
     bounds.save(mainWindow.getBounds());
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+  // if (acrylic) {
+  //   mainWindow.blurType = 'acrylic';
+  //   mainWindow.setBlur(acrylic);
+  // }
 
-  mainWindow.on('blur', () => {
-    const { alwaysOnTop, autoHideOnBlur } = getSettings();
-
-    if (mainWindow && !alwaysOnTop && !mainWindow.isFocused()) {
-      mainWindow[autoHideOnBlur ? 'minimize' : 'blur']();
-    }
-  });
-
-  if (acrylic) {
-    mainWindow.blurType = 'acrylic';
-
-    mainWindow.setBlur(acrylic);
-  }
-
-  if (autoUpdates) checkForUpdates(mainWindow);
-
-  switch (launchMode) {
-    case 'fullscreen':
-      mainWindow.setFullScreen(true);
-      break;
-
-    case 'maximized':
-      mainWindow.maximize();
-      break;
-  }
+  // if (autoUpdates) checkForUpdates(mainWindow);
 
   invokeEvents(mainWindow);
+
+  // REMOVER DEPOIS
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  }
 }
 
-handleInitialization();
+app.whenReady().then(async () => {
+  await Promise.all([settings.init(), keymaps.init(), bounds.init()]);
 
-app.commandLine.appendSwitch(
-  'disable-features',
-  'WidgetLayering,CalculateNativeWinOcclusion',
-);
-
-app.whenReady().then(() => {
-  isSingleInstance && createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-
-  if (isPackaged) installCLI();
+  if (isSingleInstance) createWindow();
+  // if (app.isPackaged) installCLI();
 
   Menu.setApplicationMenu(null);
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll();
-});
-
-export { createWindow };
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');

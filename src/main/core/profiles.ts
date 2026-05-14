@@ -1,227 +1,83 @@
-import { existsSync } from 'node:fs';
+// function createProfile(t: any, template?: IProfile | null): IProfile {
+//   const profile = { ...(template ?? defaultProfiles[0]) };
 
-import { defaultOptions as serialOptions } from 'main/connections/serial';
-import { defaultOptions as sshOptions } from 'main/connections/ssh';
-import { getSettings } from 'main/settings';
-import { HOMEDIR, resourcesPath } from 'main/settings/constants';
-import getRegistryPath from 'main/utils/registry-path';
-import type { IProfile } from 'shared/types';
-import type { AlphaStore } from 'ui/types';
+//   return {
+//     ...profile,
+//     id: crypto.randomUUID(),
+//     name: t('{{profile.name}} copy', { profile }),
+//     group: 'Ungrouped',
+//   };
+// }
 
-export const defaultProfiles = [
-  {
-    id: 'cmd',
-    name: 'Command Prompt',
-    group: 'System',
-    options: {
-      file: 'C:\\Windows\\system32\\cmd.exe',
-      args: [],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'clink',
-    name: 'Clink',
-    group: 'External',
-    options: {
-      file: 'C:\\Windows\\system32\\cmd.exe',
-      args: [
-        '/k',
-        `${resourcesPath}\\clink\\clink_${process.arch}.exe`,
-        'inject',
-      ],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'cygwin',
-    name: 'Cygwin',
-    group: 'External',
-    options: {
-      file: `${getRegistryPath('Cygwin\\setup', 'rootdir')}\\bin\\bash.exe`,
-      args: ['--login', '-i'],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'git-bash',
-    name: 'Git Bash',
-    group: 'External',
-    options: {
-      file: `${getRegistryPath('GitForWindows', 'InstallPath')}\\bin\\bash.exe`,
-      args: ['--login', '-i'],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'msys2',
-    name: `MSYS2`,
-    group: 'External',
-    options: {
-      file: `C:\\msys64\\msys2_shell.cmd`,
-      args: ['-defterm', '-here', '-no-start'],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'powershell',
-    name: 'PowerShell',
-    group: 'System',
-    options: {
-      file: 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe',
-      args: [],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-  {
-    id: 'wsl',
-    name: 'WSL',
-    group: 'System',
-    options: {
-      file: 'C:\\Windows\\system32\\wsl.exe',
-      args: [],
-      env: {},
-      cwd: HOMEDIR,
-    },
-    title: false,
-    type: 'shell',
-  },
-]
-  .filter(({ options }) => existsSync(options.file))
-  .sort((a, b) =>
-    a.group.toLowerCase().localeCompare(b.group.toLowerCase()),
-  ) as IProfile<'shell'>[];
+// function getGroups(
+//   array?: boolean,
+//   connections?: boolean,
+// ): IProfile[] | Record<string, IProfile[]> {
+//   const groups: Record<string, IProfile[]> = {};
 
-const connectionsProfiles = [
-  {
-    id: 'serial',
-    name: 'Serial connection',
-    group: 'Connections',
-    options: serialOptions,
-    title: false,
-    type: 'serial',
-  },
-  {
-    id: 'ssh',
-    name: 'SSH connection',
-    group: 'Connections',
-    options: sshOptions,
-    title: false,
-    type: 'ssh',
-  },
-] as IProfile<'ssh' | 'serial'>[];
+//   let { profiles } = getSettings();
 
-function createProfile(t: any, template?: IProfile | null): IProfile {
-  const profile = { ...(template ?? defaultProfiles[0]) };
+//   profiles = profiles.concat([...defaultProfiles]);
 
-  return {
-    ...profile,
-    id: crypto.randomUUID(),
-    name: t('{{profile.name}} copy', { profile }),
-    group: 'Ungrouped',
-  };
-}
+//   if (connections) {
+//     profiles = profiles.concat([...connectionsProfiles]);
+//   }
 
-function getGroups(
-  array?: boolean,
-  connections?: boolean,
-): IProfile[] | Record<string, IProfile[]> {
-  const groups: Record<string, IProfile[]> = {};
+//   profiles.forEach(profile => {
+//     const { group } = profile;
 
-  let { profiles } = getSettings();
+//     groups[group] = group in groups ? [...groups[group], profile] : [profile];
+//   });
 
-  profiles = profiles.concat([...defaultProfiles]);
+//   return array ? profiles : groups;
+// }
 
-  if (connections) {
-    profiles = profiles.concat([...connectionsProfiles]);
-  }
+// function getProfileByKey(key: keyof IProfile, value: any): IProfile {
+//   const groups = getGroups(true) as IProfile[];
 
-  profiles.forEach(profile => {
-    const { group } = profile;
+//   const profile = groups.find(profile => profile[key] === value);
 
-    groups[group] = group in groups ? [...groups[group], profile] : [profile];
-  });
+//   return getDefaultProfile(profile);
+// }
 
-  return array ? profiles : groups;
-}
+// function getDefaultProfile(profile?: IProfile): IProfile {
+//   if (profile) return profile;
 
-function getProfileByKey(key: keyof IProfile, value: any): IProfile {
-  const groups = getGroups(true) as IProfile[];
+//   const { defaultProfile } = getSettings();
 
-  const profile = groups.find(profile => profile[key] === value);
+//   return getProfileByKey('id', defaultProfile);
+// }
 
-  return getDefaultProfile(profile);
-}
+// function getAllProfiles(): IProfile[] {
+//   const { profiles } = getSettings();
 
-function getDefaultProfile(profile?: IProfile): IProfile {
-  if (profile) return profile;
+//   return profiles.concat(defaultProfiles);
+// }
 
-  const { defaultProfile } = getSettings();
+// function getInstanceProfile({ instances, current }: AlphaStore): IProfile | null {
+//   const { origin, terms } = current;
 
-  return getProfileByKey('id', defaultProfile);
-}
+//   if (!origin || !terms[origin]) return null;
 
-function getAllProfiles(): IProfile[] {
-  const { profiles } = getSettings();
+//   const [id] = terms[origin];
+//   const { profile } = instances[id];
 
-  return profiles.concat(defaultProfiles);
-}
+//   return profile;
+// }
 
-function getInstanceProfile({
-  instances,
-  current,
-}: AlphaStore): IProfile | null {
-  const { origin, terms } = current;
+// function sortGroups(groups: any): string[] {
+//   const weights = { Ungrouped: -1, External: 98, System: 99, Connections: 100 };
 
-  if (!origin || !terms[origin]) return null;
+//   if (Array.isArray(groups)) {
+//     return [...groups].sort((a, b) => {
+//       const weightA = weights[a] ?? 0;
+//       const weightB = weights[b] ?? 0;
 
-  const [id] = terms[origin];
-  const { profile } = instances[id];
+//       if (weightA !== weightB) return weightA - weightB;
 
-  return profile;
-}
+//       return a.toLowerCase().localeCompare(b.toLowerCase());
+//     });
+//   }
 
-function sortGroups(groups: any): string[] {
-  const weights = { Ungrouped: -1, External: 98, System: 99, Connections: 100 };
-
-  if (Array.isArray(groups)) {
-    return [...groups].sort((a, b) => {
-      const weightA = weights[a] ?? 0;
-      const weightB = weights[b] ?? 0;
-
-      if (weightA !== weightB) return weightA - weightB;
-
-      return a.toLowerCase().localeCompare(b.toLowerCase());
-    });
-  }
-
-  return [];
-}
-
-export {
-  createProfile,
-  getGroups,
-  getProfileByKey,
-  getDefaultProfile,
-  getAllProfiles,
-  getInstanceProfile,
-  sortGroups,
-};
+//   return [];
+// }

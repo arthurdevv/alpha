@@ -3,10 +3,6 @@ import colors from 'ansi-colors';
 import type IPC from 'main/ipc/main';
 import type { IProfile } from 'shared/types';
 
-export function errorLog(text: string): string {
-  return `${colors.bgRedBright.black(' X ')} ${colors.redBright(text)}\r\n`;
-}
-
 class Logger {
   protected ipc: IPC;
 
@@ -33,17 +29,13 @@ class Logger {
   }
 
   warn(text: string) {
-    this.exec(
-      `${colors.bgYellow.black(' WARNING ')} ${colors.yellow(text)}\r\n`,
-    );
+    this.exec(`${colors.bgYellow.black(' WARNING ')} ${colors.yellow(text)}\r\n`);
 
     return this;
   }
 
   error(text: string, reject?: () => void) {
-    this.exec(
-      `${colors.bgRedBright.black(' X ')} ${colors.redBright(text)}\r\n`,
-    );
+    this.exec(`${colors.bgRedBright.black(' X ')} ${colors.redBright(text)}\r\n`);
 
     if (reject) reject();
 
@@ -72,10 +64,7 @@ class Logger {
   }
 
   exec(data: any, command = 'write', focus = false) {
-    this.ipc.send(
-      `terminal:${command}`,
-      command === 'write' ? { id: this.id, data } : data,
-    );
+    this.ipc.send(`terminal:${command}`, command === 'write' ? { id: this.id, data } : data);
 
     if (focus) setTimeout(() => this.ipc.send('terminal:action', 'focus'), 0);
 

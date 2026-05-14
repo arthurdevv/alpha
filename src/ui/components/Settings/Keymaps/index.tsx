@@ -5,10 +5,10 @@ import { useSearch } from 'ui/hooks/useSearch';
 import { useAppStore } from 'ui/store/app/store';
 
 import { KeyboardOffIcon, SearchIcon } from 'components/Icons';
-import { Form, FormItem, NoResults, Title } from 'components/Settings/styles';
+import { Content, Form, FormItem, NoResults, Title } from 'components/Settings/styles';
 
 import schema from './schema';
-import { AddKeys, Content, Item, Key, Keys, Label, Wrapper } from './styles';
+import { AddKeys, Item, Key, Keys, Label, Wrapper } from './styles';
 
 export default function Keymaps() {
   const keymaps = useAppStore(s => s.keymaps);
@@ -34,7 +34,7 @@ export default function Keymaps() {
           </FormItem>
         </Form>
       </Title>
-      <Content className={cx(isEmpty && 'empty')}>
+      <Content className={cx(isEmpty && 'empty')} style={{ gap: '1rem' }}>
         {isEmpty ? (
           <NoResults>
             <KeyboardOffIcon />
@@ -50,9 +50,9 @@ export default function Keymaps() {
                 <Label>{t(label)}</Label>
                 <Wrapper>
                   <AddKeys>{t('Add keys...')}</AddKeys>
-                  {keys?.map(keys => (
-                    <Keys key={keys}>
-                      {keys.split('+').map((key, index) => (
+                  {keys?.map(k => (
+                    <Keys key={k}>
+                      {k.split('+').map((key, index) => (
                         <Key key={index}>{key}</Key>
                       ))}
                     </Keys>

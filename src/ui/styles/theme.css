@@ -1,0 +1,21 @@
+:root {
+  --foreground: #e6e6e6;
+  --background: #0a0a0a;
+  --muted: #a0a0a0;
+  --border: #1e1e1e;
+  --box-shadow: #00000099;
+
+  --divider: #1c1c1cff; /* acrylic ? '#ffffff11' : '#1c1c1cff', */
+  --divider-hover: #2d2d2dff; /* acrylic ? '#ffffff26' : '#2d2d2dff' */
+
+  --tooltip: #0a0a0afc; /* acrylic ? '#0a0a0acc' : '#0a0a0afc', */
+  --overlay: #0f0f0f72;
+  --textarea: #141414fc;
+
+  --cursor: #e6e6e6;
+  --cursor-accent: #00000000;
+  --selection-foreground: #e6e6e6;
+  --selection-background: #303030;
+  --scrollbar-thumb: #ffffff26;
+  --scrollbar-hover: #ffffff3f;
+}

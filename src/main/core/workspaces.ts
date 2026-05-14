@@ -1,8 +1,8 @@
 import { basename, extname, relative, sep } from 'node:path';
 
 import { getDefaultProfile, getProfileByKey } from 'main/core/profiles';
-import systemInfo, { getCurrentBranch } from 'main/utils/system-info';
 import type { ITheme, IWorkspace, IWorkspaceTab } from 'shared/types';
+import systemInfo, { getCurrentBranch } from 'ui/utils/system-info';
 
 export function createWorkspace(t: any, index: number = 0): IWorkspace {
   return {
@@ -23,10 +23,7 @@ export function createWorkspaceTab(t: any, index: number = 1): IWorkspaceTab {
   };
 }
 
-export function getPreviewPrompt(
-  { profile: id }: IWorkspaceTab,
-  theme: ITheme,
-) {
+export function getPreviewPrompt({ profile: id }: IWorkspaceTab, theme: ITheme) {
   const profile = getProfileByKey('id', id);
 
   if (profile.type === 'shell') {

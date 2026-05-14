@@ -1,4 +1,4 @@
-import ipc from 'ui/ipc';
+import ipc from 'main/ipc/renderer';
 
 import { boundCommands } from './schema';
 

@@ -1,4 +1,4 @@
-import type { Instance, Viewport } from 'shared/types';
+import type { Instance } from 'shared/types';
 import type { Tab, Term } from 'ui/types';
 
 export interface TermsState {
@@ -10,17 +10,9 @@ export interface TermsState {
 }
 
 export interface TermsActions {
-  requestTerm: (instance: Instance) => void;
-  splitTerm: (
-    id: UUID,
-    instance: Instance,
-    orientation: 'horizontal' | 'vertical',
-  ) => void;
-  switchTerm: (
-    id: UUID,
-    order: 'next' | 'previous' | number,
-    nested?: boolean,
-  ) => void;
+  requestTerm: (instance: Instance, blank: boolean) => void;
+  splitTerm: (id: UUID, instance: Instance, orientation: 'horizontal' | 'vertical') => void;
+  switchTerm: (id: UUID, order: 'next' | 'previous' | number, nested?: boolean) => void;
   resizeTerm: (id: UUID, direction: 'up' | 'right' | 'down' | 'left') => void;
   disposeTerm: (id: UUID, origin: string) => void;
 }

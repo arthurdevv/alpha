@@ -1,15 +1,26 @@
 import { useMemo, useState } from 'preact/hooks';
 
-export function useSearch<T extends Record<string, string>>(schema: T) {
+type Mappable = { id: string; name: string; group: string };
+
+export function useSearch<T extends Record<string, string>>(schema: T | Mappable[]) {
   const [query, setQuery] = useState('');
 
+  const normalized = useMemo<[string, string, string][]>(() => {
+    if (Array.isArray(schema)) {
+      return schema
+        .toSorted((a, b) => a.name.localeCompare(b.name))
+        .map(({ id, name, group }) => [id, name, group]);
+    }
+
+    return Object.entries(schema);
+  }, [schema]);
+
   const filtered = useMemo(() => {
-    const entries = Object.entries(schema);
-    if (!query.trim()) return entries;
+    if (!query.trim()) return normalized;
 
     const q = query.toLowerCase();
-    return entries.filter(([, label]) => label.toLowerCase().includes(q));
-  }, [schema, query]);
+    return normalized.filter(([, label]) => label.toLowerCase().includes(q));
+  }, [normalized, query]);
 
   return { query, setQuery, filtered, isEmpty: filtered.length === 0 };
 }

@@ -3,13 +3,13 @@ import { readFileSync } from 'node:fs';
 import net from 'node:net';
 
 import socks from 'socksv5';
-import { Client } from 'ssh2';
 import type { ClientChannel } from 'ssh2';
+import { Client } from 'ssh2';
 import sshpk from 'sshpk';
 
-import executeScripts, { getUnique } from 'main/connections/scripts';
 import Logger from 'main/core/logger';
 import type IPC from 'main/ipc/main';
+import executeScripts, { getUnique } from 'main/profiles/scripts';
 import type { IForwardPort, ISSHOptions } from 'main/types';
 import { reportError } from 'shared/error-reporter';
 import type { IInstance } from 'shared/types';
@@ -45,21 +45,12 @@ class SSH extends Logger {
 
   private connected: boolean = false;
 
-  constructor(
-    options: Partial<ISSHOptions>,
-    { id, profile }: IInstance,
-    ipc: IPC,
-  ) {
+  constructor(options: Partial<ISSHOptions>, { id, profile }: IInstance, ipc: IPC) {
     super(id, profile, ipc);
 
-    this.options = Object.assign(defaultOptions, options, <
-      Partial<ISSHOptions>
-    >{
+    this.options = Object.assign(defaultOptions, options, <Partial<ISSHOptions>>{
       hostVerifier: (hash: Buffer) => {
-        this.fingerprint = crypto
-          .createHash('sha256')
-          .update(hash)
-          .digest('base64');
+        this.fingerprint = crypto.createHash('sha256').update(hash).digest('base64');
 
         return Boolean(this.fingerprint);
       },
@@ -78,14 +69,9 @@ class SSH extends Logger {
           try {
             const content = readFileSync(keyPath);
 
-            key = sshpk
-              .parsePrivateKey(content.toString(), 'auto')
-              .toString('openssh');
+            key = sshpk.parsePrivateKey(content.toString(), 'auto').toString('openssh');
           } catch (error) {
-            if (
-              error instanceof sshpk.KeyEncryptedError ||
-              error instanceof sshpk.KeyParseError
-            ) {
+            if (error instanceof sshpk.KeyEncryptedError || error instanceof sshpk.KeyParseError) {
               this.error(error.message);
             }
           }
@@ -102,9 +88,7 @@ class SSH extends Logger {
   connect() {
     this.client = new Client();
 
-    this.info(`${this.options.host}:${this.options.port}`).startSpinner(
-      `Connecting...`,
-    );
+    this.info(`${this.options.host}:${this.options.port}`).startSpinner(`Connecting...`);
 
     this.client
       .on('ready', async () => {
@@ -114,14 +98,12 @@ class SSH extends Logger {
           .shell({ term: 'xterm-256color' }, this.options, (error, stream) => {
             if (error) return this.error(error.message);
 
-            let buffer = '';
+            const buffer = '';
 
             stream
               .on('data', (data: string) => {
-                executeScripts(
-                  { chunk: data, buffer },
-                  this.options.scripts,
-                  execute => stream.write(`${execute}`),
+                executeScripts({ chunk: data, buffer }, this.options.scripts, execute =>
+                  stream.write(`${execute}`),
                 );
 
                 this.exec(data);
@@ -130,18 +112,12 @@ class SSH extends Logger {
           })
           .setNoDelay(true);
 
-        await Promise.all(
-          getUnique(this.options.ports).map(port => this.forward(port)),
-        );
+        await Promise.all(getUnique(this.options.ports).map(port => this.forward(port)));
 
-        this.exec(this.connected, 'connected')
-          .exec('clear', 'action')
-          .stopSpinner();
+        this.exec(this.connected, 'connected').exec('clear', 'action').stopSpinner();
       })
       .on('handshake', negotiated => {
-        this.debug(`Host key (${negotiated.serverHostKey})`).debug(
-          `SHA256:${this.fingerprint}`,
-        );
+        this.debug(`Host key (${negotiated.serverHostKey})`).debug(`SHA256:${this.fingerprint}`);
       })
       .on('x11', (_, accept) => {
         const socket = new net.Socket();
@@ -159,9 +135,7 @@ class SSH extends Logger {
           .connect(6000, 'localhost');
       })
       .on('tcp connection', (details, accept, reject) => {
-        const port = this.options.ports.find(
-          port => port.port === details.destPort,
-        );
+        const port = this.options.ports.find(port => port.port === details.destPort);
 
         if (port && port.type !== 'dynamic') {
           const socket = net.connect(port.dstPort, port.dstHost);
@@ -199,10 +173,7 @@ class SSH extends Logger {
       .connect({ ...this.options, algorithms });
 
     ['greeting', 'banner'].forEach((event: any) =>
-      this.client.on(
-        event,
-        message => !this.options.messages && this.exec(message),
-      ),
+      this.client.on(event, message => !this.options.messages && this.exec(message)),
     );
   }
 
@@ -285,9 +256,7 @@ class SSH extends Logger {
             })
             .on('error', error => this.error(error.message, reject))
             .listen(port.port, port.host, () => {
-              this.info(
-                `Dynamic port forwarded: ${port.host}:${port.port} →  SOCKS Proxy`,
-              );
+              this.info(`Dynamic port forwarded: ${port.host}:${port.port} →  SOCKS Proxy`);
             })
             .useAuth(socks.auth.None());
         });

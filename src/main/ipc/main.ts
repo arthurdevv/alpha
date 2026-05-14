@@ -16,7 +16,7 @@ export class IPCMain extends BaseIPC {
     this.window.webContents.send('renderer', { channel, args });
   }
 
-  handle(channel: string, listener: (args: any) => any | Promise<any>) {
-    ipcMain.handle(channel, (_, args) => listener(args));
+  handle(channel: string, listener: (...args: any[]) => any | Promise<any>) {
+    ipcMain.handle(channel, (_, args) => listener(...args));
   }
 }
