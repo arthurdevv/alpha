@@ -3,20 +3,20 @@
 </p>
 
 <div align="center">
-  <h3>WELCOME TO ALPHA</h3>
+  <h3>ALPHA</h3>
 
   <i>A modern terminal for modern workflows</i>
 </div>
 
 <div align="center">
   <a href="https://github.com/arthurdevv/alpha/releases">
-    <img src="https://img.shields.io/github/downloads/arthurdevv/alpha/total?color=white&style=for-the-badge" alt="Downloads">
+    <img src="https://img.shields.io/github/downloads/arthurdevv/alpha/total?color=fff&style=for-the-badge" alt="Downloads">
   </a>
   <a href="https://github.com/arthurdevv/alpha/releases/latest">
-    <img src="https://img.shields.io/github/v/release/arthurdevv/alpha?color=white&style=for-the-badge" alt="Release">
+    <img src="https://img.shields.io/github/v/release/arthurdevv/alpha?color=fff&style=for-the-badge" alt="Release">
   </a>
   <a href="https://github.com/arthurdevv/alpha">
-    <img src="https://img.shields.io/static/v1.svg?color=white&label=Platform&message=WIN&style=for-the-badge" alt="Platform">
+    <img src="https://img.shields.io/static/v1.svg?color=fff&label=Platform&message=WIN&style=for-the-badge" alt="Platform">
   </a>
 </div>
 
@@ -56,8 +56,6 @@ Alpha will **automatically** update when a new release is available.
 And more features to explore.
 
 ## Contributing
-
-Contributions are always welcome!
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed instructions on how to get started.
 
