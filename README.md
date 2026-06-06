@@ -10,7 +10,7 @@
 
 <div align="center">
   <a href="https://github.com/arthurdevv/alpha/releases">
-    <img src="https://img.shields.io/github/downloads/arthurdevv/alpha/total?color=fff&style=for-the-badge" alt="Downloads">
+    <img src="https://img.shields.io/github/downloads/arthurdevv/alpha/total?style=for-the-badge&color=%23fff" alt="Downloads">
   </a>
   <a href="https://github.com/arthurdevv/alpha/releases/latest">
     <img src="https://img.shields.io/github/v/release/arthurdevv/alpha?color=fff&style=for-the-badge" alt="Release">
